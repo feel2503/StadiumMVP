@@ -1,0 +1,19 @@
+ncloud
+ID는 메일 
+ojh300@gmail.com
+암호
+dlswmd@2sid2
+
+서버 생성
+인증키 이름 : stadiumamp
+
+IP : 223.130.134.43
+관리자 이름
+root
+비밀번호
+M4GfGH@NR6ARd
+
+
+Stadium AMP DB
+user/pwd : thiscat / stadiumamp!
+database : stadiumamp
