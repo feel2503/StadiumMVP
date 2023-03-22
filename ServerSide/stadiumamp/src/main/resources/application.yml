@@ -1,0 +1,52 @@
+########################################### SSL  ##############################
+#server.port: 443
+#server.ssl:
+#  key-store: cert/pmdmcert.p12
+#  key-store-password: pTTUhd
+#  keyStoreType: PKCS12
+########################################### SPRING  ##############################
+server:
+    port: 80
+    error:
+        include-message: always
+        include-binding-errors: always
+
+spring:
+    mvc:
+        async:
+            request-timeout: 300000 # 5 minute
+        pathmatch:
+            matching-strategy: ant_path_matcher
+
+    datasource:
+        url: jdbc:postgresql://localhost:5432/stadiumamp
+        driver-class-name: org.postgresql.Driver
+        username: thiscat
+        password: stadiumamp!
+
+    sql.init.mode: always
+    ###################  [[  JPA ]] ########################
+    jpa:
+        database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+        show-sql: true
+        open-in-view: true
+
+        hibernate:
+            ddl-auto: none
+        properties:
+            hibernate:
+                jdbc:
+                    batch-size: 100
+                format_sql: true
+                dialect: org.hibernate.dialect.PostgreSQLDialect
+                #use_sql_comments: true
+    ####################  [[  DEV Setting ]] ########################
+    devtools:
+        livereload:
+            enabled: true
+
+##################  [[  Swagger ]] ########################
+swagger.base.package: kr.co.thiscat.stadiumamp
+
+api:
+    version: STADIUMAMP V0.0.1

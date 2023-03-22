@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="favicon.ico">
+    <meta http-equiv="X-UA-Compatible" content="IE=9;IE=10;IE=Edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Welcome to Stadium APM</title>
+
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    function setInterval(){
+        let arr = document.getElementsByName("stopWatch");
+
+        for(let i=0; i<arr.length; i++){
+            // time은 스톱워치의 경우 0으로 두고 time++;
+            // time은 타이머의 경우 남은 시간을 초 단위로 두고 time--;
+            // 차이를 눈으로 보기 위해 (i*100)을 추가했고, 실제로는 표현하려는 시작 시간을 넣으셔야 됩니다.
+            let time = 0 + (i*100);
+
+            startTimer(time, arr[i]); // 각 타이머 생성
+        }
+    }
+
+    function startTimer(time, obj){
+        var hour, min, sec;
+
+        var timer = setInterval(function(){
+                time--; // 1초마다 증가, 타이머의 경우 time--;
+
+                min = Math.floor(time/60);
+                hour = Math.floor(min/60);
+                sec = time%60;
+                min = min%60;
+
+                var th = hour;
+                var tm = min;
+                var ts = sec;
+
+                // 한자리일 경우 처리
+                if(th < 10){
+                    th = "0" + hour;
+                }
+                if(tm < 10){
+                    tm = "0" + min;
+                }
+                if(ts < 10){
+                    ts = "0" + sec;
+                }
+
+                // 함수 호출 당시 받은 object의 html 교체
+                obj.innerHTML = th + ":" + tm + ":" + ts;
+            }
+            , 1000);
+    }
+
+
+    /*]]>*/
+</script>
+    <div id="wrap" >
+        <div class="wc_text_02">
+            이벤트 서버 <b>[[${server.name}]]</b> 실시간 응원 결과
+        </div>
+
+        <div class="result_graph">
+            <div class="home_graph">홈팀 [[${event.homeCount}]]</div>
+            <div class="away_graph">[[${event.awayCount}]] 원정팀</div>
+        </div>
+
+        <div class="wc_text_02">
+            현재 응원 이벤트 남은 시간
+        </div>
+
+        <div class="time_count">
+            [[${state}]]
+        </div>
+
+        <div class="wc_text_02">
+            응원할 음원을 투표해 주세요.
+        </div>
+
+        <div class="bt-02">
+            <button th:onclick="|location.href='@{/vote/save (teamType = ${team}, eventId = ${event.id})}'|" class="join_event">[[${teamtype}]] 팀 응원 1</button>
+            <button th:onclick="|location.href='@{/vote/save (teamType = ${team}, eventId = ${event.id})}'|" class="join_event">[[${teamtype}]] 팀 응원 2</button>
+            <button class="join_event_disable">홈 팀 응원 3</button>
+            <button class="join_event_disable">홈 팀 응원 4</button>
+        </div>
+
+        <p></p>
+
+
+    </div>
+
+
+    <div id="bottom_banner">
+        <img src="asset/bn.jpg">
+    </div>
+</body>
+</html>

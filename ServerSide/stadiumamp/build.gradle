@@ -1,0 +1,89 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '2.7.7'
+	id 'io.spring.dependency-management' version '1.1.0'
+	id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
+}
+
+group = 'kr.co.thiscat'
+version = '0.0.1-SNAPSHOT'
+//sourceCompatibility = '11'
+
+
+
+repositories {
+	mavenCentral()
+}
+
+
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+//	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation'org.springframework.boot:spring-boot-starter-validation'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+	// === QueryDsl 시작 ===
+	implementation 'com.querydsl:querydsl-jpa:5.0.0'
+	//annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
+	annotationProcessor "com.querydsl:querydsl-apt:5.0.0"
+
+//	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+//	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+	// === QueryDsl 끝 ===
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	//lombok
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	// postgresql
+	runtimeOnly 'org.postgresql:postgresql'
+
+	// stringutil
+	implementation 'io.netty:netty-common:4.1.31.Final'
+
+	// swagger
+	implementation 'io.springfox:springfox-swagger-ui:3.0.0'
+	implementation 'io.springfox:springfox-swagger2:3.0.0'
+	implementation 'io.springfox:springfox-boot-starter:3.0.0'
+
+	implementation 'commons-io:commons-io:2.6'
+	implementation 'com.google.guava:guava:20.0'
+
+
+
+}
+
+
+test {
+	useJUnitPlatform()
+}
+
+//querydsl 추가 시작
+def querydslDir = "$buildDir/generated/querydsl"
+
+querydsl {
+	jpa = true
+	querydslSourcesDir = querydslDir
+}
+sourceSets {
+	main {
+		java {
+			srcDirs "src/main/java", "$buildDir/generated/querydsl"
+		}
+	}
+}
+compileQuerydsl{
+	options.annotationProcessorPath = configurations.querydsl
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+	querydsl.extendsFrom compileClasspath
+}

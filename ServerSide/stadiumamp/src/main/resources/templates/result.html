@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="favicon.ico">
+    <meta http-equiv="X-UA-Compatible" content="IE=9;IE=10;IE=Edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Welcome to Stadium APM</title>
+
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <h1>Server 테이블</h1>
+    <table border="1">
+        <tr>
+            <th>Server ID</th>
+            <th>Server Name</th>
+        </tr>
+        <tr th:each="server : ${server}">
+            <td th:text="${server.id}">Server ID</td>
+            <td th:text="${server.name}">Server Name</td>
+        </tr>
+    </table>
+
+    <h1>Event 테이블</h1>
+    <table border="1">
+        <tr>
+            <th>Event ID</th>
+            <th>Server ID</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Vote Time</th>
+            <th>Result Time</th>
+            <th>State</th>
+            <th>Home Count</th>
+            <th>Away Count</th>
+        </tr>
+        <tr th:each="event : ${event}">
+            <td th:text="${event.id}">Event ID</td>
+            <td th:text="${event.stadiumServerId}">Server ID</td>
+            <td th:text="${event.startDateTime}">Start Date</td>
+            <td th:text="${event.endDateTime}">End Date</td>
+            <td th:text="${event.voteTime}">Vote Time</td>
+            <td th:text="${event.resultTime}">Result Time</td>
+            <td th:text="${event.eventState}">State</td>
+            <td th:text="${event.homeCount}">Home Count</td>
+            <td th:text="${event.awayCount}">Away Count</td>
+        </tr>
+    </table>
+
+</body>
+</html>

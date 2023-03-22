@@ -1,0 +1,146 @@
+@charset "utf-8";
+/* 구글폰트 */
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap');
+
+html, body {
+	height:100%;
+    min-width:375px;
+    /*font-family:font-family: 'Noto Sans KR', sans-serif;*/
+	margin:0px;
+	position:relative;
+	background-image:linear-gradient(#ffffff,#efefef);
+    background-repeat:no-repeat;
+    background-size: cover;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-attachment:fixed;
+}
+
+ul, li {list-style:none;}
+* {box-sizing: border-box;}
+a {color: #333;text-decoration:none;}
+
+div{
+    border:0px dotted red;
+}
+
+#wrap{
+    padding:20px;
+}
+
+.logo {
+    text-align: center;
+    margin-bottom:30px;
+    border-bottom:1px solid #efefef;
+    padding:30px 0px 30px 0px;
+}
+.logo img{
+
+    width:80%;
+}
+
+.wc_text{
+    text-align: left;
+    line-height: 24px;
+    margin-bottom: 30px;
+    font-size:18px;
+    font-weight:bold;
+}
+.wc_text_02{
+    text-align: left;
+    line-height: 36px;
+    font-size:16px;
+    font-weight:300;
+    margin-bottom: 10px;
+}
+
+
+.select_home{
+    width: 100%;
+    height: 100px;
+    border:1px solid red;
+    background-image: url('../asset/home_bg.svg');
+    background-size: cover;
+    background-position: center;
+    margin-bottom:10px;
+
+}
+.select_away{
+    height:80px;
+    background-image:url('../asset/away_bg.png');
+    background-color: #fff;
+    margin-bottom:10px;
+}
+
+.join_event{
+    cursor: pointer;
+    width: 100%;
+    background-color: limegreen;
+    border: none;
+    border-radius: 5px;
+    padding:15px;
+    font-size: 16px;
+    color:#ffffff;
+    font-weight:700;
+    margin-bottom: 15px;
+}
+.join_event_disable{
+    cursor: pointer;
+    width: 100%;
+    background-color: #ebebeb;
+    border:none;
+    border-radius: 5px;
+    padding:15px;
+    font-size: 16px;
+    color:#ffffff;
+    font-weight:700;
+    margin-bottom: 15px;
+}
+#bottom_banner{
+    position: fixed;
+    bottom:0px;
+    width: 100%;
+}
+#bottom_banner img{
+    width: 100%;
+}
+
+.result_graph{
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 30px;
+
+}
+.home_graph{
+    background-color:royalblue;
+    flex-basis: 50%;
+    text-align: left;
+    border-radius: 100px 0px 0px 100px;
+    padding:15px 15px 15px 30px;
+    color:#ffffff;
+    font-weight: 600;
+}
+.away_graph{
+    background-color:orangered;
+    flex-basis: 50%;
+    text-align: right;
+    border-radius: 0px 100px 100px 0px;
+    padding:15px 30px 15px 15px;
+    color:#ffffff;
+    font-weight: 600;
+}
+.time_count{
+    text-align: center;
+    font-weight: 900;
+    font-size:18px;
+    border-radius: 5px;
+    background-color: #efefef;
+    padding:10px;
+    margin-bottom: 30px;
+}
+.bt-02{
+    padding:20px;
+    border-radius: 5px;
+    border: 1px solid #ebebeb;
+}
