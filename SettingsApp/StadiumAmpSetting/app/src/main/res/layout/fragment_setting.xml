@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="20dp"
+    android:layout_marginRight="20dp"
+    android:layout_marginTop="30dp"
+    android:orientation="vertical"
+    tools:context=".fragment.SettingFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:background="@drawable/bg_round_gray"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="이벤트 시간 설정" />
+
+        <RadioGroup
+            android:id="@+id/radio_vote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <RadioButton
+                android:id="@+id/radio_vote_3m"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="투표시간 3분"/>
+            <RadioButton
+                android:id="@+id/radio_vote_5m"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="투표시간 5분"/>
+        </RadioGroup>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:padding="10dp"
+        android:background="@drawable/bg_round_gray"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="이벤트 시간 종료 후 결과 표시 설정" />
+
+        <RadioGroup
+            android:id="@+id/radio_result"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <RadioButton
+                android:id="@+id/radio_result_1m"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="결과표시 1분"/>
+            <RadioButton
+                android:id="@+id/radio_result_3m"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="결과표시 3분"/>
+
+        </RadioGroup>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:padding="10dp"
+        android:background="@drawable/bg_round_gray"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="서버 위치 설정" />
+
+        <TextView
+            android:id="@+id/text_event_select"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:padding="15dp"
+            android:background="@drawable/bg_round_white"
+            android:text="이벤트 서버 선택" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:padding="10dp"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/text_event_server"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="이벤트 서버 : " />
+
+        <TextView
+            android:id="@+id/text_event_start"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:padding="15dp"
+            android:textColor="@color/white"
+            android:background="@drawable/bg_round_06141f"
+            android:text="이벤트 시작" />
+
+        <TextView
+            android:id="@+id/text_event_stop"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:padding="15dp"
+            android:textColor="#c2c2c2"
+            android:background="@drawable/bg_round_gray"
+            android:text="이벤트 종료" />
+
+
+    </LinearLayout>
+
+</LinearLayout>
