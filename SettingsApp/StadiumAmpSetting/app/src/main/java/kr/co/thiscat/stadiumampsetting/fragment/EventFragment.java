@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -52,6 +53,8 @@ public class EventFragment extends Fragment {
     private TextView mTextTime;
 
     private int second;
+
+    private ImageView mImgEvent;
 
     public EventFragment() {
         // Required empty public constructor
@@ -96,6 +99,7 @@ public class EventFragment extends Fragment {
         mTextHome = view.findViewById(R.id.text_result_home);
         mTextAway = view.findViewById(R.id.text_result_away);
         mTextTime = view.findViewById(R.id.text_event_remain);
+        mImgEvent = view.findViewById(R.id.imageView);
         return view;
     }
 

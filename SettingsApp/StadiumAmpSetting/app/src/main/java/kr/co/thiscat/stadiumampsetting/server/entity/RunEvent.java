@@ -37,6 +37,16 @@ public class RunEvent
     @SerializedName("startDateTime")
     private String startDateTime;
 
+    String homeMusic;
+
+    String awayMusic;
+
+    String defaultMusic;
+
+    String homeImg;
+    String awayImg;
+    String defaultImg;
+
     public long getId() {
         return id;
     }
@@ -99,5 +109,53 @@ public class RunEvent
 
     public void setStartDateTime(String startDateTime) {
         this.startDateTime = startDateTime;
+    }
+
+    public String getHomeMusic() {
+        return homeMusic;
+    }
+
+    public void setHomeMusic(String homeMusic) {
+        this.homeMusic = homeMusic;
+    }
+
+    public String getAwayMusic() {
+        return awayMusic;
+    }
+
+    public void setAwayMusic(String awayMusic) {
+        this.awayMusic = awayMusic;
+    }
+
+    public String getDefaultMusic() {
+        return defaultMusic;
+    }
+
+    public void setDefaultMusic(String defaultMusic) {
+        this.defaultMusic = defaultMusic;
+    }
+
+    public String getHomeImg() {
+        return homeImg;
+    }
+
+    public void setHomeImg(String homeImg) {
+        this.homeImg = homeImg;
+    }
+
+    public String getAwayImg() {
+        return awayImg;
+    }
+
+    public void setAwayImg(String awayImg) {
+        this.awayImg = awayImg;
+    }
+
+    public String getDefaultImg() {
+        return defaultImg;
+    }
+
+    public void setDefaultImg(String defaultImg) {
+        this.defaultImg = defaultImg;
     }
 }

@@ -1,0 +1,348 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".fragment.SettingFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="30dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:background="@drawable/bg_round_gray"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="이벤트 진행중 기본 재생 음악" />
+
+                <RadioGroup
+                    android:id="@+id/radio_default_music"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <RadioButton
+                        android:id="@+id/radio_default_media"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Media URL"/>
+                    <EditText
+                        android:id="@+id/edit_default_media"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:textAlignment="center"
+                        android:textSize="15dp"
+                        android:hint="web url 을 붙여 넣어주세요"
+                        android:background="@drawable/bg_round_white"/>
+                    <RadioButton
+                        android:id="@+id/radio_default_local"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Local File"/>
+
+                    <TextView
+                        android:id="@+id/text_default_local"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:textSize="15dp"
+                        android:background="@drawable/bg_round_white"
+                        android:text="스마트폰 안에 파일을 선택하세요" />
+                </RadioGroup>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:padding="10dp"
+                android:background="@drawable/bg_round_gray"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Home Team 응원 음원 1" />
+
+                <RadioGroup
+                    android:id="@+id/radio_home_music_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <RadioButton
+                        android:id="@+id/radio_home_media_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Media URL"/>
+                    <EditText
+                        android:id="@+id/edit_home_media_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="15dp"
+                        android:textAlignment="center"
+                        android:padding="10dp"
+                        android:hint="web url 을 붙여 넣어주세요"
+                        android:background="@drawable/bg_round_white"/>
+                    <RadioButton
+                        android:id="@+id/radio_home_local_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Local File"/>
+                    <TextView
+                        android:id="@+id/text_home_local_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:textSize="15dp"
+                        android:background="@drawable/bg_round_white"
+                        android:text="스마트폰 안에 파일을 선택하세요" />
+                </RadioGroup>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:padding="10dp"
+                android:background="@drawable/bg_round_gray"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Home Team 응원 음원 2" />
+
+                <RadioGroup
+                    android:id="@+id/radio_home_music_2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <RadioButton
+                        android:id="@+id/radio_home_media_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Media URL"/>
+                    <EditText
+                        android:id="@+id/edit_home_media_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="15dp"
+                        android:textAlignment="center"
+                        android:padding="10dp"
+                        android:hint="web url 을 붙여 넣어주세요"
+                        android:background="@drawable/bg_round_white"/>
+                    <RadioButton
+                        android:id="@+id/radio_home_local_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Local File"/>
+                    <TextView
+                        android:id="@+id/text_home_local_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:textSize="15dp"
+                        android:background="@drawable/bg_round_white"
+                        android:text="스마트폰 안에 파일을 선택하세요" />
+
+                </RadioGroup>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:padding="10dp"
+                android:background="@drawable/bg_round_gray"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Away Team 응원 음원 1" />
+
+                <RadioGroup
+                    android:id="@+id/radio_away_music_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <RadioButton
+                        android:id="@+id/radio_away_media_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Media URL"/>
+                    <EditText
+                        android:id="@+id/edit_away_media_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="15dp"
+                        android:padding="10dp"
+                        android:textAlignment="center"
+                        android:hint="web url 을 붙여 넣어주세요"
+                        android:background="@drawable/bg_round_white"/>
+                    <RadioButton
+                        android:id="@+id/radio_away_local_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Local File"/>
+                    <TextView
+                        android:id="@+id/text_away_local_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:textSize="15dp"
+                        android:background="@drawable/bg_round_white"
+                        android:text="스마트폰 안에 파일을 선택하세요" />
+                </RadioGroup>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:padding="10dp"
+                android:background="@drawable/bg_round_gray"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Away Team 응원 음원 2" />
+
+                <RadioGroup
+                    android:id="@+id/radio_away_music_2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <RadioButton
+                        android:id="@+id/radio_away_media_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Media URL"/>
+                    <EditText
+                        android:id="@+id/edit_away_media_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:textAlignment="center"
+                        android:hint="web url 을 붙여 넣어주세요"
+                        android:background="@drawable/bg_round_white"/>
+                    <RadioButton
+                        android:id="@+id/radio_away_local_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Local File"/>
+                    <TextView
+                        android:id="@+id/text_away_local_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:textSize="15dp"
+                        android:background="@drawable/bg_round_white"
+                        android:text="스마트폰 안에 파일을 선택하세요" />
+                </RadioGroup>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:padding="10dp"
+                android:background="@drawable/bg_round_gray"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="이벤트 기본 이미지" />
+
+                <TextView
+                    android:id="@+id/text_event_default_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:textSize="15dp"
+                    android:padding="15dp"
+                    android:background="@drawable/bg_round_white"
+                    android:text="스마트폰 안에 파일을 선택하세요" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:text="Home Team 이벤트 이미지" />
+
+                <TextView
+                    android:id="@+id/text_event_home_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:textSize="15dp"
+                    android:padding="15dp"
+                    android:background="@drawable/bg_round_white"
+                    android:text="스마트폰 안에 파일을 선택하세요" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:text="Away Team 이벤트 이미지" />
+
+                <TextView
+                    android:id="@+id/text_event_away_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:textSize="15dp"
+                    android:padding="15dp"
+                    android:background="@drawable/bg_round_white"
+                    android:text="스마트폰 안에 파일을 선택하세요" />
+
+
+            </LinearLayout>
+            <TextView
+                android:id="@+id/text_event_setting_confirm"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:padding="15dp"
+                android:textSize="15dp"
+                android:textColor="@color/white"
+                android:background="@drawable/bg_round_06141f"
+                android:text="확인" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:padding="10dp"
+                android:orientation="vertical">
+
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
