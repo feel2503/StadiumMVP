@@ -23,6 +23,14 @@ public class Stadiumserver extends BaseEntity {
     @Column(unique = true)
     String name;
 
+    String defaultMusic;
+    String homeMusic1;
+    String homeMusic2;
+    String awayMusic1;
+    String awayMusic2;
+    String defaultImage;
+    String homeImage;
+    String awayImage;
 
 //    @Column(unique = true)
 //    private String loginId; // VARCHAR(20) NULL DEFAULT NULL,

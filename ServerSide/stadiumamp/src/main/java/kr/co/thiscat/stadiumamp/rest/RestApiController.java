@@ -3,6 +3,7 @@ package kr.co.thiscat.stadiumamp.rest;
 import io.swagger.annotations.ApiOperation;
 import kr.co.thiscat.stadiumamp.dto.RunEventDto;
 import kr.co.thiscat.stadiumamp.dto.RunEventStartDto;
+import kr.co.thiscat.stadiumamp.dto.StadiumServerDto;
 import kr.co.thiscat.stadiumamp.entity.Runevent;
 import kr.co.thiscat.stadiumamp.entity.Stadiumserver;
 import kr.co.thiscat.stadiumamp.entity.repository.RunEventRepository;
@@ -35,6 +36,44 @@ public class RestApiController extends BaseController{
                 .name(eventServer.getName())
                 .build());
         return getResponseEntity("success", "success", HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Add Event Server")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PostMapping(value = "/v1/server/update", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultWithValue> updateEvent(@RequestBody StadiumServerDto stadiumServerDto) throws Exception {
+        Stadiumserver stadiumserver = stadiumServerRepository.findById(stadiumServerDto.getId()).orElseThrow();
+        stadiumserver.setAwayImage(stadiumServerDto.getAwayImage());
+        stadiumserver.setAwayMusic1(stadiumServerDto.getAwayMusic1());
+        stadiumserver.setAwayMusic2(stadiumServerDto.getAwayMusic2());
+        stadiumserver.setHomeImage(stadiumServerDto.getHomeImage());
+        stadiumserver.setHomeMusic1(stadiumServerDto.getHomeMusic1());
+        stadiumserver.setHomeMusic2(stadiumServerDto.getHomeMusic2());
+        stadiumserver.setDefaultImage(stadiumServerDto.getDefaultImage());
+        stadiumserver.setDefaultMusic(stadiumServerDto.getDefaultMusic());
+
+        stadiumServerRepository.save(stadiumserver);
+        return getResponseEntity("success", "success", HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Server info")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @GetMapping(value = "/v1/server/server", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultWithValue> getServr(@RequestParam Long serverId) throws Exception {
+        Stadiumserver stadiumserver = stadiumServerRepository.findById(serverId).orElseThrow();
+        StadiumServerDto stadiumServerDto = StadiumServerDto.builder()
+                .awayImage(stadiumserver.getAwayImage())
+                .awayMusic1(stadiumserver.getAwayMusic1())
+                .awayMusic2(stadiumserver.getAwayMusic2())
+                .defaultImage(stadiumserver.getDefaultImage())
+                .defaultMusic(stadiumserver.getDefaultMusic())
+                .homeImage(stadiumserver.getHomeImage())
+                .homeMusic1(stadiumserver.getHomeMusic1())
+                .homeMusic2(stadiumserver.getHomeMusic2())
+                .build();
+        ArrayList<Stadiumserver> result = new ArrayList<>();
+        result.add(stadiumserver);
+        return getResponseEntity(result, "success", HttpStatus.OK);
     }
 
     @ApiOperation(value = "Event List")
@@ -74,6 +113,15 @@ public class RestApiController extends BaseController{
     @GetMapping(value = "/v1/event/state", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResultWithValue> getLastEventState(@RequestParam Long eventId) throws Exception {
         Runevent runevent = runEventRepository.findById(eventId).orElseThrow(EntityNotFoundException::new);
+        Stadiumserver stadiumserver = stadiumServerRepository.findById(runevent.getStadiumserver().getId()).orElseThrow();
+        String homeMusic = stadiumserver.getHomeMusic1();
+        if(runevent.getHomeMusic1() < runevent.getHomeMusic2())
+            homeMusic = stadiumserver.getHomeMusic2();
+
+        String awayMusic = stadiumserver.getAwayMusic1();
+        if(runevent.getAwayMusic1() < runevent.getAwayMusic2())
+            awayMusic = stadiumserver.getAwayMusic2();
+
         RunEventDto runEventDto = RunEventDto.builder()
                 .id(runevent.getId())
                 .stadiumServerId(runevent.getStadiumserver().getId())
@@ -83,6 +131,12 @@ public class RestApiController extends BaseController{
                 .awayCount(runevent.getAwayCount())
                 .eventState(runevent.getEventState())
                 .startDateTime(runevent.getStartDateTime())
+                .homeMusic(homeMusic)
+                .awayMusic(awayMusic)
+                .defaultMusic(stadiumserver.getDefaultMusic())
+                .homeImg(stadiumserver.getHomeImage())
+                .awayImg(stadiumserver.getAwayImage())
+                .defaultImg(stadiumserver.getDefaultImage())
                 .build();
 
         return getResponseEntity(runEventDto, "success", HttpStatus.OK);

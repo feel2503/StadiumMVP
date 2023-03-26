@@ -38,7 +38,12 @@ public class Runevent extends BaseEntity {
     Integer resultTime;
 
     Integer homeCount;
+    Integer homeMusic1;
+    Integer homeMusic2;
+
     Integer awayCount;
+    Integer awayMusic1;
+    Integer awayMusic2;
 
     String eventState;
 
