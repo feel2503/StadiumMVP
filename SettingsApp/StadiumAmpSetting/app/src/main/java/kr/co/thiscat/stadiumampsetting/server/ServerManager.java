@@ -120,4 +120,10 @@ public class ServerManager {
         Call<RunEventResult> call = mServerInterface.eventResult(eventId);
         call.enqueue(callBack);
     }
+
+    public void eventNowResult(SECallBack<RunEventResult> callBack, long eventId)
+    {
+        Call<RunEventResult> call = mServerInterface.eventNowResult(eventId);
+        call.enqueue(callBack);
+    }
 }

@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -22,6 +24,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import kr.co.thiscat.stadiumampsetting.MainActivity;
 import kr.co.thiscat.stadiumampsetting.PreferenceUtil;
 import kr.co.thiscat.stadiumampsetting.R;
 import kr.co.thiscat.stadiumampsetting.server.SECallBack;
@@ -192,6 +195,22 @@ public class EventSettingFragment extends Fragment {
         super.onResume();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        MainActivity activity = (MainActivity)getActivity();
+
+        activity.mStrDefault = mStrDefault;
+        activity.mStrHome1 = mStrHome1;
+        activity.mStrHome2 = mStrHome2;
+        activity.mStrAway1 = mStrAway1;
+        activity.mStrAway2 = mStrAway2;
+        activity.mStrDefaultImg = mStrDefaultImg;
+        activity.mStrHomeImg = mStrHomeImg;
+        activity.mStrAwayImg = mStrAwayImg;
+
+    }
+
     private void initData(StadiumServer stadiumServer)
     {
         if(stadiumServer.getDefaultMusic() != null)
@@ -326,6 +345,17 @@ public class EventSettingFragment extends Fragment {
                 mStrDefault = selectedfile.toString();
                 mTextDefaultLocal.setText(getFileNameFromUri(selectedfile));
                 mRadioDefault.check(R.id.radio_default_local);
+//                try{
+//                    MediaPlayer mediaPlayer = new MediaPlayer();
+//
+//                    mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+//                    mediaPlayer.setDataSource(getActivity(), selectedfile);
+//                    mediaPlayer.prepare();
+//                    mediaPlayer.start();
+//                }catch (Exception e)
+//                {
+//                    e.printStackTrace();
+//                }
             }
             else if(requestCode == R.id.text_home_local_1) {
                 mStrHome1 = selectedfile.toString();

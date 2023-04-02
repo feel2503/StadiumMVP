@@ -38,4 +38,7 @@ public interface ServerInterface {
     @GET("v1/event/result")
     Call<RunEventResult> eventResult(@Query("eventId")long eventId);
 
+    @GET("v1/event/nowstate")
+    Call<RunEventResult> eventNowResult(@Query("eventId")long eventId);
+
 }

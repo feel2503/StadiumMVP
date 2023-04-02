@@ -2,6 +2,7 @@ package kr.co.thiscat.stadiumampsetting;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.menu.MenuView;
 
 import android.Manifest;
 import android.app.Activity;
@@ -10,6 +11,7 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -31,6 +33,7 @@ import kr.co.thiscat.stadiumampsetting.server.entity.RunEvent;
 import kr.co.thiscat.stadiumampsetting.server.entity.RunEventResult;
 import retrofit2.Response;
 
+
 public class MainActivity extends AppCompatActivity {
     LinearLayout home_ly;
     BottomNavigationView bottomNavigationView;
@@ -45,6 +48,16 @@ public class MainActivity extends AppCompatActivity {
     public static String[] REQUIRED_PERMISSIONS = {
             Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE
     };
+
+    public String mStrDefault;
+    public String mStrHome1;
+    public String mStrHome2;
+    public String mStrAway1;
+    public String mStrAway2;
+    public String mStrDefaultImg;
+    public String mStrHomeImg;
+    public String mStrAwayImg;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,25 +69,30 @@ public class MainActivity extends AppCompatActivity {
         SettingListener(); //리스너 등록
 
         //맨 처음 시작할 탭 설정
-        bottomNavigationView.setSelectedItemId(R.id.tab_setting);
+        bottomNavigationView.setSelectedItemId(R.id.tab_event_setting);
 
+        getSupportActionBar().setTitle("stadiumAMP Setting App");
         mPreferenceUtil = new PreferenceUtil(MainActivity.this);
         mServer = ServerManager.getInstance(MainActivity.this);
-        int serverId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_SERVER_ID, -1);
-        //mEventId = 1;
-        if(serverId > 0)
-        {
-            mServer.getLastEvent(mLastEventCallBack, serverId);
-        }
+
         mMediaPlayer = new MediaPlayer();
 
         mPermUtil = new PermissionUtil(MainActivity.this, REQUIRED_PERMISSIONS);
         mPermUtil.onSetPermission();
+
+        startEventCount();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mMediaPlayer.stop();
+        mMediaPlayer.release();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
         mMediaPlayer.stop();
         mMediaPlayer.release();
     }
@@ -107,6 +125,15 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void startEventCount()
+    {
+        int serverId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_SERVER_ID, -1);
+        //mEventId = 1;
+        if(serverId > 0)
+        {
+            mServer.getLastEvent(mLastEventCallBack, serverId);
+        }
+    }
 
     private void SettingListener() {
         //선택 리스너 등록
@@ -142,10 +169,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void updateTime(final RunEvent runEvent)
+    private void updateResultTime(final RunEvent runEvent)
     {
         try {
-
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
             Date startTime = sdf.parse(runEvent.getStartDateTime());
 
@@ -163,24 +189,16 @@ public class MainActivity extends AppCompatActivity {
             }
             else
             {
-                second = (int)(diffTime / 1000);
                 Timer timer = new Timer();
                 TimerTask timerTask = new TimerTask() {
                     @Override
                     public void run() {
-                        if(second > 0) {
-                            //1초씩 감소
-                            second--;
-                            // 0분 이상이면
-                        }
-                        else
-                        {
-                            //mMediaPlayer.reset();
-                            mServer.getLastEvent(mEventStateCallBack, runEvent.getId());
-                        }
+                        int serverId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_SERVER_ID, -1);
+                        Log.d("AAAA", "serverid : " + serverId);
+                        mServer.getLastEvent(mEventStateCallBack, serverId);
                     }
                 };
-                timer.schedule(timerTask, 0, 1000);
+                timer.schedule(timerTask, diffTime);
             }
         }catch (Exception e)
         {
@@ -196,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
             if (response.isSuccessful())
             {
                 RunEvent runEvent = response.body().getData();
-                updateTime(runEvent);
+                updateResultTime(runEvent);
             }
             else
             {
@@ -217,23 +235,32 @@ public class MainActivity extends AppCompatActivity {
                     RunEvent runEvent = response.body().getData();
                     if(runEvent.getHomeCount() >= runEvent.getAwayCount())
                     {
-                        strUri = runEvent.getHomeMusic();
+                        if(runEvent.getHome1Count() > runEvent.getHome2Count())
+                            strUri = mStrHome1;
+                        else
+                            strUri = mStrHome2;
                     }
                     else
                     {
-                        strUri = runEvent.getAwayMusic();
+                        if(runEvent.getAway1Count() > 0)
+                            strUri = mStrAway1;
+                        else
+                            strUri = mStrAway2;
                     }
                     if(strUri == null || strUri.length() < 1)
-                        strUri = runEvent.getDefaultMusic();
+                        strUri = mStrDefault;
+
+                    Log.d("AAAA", "player Uri : " + strUri);
                     if(strUri != null && strUri.length() > 0)
                     {
                         Uri uri = Uri.parse(strUri);
                         mMediaPlayer.setDataSource(getApplicationContext(), uri);
+                        mMediaPlayer.prepare();
                         mMediaPlayer.start();
                     }
                 }catch (Exception e)
                 {
-
+                    e.printStackTrace();
                 }
 
             }

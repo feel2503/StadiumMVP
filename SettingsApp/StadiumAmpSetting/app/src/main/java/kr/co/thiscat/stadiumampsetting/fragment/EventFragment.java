@@ -2,6 +2,7 @@ package kr.co.thiscat.stadiumampsetting.fragment;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -20,6 +21,7 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import kr.co.thiscat.stadiumampsetting.MainActivity;
 import kr.co.thiscat.stadiumampsetting.PreferenceUtil;
 import kr.co.thiscat.stadiumampsetting.R;
 import kr.co.thiscat.stadiumampsetting.server.SECallBack;
@@ -48,14 +50,16 @@ public class EventFragment extends Fragment {
     protected ProgressDialog mProgress = null;
     private PreferenceUtil mPreferenceUtil;
 
+    private TextView mTextCurrent;
     private TextView mTextHome;
     private TextView mTextAway;
     private TextView mTextTime;
 
     private int second;
+    private boolean isRunning = false;
 
     private ImageView mImgEvent;
-
+    Timer timer;
     public EventFragment() {
         // Required empty public constructor
     }
@@ -89,6 +93,7 @@ public class EventFragment extends Fragment {
         mPreferenceUtil = new PreferenceUtil(getContext());
         mProgress = new ProgressDialog(getContext());
         mServer = ServerManager.getInstance(getContext());
+         timer = new Timer();
     }
 
     @Override
@@ -100,6 +105,8 @@ public class EventFragment extends Fragment {
         mTextAway = view.findViewById(R.id.text_result_away);
         mTextTime = view.findViewById(R.id.text_event_remain);
         mImgEvent = view.findViewById(R.id.imageView);
+        mTextCurrent = view.findViewById(R.id.text_current_server);
+
         return view;
     }
 
@@ -108,11 +115,25 @@ public class EventFragment extends Fragment {
         super.onResume();
         int eventId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_EVENT_ID, -1);
         //mEventId = 1;
-        if(eventId > 0)
+        if(eventId > 0 )
         {
             mServer.getEventState(mEventStateCallBack, eventId);
             showProgress(getActivity(), true);
         }
+        else
+        {
+            mTextCurrent.setText("진행중인 이벤트 없음");
+            mTextTime.setText("0분 00초");
+        }
+        MainActivity activity = (MainActivity)getActivity();
+        Uri uri = Uri.parse(activity.mStrDefaultImg);
+        mImgEvent.setImageURI(uri);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        timer.cancel();
     }
 
     private String getTimeStr(int time)
@@ -133,8 +154,14 @@ public class EventFragment extends Fragment {
                 public void run() {
                     int min = time / 60;
                     int sec = time % 60;
-                    String result = "" + min + "분" + sec + "초";
-                    mTextTime.setText(result);
+                    if(min == 0 && sec <= 0)
+                    {
+                        mTextTime.setText("이벤트 종료");
+                    }
+                    else {
+                        mTextTime.setText("" + min + "분" + sec + "초");
+                    }
+                    
                 }
             });
         }
@@ -160,18 +187,23 @@ public class EventFragment extends Fragment {
             }
             else
             {
+                isRunning = true;
                 second = (int)(diffTime / 1000);
-                Timer timer = new Timer();
+
                 TimerTask timerTask = new TimerTask() {
                     @Override
                     public void run() {
-                        if(second != 0) {
+                        if(second >= 0) {
                             //1초씩 감소
                             second--;
-
+                            updateTimerTextView(second);
                             // 0분 이상이면
                         }
-                        updateTimerTextView(second);
+                        else
+                        {
+                            isRunning = false;
+                        }
+
                         //mTextTime.setText(getTimeStr(second));
                     }
                 };
@@ -183,22 +215,60 @@ public class EventFragment extends Fragment {
         }
     }
 
+    private void updateScoreValue(String name, final int home, final int away)
+    {
+        if(getActivity() != null)
+        {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    mTextCurrent.setText("이벤트 서버 "+name+" 실시간 응원 결과");
+                    ViewGroup.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, home);
+                    mTextHome.setLayoutParams(params);
+
+                    ViewGroup.LayoutParams params1 = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, away);
+                    mTextAway.setLayoutParams(params1);
+
+                    MainActivity activity = (MainActivity)getActivity();
+                    Uri uri = Uri.parse(activity.mStrDefaultImg);
+                    if(home > away)
+                    {
+                        uri = Uri.parse(activity.mStrHomeImg);
+                    }
+                    else if(home < away)
+                    {
+                        uri = Uri.parse(activity.mStrAwayImg);
+                    }
+                    mImgEvent.setImageURI(uri);
+                }
+            });
+
+
+        }
+    }
     private void updateScore(RunEvent runEvent)
     {
         int home = runEvent.getHomeCount();
         int away = runEvent.getAwayCount();
+        if(home == away && home == 0)
+        {
+            home = away = 1;
+        }
+        updateScoreValue(runEvent.getServerName(), home, away);
 
-//        int home = 300;
-//        int away = 200;
-        if(home == 0)
-            home = 1;
-        if(away == 0)
-            away = 1;
-        ViewGroup.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, home);
-        mTextHome.setLayoutParams(params);
-
-        ViewGroup.LayoutParams params1 = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, away);
-        mTextAway.setLayoutParams(params1);
+        Timer timer = new Timer();
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                int eventId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_EVENT_ID, -1);
+                mServer.eventNowResult(mEventResultCallBack, eventId);
+            }
+        };
+        if(isRunning)
+        {
+            timer.schedule(timerTask, 1000);
+        }
     }
 
     public void showProgress(final Activity act, final boolean bShow)
@@ -248,6 +318,27 @@ public class EventFragment extends Fragment {
                 // no event
             }
             showProgress(getActivity(), false);
+        }
+    };
+
+
+    private SECallBack<RunEventResult> mEventResultCallBack = new SECallBack<RunEventResult>()
+    {
+        @Override
+        public void onResponseResult(Response<RunEventResult> response)
+        {
+            if (response.isSuccessful())
+            {
+                if(isResumed())
+                {
+                    RunEvent runEvent = response.body().getData();
+                    updateScore(runEvent);
+                }
+            }
+            else
+            {
+                // no event
+            }
         }
     };
 }

@@ -13,6 +13,8 @@ public class RunEvent
     @SerializedName("stadiumserver")
     private long stadiumServerId;
 
+    private String serverName;
+
     @Expose
     @SerializedName("voteTime")
     private int voteTime;
@@ -25,9 +27,15 @@ public class RunEvent
     @SerializedName("homeCount")
     private int homeCount;
 
+    private int home1Count;
+    private int home2Count;
+
+
     @Expose
     @SerializedName("awayCount")
     private int awayCount;
+    private int away1Count;
+    private int away2Count;
 
     @Expose
     @SerializedName("eventState")
@@ -37,11 +45,7 @@ public class RunEvent
     @SerializedName("startDateTime")
     private String startDateTime;
 
-    String homeMusic;
 
-    String awayMusic;
-
-    String defaultMusic;
 
     String homeImg;
     String awayImg;
@@ -111,30 +115,6 @@ public class RunEvent
         this.startDateTime = startDateTime;
     }
 
-    public String getHomeMusic() {
-        return homeMusic;
-    }
-
-    public void setHomeMusic(String homeMusic) {
-        this.homeMusic = homeMusic;
-    }
-
-    public String getAwayMusic() {
-        return awayMusic;
-    }
-
-    public void setAwayMusic(String awayMusic) {
-        this.awayMusic = awayMusic;
-    }
-
-    public String getDefaultMusic() {
-        return defaultMusic;
-    }
-
-    public void setDefaultMusic(String defaultMusic) {
-        this.defaultMusic = defaultMusic;
-    }
-
     public String getHomeImg() {
         return homeImg;
     }
@@ -157,5 +137,45 @@ public class RunEvent
 
     public void setDefaultImg(String defaultImg) {
         this.defaultImg = defaultImg;
+    }
+
+    public int getHome1Count() {
+        return home1Count;
+    }
+
+    public void setHome1Count(int home1Count) {
+        this.home1Count = home1Count;
+    }
+
+    public int getHome2Count() {
+        return home2Count;
+    }
+
+    public void setHome2Count(int home2Count) {
+        this.home2Count = home2Count;
+    }
+
+    public int getAway1Count() {
+        return away1Count;
+    }
+
+    public void setAway1Count(int away1Count) {
+        this.away1Count = away1Count;
+    }
+
+    public int getAway2Count() {
+        return away2Count;
+    }
+
+    public void setAway2Count(int away2Count) {
+        this.away2Count = away2Count;
+    }
+
+    public String getServerName() {
+        return serverName;
+    }
+
+    public void setServerName(String serverName) {
+        this.serverName = serverName;
     }
 }

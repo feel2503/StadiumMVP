@@ -25,6 +25,7 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/text_current_server"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="이벤트 서버 xxxx 실시간 응원 결과" />

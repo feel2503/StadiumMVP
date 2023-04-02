@@ -30,6 +30,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import kr.co.thiscat.stadiumampsetting.DialogServerSelect;
+import kr.co.thiscat.stadiumampsetting.MainActivity;
 import kr.co.thiscat.stadiumampsetting.PreferenceUtil;
 import kr.co.thiscat.stadiumampsetting.R;
 import kr.co.thiscat.stadiumampsetting.server.SECallBack;
@@ -217,7 +218,7 @@ public class SettingFragment extends Fragment {
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(start);
                 cal.add(Calendar.MINUTE, runEvent.getVoteTime());
-                cal.add(Calendar.SECOND, 2);
+                cal.add(Calendar.SECOND, 1);
                 Date endDate = cal.getTime();
 
                 Timer timer = new Timer();
@@ -304,10 +305,23 @@ public class SettingFragment extends Fragment {
                 }
 
                 showProgress(getActivity(), true);
+                MainActivity activity = (MainActivity)getActivity();
+
                 StartEvent startEvent = new StartEvent();
                 startEvent.setStadiumServerId(mServerId);
                 startEvent.setVoteTime(getVoteTime());
+                //startEvent.setVoteTime(1);
+
                 startEvent.setResultTime(getResultTime());
+                startEvent.setDefaultMusic(activity.mStrDefault);
+                startEvent.setHomeMusic1(activity.mStrHome1);
+                startEvent.setHomeMusic2(activity.mStrHome2);
+                startEvent.setAwayMusic1(activity.mStrAway1);
+                startEvent.setAwayMusic2(activity.mStrAway2);
+                startEvent.setDefaultImage(activity.mStrDefaultImg);
+                startEvent.setHomeImage(activity.mStrHomeImg);
+                startEvent.setAwayImage(activity.mStrAwayImg);
+
                 mServer.eventStart(mEventStartCallBack, startEvent);
             }
             else if(v.getId() == R.id.text_event_stop)
@@ -339,6 +353,8 @@ public class SettingFragment extends Fragment {
 
     public void showProgress(final Activity act, final boolean bShow)
     {
+        if(act == null)
+            return;
         act.runOnUiThread(new Runnable()
         {
             @Override
@@ -413,6 +429,9 @@ public class SettingFragment extends Fragment {
                 RunEvent runEvent = response.body().getData();
                 updateEventState(runEvent);
                 saveEventInfo((int)runEvent.getId());
+
+                MainActivity activity = (MainActivity) getActivity();
+                activity.startEventCount();
             }
 
             showProgress(getActivity(), false);
