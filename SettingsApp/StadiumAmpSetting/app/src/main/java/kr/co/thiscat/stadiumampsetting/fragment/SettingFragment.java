@@ -431,7 +431,8 @@ public class SettingFragment extends Fragment {
                 saveEventInfo((int)runEvent.getId());
 
                 MainActivity activity = (MainActivity) getActivity();
-                activity.startEventCount();
+                if(activity != null)
+                    activity.startEventCount();
             }
 
             showProgress(getActivity(), false);
@@ -450,6 +451,9 @@ public class SettingFragment extends Fragment {
                 RunEvent runEvent = response.body().getData();
                 updateEventState(runEvent);
                 saveEventInfo((int)runEvent.getId());
+
+                MainActivity activity = (MainActivity) getActivity();
+                activity.startEventCount();
             }
             else
             {

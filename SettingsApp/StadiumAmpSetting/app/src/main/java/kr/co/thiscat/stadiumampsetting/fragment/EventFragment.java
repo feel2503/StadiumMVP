@@ -125,9 +125,13 @@ public class EventFragment extends Fragment {
             mTextCurrent.setText("진행중인 이벤트 없음");
             mTextTime.setText("0분 00초");
         }
+
         MainActivity activity = (MainActivity)getActivity();
-        Uri uri = Uri.parse(activity.mStrDefaultImg);
-        mImgEvent.setImageURI(uri);
+        if(activity.mStrDefaultImg != null)
+        {
+            Uri uri = Uri.parse(activity.mStrDefaultImg);
+            mImgEvent.setImageURI(uri);
+        }
     }
 
     @Override

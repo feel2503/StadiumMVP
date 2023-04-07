@@ -20,4 +20,13 @@ public class RunEventStartDto {
 
     Integer voteTime;
     Integer resultTime;
+
+    String defaultMusic;
+    String homeMusic1;
+    String homeMusic2;
+    String awayMusic1;
+    String awayMusic2;
+    String defaultImage;
+    String homeImage;
+    String awayImage;
 }

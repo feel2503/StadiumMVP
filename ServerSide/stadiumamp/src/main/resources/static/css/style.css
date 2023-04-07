@@ -58,19 +58,36 @@ div{
 
 .select_home{
     width: 100%;
-    height: 100px;
-    border:1px solid red;
-    background-image: url('../asset/home_bg.svg');
-    background-size: cover;
-    background-position: center;
+    padding:5px;
+    background-image: url('./../asset/HOME.svg');
+    background-size:40%;
+    background-repeat:no-repeat;
+    background-position:90%;
     margin-bottom:10px;
+    background-color:#efefef;
+    border-radius:10px;
 
 }
+.select_home div{
+    padding:5px;
+    font-size:16px;
+    font-weight:900;
+}
 .select_away{
-    height:80px;
-    background-image:url('../asset/away_bg.png');
-    background-color: #fff;
+    width: 100%;
+    padding:5px;
+    background-image: url('./../asset/AWAY.svg');
+    background-size:40%;
+    background-repeat:no-repeat;
+    background-position:90%;
     margin-bottom:10px;
+    background-color:#efefef;
+    border-radius:10px;
+}
+.select_away div{
+    padding:5px;
+    font-size:16px;
+    font-weight:900;
 }
 
 .join_event{
@@ -143,4 +160,55 @@ div{
     padding:20px;
     border-radius: 5px;
     border: 1px solid #ebebeb;
+}
+.setting_box{
+    padding:5px;
+    background-color: #ffffff;
+    border:1px solid #efefef;
+    margin:10px 0px 20px 0px;
+    border-radius: 5px;
+}
+
+.setting_bt{
+    margin-top:10px;
+}
+
+.setting_box button{
+    cursor: pointer;
+    width: 100%;
+    background-color: slategray;
+    border: none;
+    border-radius: 5px;
+    padding:15px;
+    font-size: 16px;
+    color:#ffffff;
+    font-weight:700;
+}
+
+.setting_item{
+    padding:10px;
+}
+
+.setting_title{
+    font-weight:900;
+}
+
+#gnb{
+    background-color: blue;
+    padding:10px;
+    color: #ffffff;
+    font-weight: 900;
+}
+#fnb{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content:space-between;
+    padding:5px;
+    position: fixed;
+    bottom:0px;
+    width: 100%;
+    background-color: #000;
+    color:#fff;
+    padding:10px;
 }

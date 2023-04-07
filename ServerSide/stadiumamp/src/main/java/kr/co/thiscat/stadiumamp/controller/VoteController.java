@@ -65,9 +65,13 @@ public class VoteController {
             long secV = sec % 60;
             String tVal = ""+minV+"분"+secV+"초";
             model.addAttribute("state", tVal);
+            model.addAttribute("min", minV);
+            model.addAttribute("sec", secV);
 
         }
 
+//        model.addAttribute("min", 1);
+//        model.addAttribute("sec", 10);
         model.addAttribute("server", stadiumserver);
         model.addAttribute("event", runEventDto);
         model.addAttribute("teamtype", strTeam);
@@ -75,7 +79,8 @@ public class VoteController {
         return "vote";
     }
     @GetMapping("/vote/save")
-    public String voteSave(HttpServletRequest request, @RequestParam String teamType, @RequestParam Long eventId ){
+    public String voteSave(HttpServletRequest request, @RequestParam String teamType, @RequestParam Long eventId,
+                           @RequestParam Long eventType){
 
         Runevent runevent = runEventRepository.findById(eventId).orElse(null);
         LocalDateTime startTime = runevent.getStartDateTime();
@@ -98,8 +103,25 @@ public class VoteController {
             int total = voteCount;
             if(homeCount != null)
                 total += homeCount;
-
             runevent.setHomeCount(total);
+
+            if(eventType == 1)
+            {
+                Integer home1 = runevent.getHome1Count();
+                int tot1 = voteCount;
+                if(home1 != null)
+                    tot1 += home1;
+                runevent.setHome1Count(tot1);
+            }
+            else if(eventType == 2)
+            {
+                Integer home2 = runevent.getHome2Count();
+                int tot2 = voteCount;
+                if(home2 != null)
+                    tot2 += home2;
+                runevent.setHome2Count(tot2);
+            }
+
         }
         else
         {
@@ -108,6 +130,24 @@ public class VoteController {
             if(awayCount != null)
                 total += awayCount;
             runevent.setAwayCount(total);
+
+            if(eventType == 1)
+            {
+                Integer away = runevent.getAway1Count();
+                int tot = voteCount;
+                if(away != null)
+                    tot += away;
+                runevent.setAway1Count(tot);
+            }
+            else if(eventType == 2)
+            {
+                Integer away = runevent.getAway2Count();
+                int tot = voteCount;
+                if(away != null)
+                    tot += away;
+                runevent.setAway2Count(tot);
+            }
+
         }
         runEventRepository.save(runevent);
 

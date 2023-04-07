@@ -13,58 +13,7 @@
     <!-- Global CSS -->
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-
-<script th:inline="javascript">
-    /*<![CDATA[*/
-    function setInterval(){
-        let arr = document.getElementsByName("stopWatch");
-
-        for(let i=0; i<arr.length; i++){
-            // time은 스톱워치의 경우 0으로 두고 time++;
-            // time은 타이머의 경우 남은 시간을 초 단위로 두고 time--;
-            // 차이를 눈으로 보기 위해 (i*100)을 추가했고, 실제로는 표현하려는 시작 시간을 넣으셔야 됩니다.
-            let time = 0 + (i*100);
-
-            startTimer(time, arr[i]); // 각 타이머 생성
-        }
-    }
-
-    function startTimer(time, obj){
-        var hour, min, sec;
-
-        var timer = setInterval(function(){
-                time--; // 1초마다 증가, 타이머의 경우 time--;
-
-                min = Math.floor(time/60);
-                hour = Math.floor(min/60);
-                sec = time%60;
-                min = min%60;
-
-                var th = hour;
-                var tm = min;
-                var ts = sec;
-
-                // 한자리일 경우 처리
-                if(th < 10){
-                    th = "0" + hour;
-                }
-                if(tm < 10){
-                    tm = "0" + min;
-                }
-                if(ts < 10){
-                    ts = "0" + sec;
-                }
-
-                // 함수 호출 당시 받은 object의 html 교체
-                obj.innerHTML = th + ":" + tm + ":" + ts;
-            }
-            , 1000);
-    }
-
-
-    /*]]>*/
-</script>
+<body onload="startTimer()">
     <div id="wrap" >
         <div class="wc_text_02">
             이벤트 서버 <b>[[${server.name}]]</b> 실시간 응원 결과
@@ -79,8 +28,8 @@
             현재 응원 이벤트 남은 시간
         </div>
 
-        <div class="time_count">
-            [[${state}]]
+        <div class="time_count" id="display">
+            0분 0초 남았습니다.;
         </div>
 
         <div class="wc_text_02">
@@ -88,14 +37,38 @@
         </div>
 
         <div class="bt-02">
-            <button th:onclick="|location.href='@{/vote/save (teamType = ${team}, eventId = ${event.id})}'|" class="join_event">[[${teamtype}]] 팀 응원 1</button>
-            <button th:onclick="|location.href='@{/vote/save (teamType = ${team}, eventId = ${event.id})}'|" class="join_event">[[${teamtype}]] 팀 응원 2</button>
-            <button class="join_event_disable">홈 팀 응원 3</button>
-            <button class="join_event_disable">홈 팀 응원 4</button>
+            <button th:onclick="|location.href='@{/vote/save (teamType = ${team}, eventId = ${event.id}, eventType=1)}'|" class="join_event">[[${teamtype}]] 팀 응원 1</button>
+            <button th:onclick="|location.href='@{/vote/save (teamType = ${team}, eventId = ${event.id}, eventType=2)}'|" class="join_event">[[${teamtype}]] 팀 응원 2</button>
+            <button class="join_event_disable">[[${teamtype}]] 팀 응원 3</button>
+            <button class="join_event_disable">[[${teamtype}]] 팀 응원 4</button>
         </div>
 
         <p></p>
 
+        <input type="hidden" id="startMin" th:value="${min}" >
+        <input type="hidden" id="startSec" th:value="${sec}" >
+
+<!--  timer      -->
+<!--        <div id="wrapper">-->
+<!--            <form>-->
+<!--                <label><input type="hidden" id="startMin" />-->
+<!--                <label><input type="text" id="startSec" />초</label>-->
+<!--                <input-->
+<!--                        type="button"-->
+<!--                        value="START"-->
+<!--                        class="start-btn"-->
+<!--                        onclick="startTimer()"                 />-->
+<!--                <input-->
+<!--                        type="button"-->
+<!--                        value="RESET"-->
+<!--                        class="reset-btn"-->
+<!--                        onclick="resetTimer()" // 타이머 리셋 함수-->
+<!--                />-->
+<!--            </form>-->
+<!--            <hr />-->
+<!--            <div id="display" class="remaining"></div> // 진행되는 타이머 시간을 보여주는 곳-->
+<!--        </div>-->
+<!--  timer      -->
 
     </div>
 
@@ -103,5 +76,44 @@
     <div id="bottom_banner">
         <img src="asset/bn.jpg">
     </div>
+
+    <script>
+        let min, sec;
+        let timer;
+
+        function startTimer() {
+            min = document.querySelector("#startMin").value;
+            if (min === "") min = 0;
+            sec = document.querySelector("#startSec").value;
+            if (sec === "") sec = 0;
+            timer = setInterval(countTimer, 1000);
+        }
+
+        function countTimer() {
+            if (sec != 0) {
+                sec--;
+                document.querySelector("#display").innerText =
+                    min + "분" + sec + "초 남았습니다.";
+            } else {
+                if (min != 0) {
+                    min--;
+                    sec = 59;
+                } else {
+                    clearTimer(timer, "이벤트 종료");
+                }
+            }
+        }
+
+        function resetTimer() { // 리셋 버튼 연결
+            clearTimer(timer, "리셋 종료");
+        }
+
+        function clearTimer(t, text) {
+            clearInterval(t);
+            document.getElementById("display").innerText = text;
+            document.getElementById("startMin").value = "";
+            document.getElementById("startSec").value = "";
+        }
+    </script>
 </body>
 </html>

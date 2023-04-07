@@ -22,17 +22,17 @@ public class RunEventDto  {
     Integer resultTime;
 
     Integer homeCount;
-    String homeMusic;
+    Integer home1Count;
+    Integer home2Count;
 
     Integer awayCount;
-    String awayMusic;
+    Integer away1Count;
+    Integer away2Count;
 
     String defaultMusic;
-
     String homeImg;
     String awayImg;
     String defaultImg;
-
     String eventState;
 
     LocalDateTime startDateTime;
