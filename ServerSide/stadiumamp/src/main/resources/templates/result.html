@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>Welcome to Stadium APM</title>
+    <title>Welcome to Stadium AMP</title>
 
     <!-- Global CSS -->
     <link rel="stylesheet" href="css/style.css">
@@ -36,8 +36,13 @@
             <th>Vote Time</th>
             <th>Result Time</th>
             <th>State</th>
+            <th>Result</th>
             <th>Home Count</th>
+            <th>Home1 Count</th>
+            <th>Home2 Count</th>
             <th>Away Count</th>
+            <th>Away1 Count</th>
+            <th>Away2 Count</th>
         </tr>
         <tr th:each="event : ${event}">
             <td th:text="${event.id}">Event ID</td>
@@ -47,8 +52,13 @@
             <td th:text="${event.voteTime}">Vote Time</td>
             <td th:text="${event.resultTime}">Result Time</td>
             <td th:text="${event.eventState}">State</td>
+            <td th:text="${event.result}">Result</td>
             <td th:text="${event.homeCount}">Home Count</td>
+            <td th:text="${event.home1Count}">Home1 Count</td>
+            <td th:text="${event.home2Count}">Home2 Count</td>
             <td th:text="${event.awayCount}">Away Count</td>
+            <td th:text="${event.away1Count}">Away1 Count</td>
+            <td th:text="${event.away2Count}">Away2 Count</td>
         </tr>
     </table>
 

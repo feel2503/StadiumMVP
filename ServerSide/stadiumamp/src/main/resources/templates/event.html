@@ -8,44 +8,43 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>Welcome to Stadium APM</title>
+    <title>Welcome to Stadium AMP</title>
 
     <!-- Global CSS -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-        <div id="wrap">
-            <div class="logo">
-                <img src="asset/StadiumAMP-Logo.svg">
-            </div>
+    <div id="wrap">
+        <div class="logo">
+            <img src="asset/StadiumAMP-Logo.svg">
+        </div>
 
-            <div class="wc_text">
-                <li>서버 <span th:text="${data.name}"> 에 접속 하셨습니다.</span></li>
-                <li>응원 권한을 선택해주세요.</li>
-            </div>
+        <div class="wc_text">
+            <li>서버 <span th:text="${data.name}"> 에 접속 하셨습니다.</span></li>
+            <li>응원 권한을 선택해주세요.</li>
+        </div>
 
-            <form method="get" action="vote">
+        <form method="get" action="vote">
+            <input type="hidden" id="gameToken" name="server_id" th:value="${data.id}" >
+            <div style="padding:5px;">
                 <div class="select_home">
                     <div><input type="radio" name="team" value=0 checked>홈팀 일반</div>
                     <div><input type="radio" name="team" value=1 >홈팀 MVP</div>
                 </div>
 
-                <div style="padding:5px;"/>
+
 
                 <div class="select_away">
-                    <div><input type="radio" name="team" value=2 checked>원정 팀 일반</div>
+                    <div><input type="radio" name="team" value=2 >원정 팀 일반</div>
                     <div><input type="radio" name="team" value=3 >원정 팀 MVP</div>
                 </div>
-
-                <div style="padding:5px;"/>
-                <input type="hidden" id="gameToken" name="server_id" th:value="${data.id}" >
-
                 <div class="bt">
                     <input type="submit" class="join_event" value="응원 이벤트 참가하기" ></input>
                 </div>
-            </form>
+            </div>
+        </form>
 
-        </div>
+    </div>
 
     <div id="bottom_banner">
         <img src="asset/bg_ad.png">

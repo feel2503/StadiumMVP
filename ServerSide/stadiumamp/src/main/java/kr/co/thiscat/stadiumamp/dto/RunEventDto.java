@@ -37,4 +37,6 @@ public class RunEventDto  {
 
     LocalDateTime startDateTime;
     LocalDateTime endDateTime;
+
+    String result;
 }

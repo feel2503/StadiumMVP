@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>Welcome to Stadium APM</title>
+    <title>Welcome to Stadium AMP</title>
 
     <!-- Global CSS -->
     <link rel="stylesheet" href="css/style.css">
@@ -37,10 +37,22 @@
         </div>
 
         <div class="bt-02">
-            <button th:onclick="|location.href='@{/vote/save (teamType = ${team}, eventId = ${event.id}, eventType=1)}'|" class="join_event">[[${teamtype}]] 팀 응원 1</button>
-            <button th:onclick="|location.href='@{/vote/save (teamType = ${team}, eventId = ${event.id}, eventType=2)}'|" class="join_event">[[${teamtype}]] 팀 응원 2</button>
-            <button class="join_event_disable">[[${teamtype}]] 팀 응원 3</button>
-            <button class="join_event_disable">[[${teamtype}]] 팀 응원 4</button>
+            <div th:if="${teamtype =='Home'}">
+                <button th:onclick="|location.href='@{/vote/save (teamType = ${team}, eventId = ${event.id}, eventType=1)}'|"
+                        class="join_event" >[[${teamtype}]] 팀 응원 1</button>
+                <button th:onclick="|location.href='@{/vote/save (teamType = ${team}, eventId = ${event.id}, eventType=2)}'|"
+                        class="join_event">[[${teamtype}]] 팀 응원 2</button>
+                <button class="join_event_disable">[[${teamtype}]] 팀 응원 3</button>
+                <button class="join_event_disable">[[${teamtype}]] 팀 응원 4</button>
+            </div>
+            <div th:if="${teamtype =='Away'}">
+                <button th:onclick="|location.href='@{/vote/save (teamType = ${team}, eventId = ${event.id}, eventType=1)}'|"
+                        class="join_away_event">[[${teamtype}]] 팀 응원 1</button>
+                <button th:onclick="|location.href='@{/vote/save (teamType = ${team}, eventId = ${event.id}, eventType=2)}'|"
+                        class="join_away_event">[[${teamtype}]] 팀 응원 2</button>
+                <button class="join_event_disable">[[${teamtype}]] 팀 응원 3</button>
+                <button class="join_event_disable">[[${teamtype}]] 팀 응원 4</button>
+            </div>
         </div>
 
         <p></p>
@@ -74,7 +86,7 @@
 
 
     <div id="bottom_banner">
-        <img src="asset/bn.jpg">
+        <img src="asset/bg_ad.png">
     </div>
 
     <script>

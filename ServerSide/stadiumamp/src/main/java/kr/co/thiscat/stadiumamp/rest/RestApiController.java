@@ -77,11 +77,11 @@ public class RestApiController extends BaseController{
         return getResponseEntity(result, "success", HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Event List")
+    @ApiOperation(value = "Server List")
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @GetMapping(value = "/v1/server/list", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResultWithValue> getEventList() throws Exception {
-        List<Stadiumserver> result = stadiumServerRepository.findAll();
+        List<Stadiumserver> result = stadiumServerRepository.findAllByOrderByIdAsc();
         return getResponseEntity(result, "success", HttpStatus.OK);
     }
 

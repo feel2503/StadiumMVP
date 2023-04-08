@@ -16,5 +16,6 @@ public interface RunEventRepository extends JpaRepository<Runevent, Long> {
 
     Optional<Runevent> findFirstByStadiumserverOrderByIdDesc(Stadiumserver event);
 
+    List<Runevent> findAllByOrderByIdAsc();
     //List<Runevent> findAllOrderByStadiumserver();
 }

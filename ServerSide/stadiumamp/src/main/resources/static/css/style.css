@@ -27,12 +27,12 @@ div{
 
 #wrap{
     padding:20px;
+    overflow: auto;
 }
 
 .logo {
     text-align: center;
     margin-bottom:30px;
-    border-bottom:1px solid #efefef;
     padding:30px 0px 30px 0px;
 }
 .logo img{
@@ -93,7 +93,7 @@ div{
 .join_event{
     cursor: pointer;
     width: 100%;
-    background-color: limegreen;
+    background-color: #2552d9;
     border: none;
     border-radius: 5px;
     padding:15px;
@@ -107,6 +107,18 @@ div{
     width: 100%;
     background-color: #ebebeb;
     border:none;
+    border-radius: 5px;
+    padding:15px;
+    font-size: 16px;
+    color:#ffffff;
+    font-weight:700;
+    margin-bottom: 15px;
+}
+.join_away_event{
+    cursor: pointer;
+    width: 100%;
+    background-color: #f23827;
+    border: none;
     border-radius: 5px;
     padding:15px;
     font-size: 16px;
@@ -130,7 +142,7 @@ div{
 
 }
 .home_graph{
-    background-color:royalblue;
+    background-color:#2552d9;
     flex-basis: 50%;
     text-align: left;
     border-radius: 100px 0px 0px 100px;
@@ -139,7 +151,7 @@ div{
     font-weight: 600;
 }
 .away_graph{
-    background-color:orangered;
+    background-color:#f23827;
     flex-basis: 50%;
     text-align: right;
     border-radius: 0px 100px 100px 0px;
@@ -148,16 +160,16 @@ div{
     font-weight: 600;
 }
 .time_count{
+    color:#ffffff;
     text-align: center;
     font-weight: 900;
     font-size:18px;
     border-radius: 5px;
-    background-color: #efefef;
+    background-color: #05a64b;
     padding:10px;
     margin-bottom: 30px;
 }
 .bt-02{
-    padding:20px;
     border-radius: 5px;
     border: 1px solid #ebebeb;
 }
