@@ -172,19 +172,19 @@ public class EventSettingFragment extends Fragment {
         mTextEventAwayImg.setOnClickListener(mOnClickListener);
 
         mRadioDefault = view.findViewById(R.id.radio_default_music);
-        mRadioDefault.check(R.id.radio_default_media);
+        mRadioDefault.check(R.id.radio_default_local);
 
         mRadioHome1 = view.findViewById(R.id.radio_home_music_1);
-        mRadioHome1.check(R.id.radio_home_media_1);
+        mRadioHome1.check(R.id.radio_home_local_1);
 
         mRadioHome2 = view.findViewById(R.id.radio_home_music_2);
-        mRadioHome2.check(R.id.radio_home_media_2);
+        mRadioHome2.check(R.id.radio_home_local_2);
 
         mRadioAway1 = view.findViewById(R.id.radio_away_music_1);
-        mRadioAway1.check(R.id.radio_away_media_1);
+        mRadioAway1.check(R.id.radio_away_local_1);
 
         mRadioAway2 = view.findViewById(R.id.radio_away_music_2);
-        mRadioAway2.check(R.id.radio_away_media_2);
+        mRadioAway2.check(R.id.radio_away_local_2);
 
         mTextConfirm = view.findViewById(R.id.text_event_setting_confirm);
         mTextConfirm.setOnClickListener(mOnClickListener);

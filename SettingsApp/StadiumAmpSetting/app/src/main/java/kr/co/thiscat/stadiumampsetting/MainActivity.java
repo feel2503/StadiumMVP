@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         //맨 처음 시작할 탭 설정
         bottomNavigationView.setSelectedItemId(R.id.tab_event_setting);
 
-        getSupportActionBar().setTitle("stadiumAMP Setting App");
+        getSupportActionBar().setTitle("stadiumAMP");
         mPreferenceUtil = new PreferenceUtil(MainActivity.this);
         mServer = ServerManager.getInstance(MainActivity.this);
 

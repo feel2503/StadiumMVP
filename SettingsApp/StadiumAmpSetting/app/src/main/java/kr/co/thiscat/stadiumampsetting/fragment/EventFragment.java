@@ -15,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -60,6 +62,8 @@ public class EventFragment extends Fragment {
 
     private ImageView mImgEvent;
     Timer timer;
+
+
     public EventFragment() {
         // Required empty public constructor
     }
@@ -131,6 +135,7 @@ public class EventFragment extends Fragment {
         {
             Uri uri = Uri.parse(activity.mStrDefaultImg);
             mImgEvent.setImageURI(uri);
+            Glide.with(this).load(uri).into(mImgEvent);
         }
     }
 

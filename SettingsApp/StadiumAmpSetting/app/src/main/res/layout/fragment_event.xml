@@ -45,7 +45,7 @@
             android:gravity="center"
             android:padding="15dp"
             android:textColor="@color/white"
-            android:background="@drawable/bg_round_1e8be1"
+            android:background="@drawable/bg_round_2552d9"
             android:text="홈팀" />
         <TextView
             android:id="@+id/text_result_away"
@@ -56,7 +56,7 @@
             android:gravity="center"
             android:padding="15dp"
             android:textColor="@color/white"
-            android:background="@drawable/bg_round_971d15"
+            android:background="@drawable/bg_round_f23827"
             android:text="원정팀" />
     </LinearLayout>
 
@@ -78,7 +78,7 @@
             android:layout_marginTop="10dp"
             android:gravity="center"
             android:padding="15dp"
-            android:background="@drawable/bg_round_c2c2c2"
+            android:background="@drawable/bg_round_05a64b"
             android:textColor="@color/white"
             android:text="2분 40초" />
     </LinearLayout>

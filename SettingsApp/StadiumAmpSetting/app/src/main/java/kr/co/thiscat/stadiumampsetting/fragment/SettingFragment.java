@@ -247,48 +247,57 @@ public class SettingFragment extends Fragment {
         mPreferenceUtil.putIntPreference(PreferenceUtil.KEY_EVENT_ID, eventId);
     }
 
+    private void showEventServerSelector()
+    {
+        ArrayList<String> items = new ArrayList<>();
+        for(StadiumServer stadiumServer : mServerList)
+        {
+            items.add(stadiumServer.getName());
+        }
+        ArrayList<Integer> selectItem = new ArrayList<>(); // RadioButton 선택 한 값 담을 ArrayList ( TEXT )
+        selectItem.clear();
+        if(mServerId > 0) {
+            selectItem.add(mServerId-1);
+        } else {
+            selectItem.add(0);
+        }
+
+        // Alert 선언
+        new AlertDialog.Builder(getContext())
+                .setTitle("서버 선택")
+                .setSingleChoiceItems(items.toArray(new String[items.size()]), selectItem.get(0), new DialogInterface.OnClickListener() {
+                    // setSingleChoiceItems 가 RadioGroup, RadioButton 을 해준다.
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        selectItem.clear(); // 하나의 값만 저장 되도록 모든 값 지워준다.
+                        selectItem.add(i); // 선택한 값 저장.
+                    }
+                })
+                .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                    // 확인 버튼을 클릭 했을때 이벤트
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        int selIdx = selectItem.get(0);
+                        String name = mServerList.get(selIdx).getName();
+                        int serverId = mServerList.get(selIdx).getId();
+                        mPreferenceUtil.putIntPreference(PreferenceUtil.KEY_SERVER_ID, serverId);
+                        mPreferenceUtil.putStringPrefrence(PreferenceUtil.KEY_SERVER_NAME, name);
+                        mServerId = serverId;
+                        mTextServrName.setText("이벤트 서버 : " + name);
+
+                        mServer.getLastEvent(mLastEventCallBack, serverId);
+                    }
+                })
+                .setNegativeButton("취소", null)
+                .show();
+    }
+
     public View.OnClickListener mOnClicklistener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if(v.getId() == R.id.text_event_select)
             {
-                ArrayList<String> items = new ArrayList<>();
-                for(StadiumServer stadiumServer : mServerList)
-                {
-                    items.add(stadiumServer.getName());
-                }
-                ArrayList<Integer> selectItem = new ArrayList<>(); // RadioButton 선택 한 값 담을 ArrayList ( TEXT )
-                selectItem.clear();
-                selectItem.add(0);
-                // Alert 선언
-                new AlertDialog.Builder(getContext())
-                        .setTitle("서버 선택")
-                        .setSingleChoiceItems(items.toArray(new String[items.size()]), 0, new DialogInterface.OnClickListener() {
-                            // setSingleChoiceItems 가 RadioGroup, RadioButton 을 해준다.
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                selectItem.clear(); // 하나의 값만 저장 되도록 모든 값 지워준다.
-                                selectItem.add(i); // 선택한 값 저장.
-                            }
-                        })
-                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                            // 확인 버튼을 클릭 했을때 이벤트
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                int selIdx = selectItem.get(0);
-                                String name = mServerList.get(selIdx).getName();
-                                int serverId = mServerList.get(selIdx).getId();
-                                mPreferenceUtil.putIntPreference(PreferenceUtil.KEY_SERVER_ID, serverId);
-                                mPreferenceUtil.putStringPrefrence(PreferenceUtil.KEY_SERVER_NAME, name);
-                                mServerId = serverId;
-                                mTextServrName.setText("이벤트 서버 : " + name);
-
-                                mServer.getLastEvent(mLastEventCallBack, serverId);
-                            }
-                        })
-                        .setNegativeButton("취소", null)
-                        .show();
-
+                showEventServerSelector();
             }
             else if(v.getId() == R.id.text_event_start)
             {
@@ -300,7 +309,25 @@ public class SettingFragment extends Fragment {
                     
                 if(mServerId < 0)
                 {
-                    Toast.makeText(getContext(), "이벤트 서버를 선택해 주세요.", Toast.LENGTH_SHORT).show();
+                    new AlertDialog.Builder(getContext())
+                            .setMessage("이벤트 서버가 설정되지 않았습니다.\n이벤트 서버를 선택 하시겠습니까?")
+                            .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //mServer.eventStop(mEventStateCallBack, mEventId);
+                                    showEventServerSelector();
+                                }
+                            })
+                            .setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            })
+                            .create()
+                            .show();
+
+                    //Toast.makeText(getContext(), "이벤트 서버를 선택해 주세요.", Toast.LENGTH_SHORT).show();
                     return;
                 }
 

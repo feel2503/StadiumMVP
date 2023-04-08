@@ -3,15 +3,18 @@
     <item
         android:id="@+id/tab_event_setting"
         android:enabled="true"
-        android:title="Event Settings"/>
+        android:icon="@drawable/media"
+        android:title="Media"/>
     <item
         android:id="@+id/tab_setting"
         android:enabled="true"
-        android:title="Server Settings"/>
+        android:icon="@drawable/server"
+        android:title="Server"/>
 
     <item
         android:id="@+id/tab_event"
         android:enabled="true"
-        android:title="Go Event"/>
+        android:icon="@drawable/cheer"
+        android:title="Cheer"/>
 
 </menu>
