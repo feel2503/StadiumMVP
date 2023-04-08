@@ -240,16 +240,21 @@ public class EventFragment extends Fragment {
                     mTextAway.setLayoutParams(params1);
 
                     MainActivity activity = (MainActivity)getActivity();
-                    Uri uri = Uri.parse(activity.mStrDefaultImg);
-                    if(home > away)
+                    if(activity.mStrDefaultImg != null)
                     {
-                        uri = Uri.parse(activity.mStrHomeImg);
+                        Uri uri = Uri.parse(activity.mStrDefaultImg);
+                        if(home > away)
+                        {
+                            uri = Uri.parse(activity.mStrHomeImg);
+                        }
+                        else if(home < away)
+                        {
+                            uri = Uri.parse(activity.mStrAwayImg);
+                        }
+                        mImgEvent.setImageURI(uri);
+                        Glide.with(activity).load(uri).into(mImgEvent);
                     }
-                    else if(home < away)
-                    {
-                        uri = Uri.parse(activity.mStrAwayImg);
-                    }
-                    mImgEvent.setImageURI(uri);
+
                 }
             });
 
