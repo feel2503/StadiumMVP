@@ -2,8 +2,8 @@ plugins {
     id 'com.android.application'
 }
 ext {
-    AppVersionCode = 100002
-    AppVersionName = "0.2"
+    AppVersionCode = 100003
+    AppVersionName = "0.3"
 }
 
 android {
@@ -22,8 +22,8 @@ android {
         applicationId "kr.co.thiscat.stadiumampsetting"
         minSdk 28
         targetSdk 30
-        versionCode 1
-        versionName "1.0"
+        versionCode AppVersionCode
+        versionName AppVersionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

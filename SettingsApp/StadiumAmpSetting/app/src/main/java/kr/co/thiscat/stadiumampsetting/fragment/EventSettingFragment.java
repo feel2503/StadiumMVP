@@ -188,11 +188,37 @@ public class EventSettingFragment extends Fragment {
 
         mTextConfirm = view.findViewById(R.id.text_event_setting_confirm);
         mTextConfirm.setOnClickListener(mOnClickListener);
+
+        MainActivity activity = (MainActivity)getActivity();
+        mStrDefault = activity.mStrDefault;
+        mStrHome1 = activity.mStrHome1;
+        mStrHome2 = activity.mStrHome2;
+        mStrAway1 = activity.mStrAway1;
+        mStrAway2 = activity.mStrAway2;
+        mStrDefaultImg = activity.mStrDefaultImg;
+        mStrHomeImg = activity.mStrHomeImg;
+        mStrAwayImg = activity.mStrAwayImg;
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        if(mStrDefault != null)
+            mTextDefaultLocal.setText(getFileNameFromUri(mStrDefault));
+        if(mStrHome1 != null)
+            mTextHomeLocal01.setText(getFileNameFromUri(mStrHome1));
+        if(mStrHome2 != null)
+            mTextHomeLocal02.setText(getFileNameFromUri(mStrHome2));
+        if(mStrAway1 != null)
+            mTextAwayLocal01.setText(getFileNameFromUri(mStrAway1));
+        if(mStrAway2 != null)
+            mTextAwayLocal02.setText(getFileNameFromUri(mStrAway2));
+        if(mStrDefaultImg != null)
+            mTextEventDefaultImg.setText(getFileNameFromUri(mStrDefaultImg));
+        if(mStrHomeImg != null)
+            mTextEventHomeImg.setText(getFileNameFromUri(mStrHomeImg));
+        if(mStrAwayImg != null)
+            mTextEventAwayImg.setText(getFileNameFromUri(mStrAwayImg));
     }
 
     @Override
@@ -266,7 +292,7 @@ public class EventSettingFragment extends Fragment {
             else
             {
                 mStrAway1 = stadiumServer.getAwayMusic1();
-                mEditAwayMedia01.setText(getFileNameFromUri(mStrAway1));
+                mTextAwayLocal01.setText(getFileNameFromUri(mStrAway1));
                 mRadioAway1.check(R.id.radio_away_media_1);
             }
         }
@@ -280,7 +306,7 @@ public class EventSettingFragment extends Fragment {
             else
             {
                 mStrAway2 = stadiumServer.getAwayMusic2();
-                mEditAwayMedia02.setText(getFileNameFromUri(mStrAway2));
+                mTextAwayLocal02.setText(getFileNameFromUri(mStrAway2));
                 mRadioAway2.check(R.id.radio_away_media_2);
             }
         }
@@ -469,6 +495,8 @@ public class EventSettingFragment extends Fragment {
 
     public void showProgress(final Activity act, final boolean bShow)
     {
+        if(act == null)
+            return;
         act.runOnUiThread(new Runnable()
         {
             @Override

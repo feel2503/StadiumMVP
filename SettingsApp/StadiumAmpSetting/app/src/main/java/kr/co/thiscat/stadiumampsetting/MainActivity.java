@@ -1,20 +1,15 @@
 package kr.co.thiscat.stadiumampsetting;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.menu.MenuView;
-
 import android.Manifest;
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.LinearLayout;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -43,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private int second;
 
     private MediaPlayer mMediaPlayer;
+    private MediaPlayer mDefaultMediaPlayer;
 
     private PermissionUtil mPermUtil;
     public static String[] REQUIRED_PERMISSIONS = {
@@ -76,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
         mServer = ServerManager.getInstance(MainActivity.this);
 
         mMediaPlayer = new MediaPlayer();
+        mDefaultMediaPlayer = new MediaPlayer();
 
         mPermUtil = new PermissionUtil(MainActivity.this, REQUIRED_PERMISSIONS);
         mPermUtil.onSetPermission();
@@ -86,15 +83,36 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mMediaPlayer.stop();
-        mMediaPlayer.release();
+//        mMediaPlayer.stop();
+//        mMediaPlayer.release();
+//        try {
+//            mDefaultMediaPlayer.stop();
+//            mDefaultMediaPlayer.prepare();
+//            mDefaultMediaPlayer.release();
+//            mDefaultMediaPlayer = null;
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        mMediaPlayer.stop();
-        mMediaPlayer.release();
+        try {
+            mMediaPlayer.stop();
+            mMediaPlayer.prepare();
+            mMediaPlayer.release();
+            mMediaPlayer = null;
+
+            mDefaultMediaPlayer.stop();
+            mDefaultMediaPlayer.prepare();
+            mDefaultMediaPlayer.release();
+            mDefaultMediaPlayer = null;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -132,7 +150,24 @@ public class MainActivity extends AppCompatActivity {
         if(serverId > 0)
         {
             mServer.getLastEvent(mLastEventCallBack, serverId);
+            if(mStrDefault != null && mStrDefault.length() > 0)
+            {
+//                try{
+//                    Uri uri = Uri.parse(mStrDefault);
+//                    mDefaultMediaPlayer.setDataSource(getApplicationContext(), uri);
+//                    mDefaultMediaPlayer.prepare();
+//                    mDefaultMediaPlayer.start();
+//                }catch (Exception e)
+//                {
+//                    e.printStackTrace();
+//                }
+            }
         }
+    }
+
+    public void stopEvent()
+    {
+
     }
 
     private void SettingListener() {
@@ -189,6 +224,23 @@ public class MainActivity extends AppCompatActivity {
             }
             else
             {
+                try{
+                    Uri uri = Uri.parse(mStrDefault);
+//                    mDefaultMediaPlayer.setScreenOnWhilePlaying(true);
+//                    mDefaultMediaPlayer.setWakeMode(getApplicationContext(), PowerManager.ON_AFTER_RELEASE);
+                    if(mDefaultMediaPlayer == null)
+                    {
+                        mDefaultMediaPlayer = new MediaPlayer();
+                        mDefaultMediaPlayer.setDataSource(getApplicationContext(), uri);
+                    }
+                    mDefaultMediaPlayer.prepare();
+                    mDefaultMediaPlayer.setLooping(true);
+                    mDefaultMediaPlayer.start();
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
                 Timer timer = new Timer();
                 TimerTask timerTask = new TimerTask() {
                     @Override
@@ -247,13 +299,19 @@ public class MainActivity extends AppCompatActivity {
                         else
                             strUri = mStrAway2;
                     }
-                    if(strUri == null || strUri.length() < 1)
-                        strUri = mStrDefault;
+//                    if(strUri == null || strUri.length() < 1)
+//                        strUri = mStrDefault;
 
                     Log.d("AAAA", "player Uri : " + strUri);
                     if(strUri != null && strUri.length() > 0)
                     {
+                        mDefaultMediaPlayer.pause();
+
                         Uri uri = Uri.parse(strUri);
+//                        mMediaPlayer.setScreenOnWhilePlaying(true);
+//                        mMediaPlayer.setWakeMode(getApplicationContext(), PowerManager.ON_AFTER_RELEASE);
+                        if(mMediaPlayer == null)
+                            mMediaPlayer = new MediaPlayer();
                         mMediaPlayer.setDataSource(getApplicationContext(), uri);
                         mMediaPlayer.prepare();
                         mMediaPlayer.start();

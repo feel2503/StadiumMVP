@@ -127,19 +127,20 @@ public class SettingFragment extends Fragment {
         super.onResume();
         mServerId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_SERVER_ID, -1);
         mEventId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_EVENT_ID, -1);
-        //mEventId = 1;
-        if(mEventId > 0)
-        {
-            mServer.getEventState(mEventStateCallBack, mEventId);
-            showProgress(getActivity(), true);
-        }
-        else if(mServerId > 0)
+        if(mServerId > 0)
         {
             String name = mPreferenceUtil.getStringPreference(PreferenceUtil.KEY_SERVER_NAME);
             mTextServrName.setText("이벤트 서버 : " + name);
-
-            mServer.getLastEvent(mEventStateCallBack, mServerId);
-            showProgress(getActivity(), true);
+            if(mEventId > 0)
+            {
+                mServer.getEventState(mEventStateCallBack, mEventId);
+                showProgress(getActivity(), true);
+            }
+            else
+            {
+                mServer.getLastEvent(mEventStateCallBack, mServerId);
+                showProgress(getActivity(), true);
+            }
         }
     }
 
@@ -211,6 +212,9 @@ public class SettingFragment extends Fragment {
 
         if(runEvent.getEventState().equalsIgnoreCase("START"))
         {
+            MainActivity activity = (MainActivity) getActivity();
+            activity.startEventCount();
+
             setEventBtnState(true);
             try{
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
@@ -460,11 +464,13 @@ public class SettingFragment extends Fragment {
                 MainActivity activity = (MainActivity) getActivity();
                 if(activity != null)
                     activity.startEventCount();
+
+                Toast.makeText(getContext(), "이벤트 를 시작 하였습니다.", Toast.LENGTH_SHORT).show();
             }
 
             showProgress(getActivity(), false);
 
-            Toast.makeText(getContext(), "이벤트 를 시작 하였습니다.", Toast.LENGTH_SHORT).show();
+
         }
     };
 
@@ -478,9 +484,6 @@ public class SettingFragment extends Fragment {
                 RunEvent runEvent = response.body().getData();
                 updateEventState(runEvent);
                 saveEventInfo((int)runEvent.getId());
-
-                MainActivity activity = (MainActivity) getActivity();
-                activity.startEventCount();
             }
             else
             {
