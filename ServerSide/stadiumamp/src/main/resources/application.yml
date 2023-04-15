@@ -12,6 +12,11 @@ server:
         include-binding-errors: always
 
 spring:
+    thymeleaf:
+        cache: false
+        check-template-location: true
+        prefix: classpath:/templates/
+        suffix: .html
     mvc:
         async:
             request-timeout: 300000 # 5 minute
@@ -47,6 +52,8 @@ spring:
 
 ##################  [[  Swagger ]] ########################
 swagger.base.package: kr.co.thiscat.stadiumamp
+
+
 
 api:
     version: STADIUMAMP V0.0.1

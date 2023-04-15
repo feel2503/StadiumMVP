@@ -1,10 +1,7 @@
 package kr.co.thiscat.stadiumamp.rest;
 
 import io.swagger.annotations.ApiOperation;
-import kr.co.thiscat.stadiumamp.dto.EventNowResultDto;
-import kr.co.thiscat.stadiumamp.dto.RunEventDto;
-import kr.co.thiscat.stadiumamp.dto.RunEventStartDto;
-import kr.co.thiscat.stadiumamp.dto.StadiumServerDto;
+import kr.co.thiscat.stadiumamp.dto.*;
 import kr.co.thiscat.stadiumamp.entity.Runevent;
 import kr.co.thiscat.stadiumamp.entity.Stadiumserver;
 import kr.co.thiscat.stadiumamp.entity.repository.RunEventRepository;
@@ -264,6 +261,95 @@ public class RestApiController extends BaseController{
         return getResponseEntity("success", "success", HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Event List")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @GetMapping(value = "/v1/vote/save", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultWithValue> voteSave(@RequestParam String teamType,
+                                                        @RequestParam Long eventId, @RequestParam Long eventType) throws Exception {
+
+
+        Runevent runevent = runEventRepository.findById(eventId).orElse(null);
+        LocalDateTime startTime = runevent.getStartDateTime();
+        int vTime = runevent.getVoteTime();
+        LocalDateTime endTime = startTime.plusMinutes(vTime);
+        LocalDateTime nowTime = LocalDateTime.now();
+
+        int voteCount = 1;
+        if(teamType.equalsIgnoreCase("1") || teamType.equalsIgnoreCase("3"))
+            voteCount = 3;
+
+        if(teamType.equalsIgnoreCase("0") || teamType.equalsIgnoreCase("1"))
+        {
+            Integer homeCount = runevent.getHomeCount();
+            int total = voteCount;
+            if(homeCount != null)
+                total += homeCount;
+            runevent.setHomeCount(total);
+
+            if(eventType == 1)
+            {
+                Integer home1 = runevent.getHome1Count();
+                int tot1 = voteCount;
+                if(home1 != null)
+                    tot1 += home1;
+                runevent.setHome1Count(tot1);
+            }
+            else if(eventType == 2)
+            {
+                Integer home2 = runevent.getHome2Count();
+                int tot2 = voteCount;
+                if(home2 != null)
+                    tot2 += home2;
+                runevent.setHome2Count(tot2);
+            }
+
+        }
+        else
+        {
+            Integer awayCount = runevent.getAwayCount();
+            int total = voteCount;
+            if(awayCount != null)
+                total += awayCount;
+            runevent.setAwayCount(total);
+
+            if(eventType == 1)
+            {
+                Integer away = runevent.getAway1Count();
+                int tot = voteCount;
+                if(away != null)
+                    tot += away;
+                runevent.setAway1Count(tot);
+            }
+            else if(eventType == 2)
+            {
+                Integer away = runevent.getAway2Count();
+                int tot = voteCount;
+                if(away != null)
+                    tot += away;
+                runevent.setAway2Count(tot);
+            }
+
+        }
+        runEventRepository.save(runevent);
+
+        VoteResultDto voteResultDto =getVoteResult(runevent);
+        return getResponseEntity(voteResultDto, "success", HttpStatus.OK);
+    }
+
+    private VoteResultDto getVoteResult(Runevent runevent)
+    {
+        int homeCount = 0;
+        int awayCount = 0;
+        if(runevent.getHomeCount() != null)
+            homeCount = runevent.getHomeCount();
+        if(runevent.getAwayCount() != null)
+            awayCount = runevent.getAwayCount();
+
+        int total = homeCount + awayCount;
+        int home = (homeCount/ total) * 100;
+        int away = (awayCount / total) * 100;
+        return new VoteResultDto(home+"%", away+"%");
+    }
     /////////// timer task
 
     class EventStateTimer extends TimerTask

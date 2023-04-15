@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"  >
 
 <head>
     <meta charset="UTF-8">
-    <link rel="shortcut icon" href="favicon.ico">
     <meta http-equiv="X-UA-Compatible" content="IE=9;IE=10;IE=Edge,chrome=1"/>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <meta name="description" content="">
@@ -11,7 +10,9 @@
     <title>Welcome to Stadium AMP</title>
 
     <!-- Global CSS -->
-    <link rel="stylesheet" href="css/style.css">
+<!--    <link rel="stylesheet" href="css/style.css">-->
+    <link rel="stylesheet"
+          th:href="@{css/style.css}"/>
 </head>
 <body onload="startTimer()">
     <div id="wrap" >
@@ -20,8 +21,8 @@
         </div>
 
         <div class="result_graph">
-            <div class="home_graph">홈팀 [[${event.homeCount}]]</div>
-            <div class="away_graph">[[${event.awayCount}]] 원정팀</div>
+            <div class="home_graph" id="home_graph">홈팀</div>
+            <div class="away_graph" id="away_graph">원정팀</div>
         </div>
 
         <div class="wc_text_02">
@@ -42,7 +43,7 @@
                         class="join_event" >[[${teamtype}]] 팀 응원 1</button>
                 <button th:onclick="|location.href='@{/vote/save (teamType = ${team}, eventId = ${event.id}, eventType=2)}'|"
                         class="join_event">[[${teamtype}]] 팀 응원 2</button>
-                <button class="join_event_disable">[[${teamtype}]] 팀 응원 3</button>
+                <button class="join_event_disable" th:onclick="|vote(${team}, ${event.id}, 1);|">[[${teamtype}]] 팀 응원 3</button>
                 <button class="join_event_disable">[[${teamtype}]] 팀 응원 4</button>
             </div>
             <div th:if="${teamtype =='Away'}">
@@ -89,43 +90,77 @@
         <img src="asset/bg_ad.png">
     </div>
 
+    <script th:src="@{jquery/jquery-3.4.1.min.js}"></script>
+    <script th:src="@{js/timer.js}"></script>
+
     <script>
-        let min, sec;
-        let timer;
+        // let min, sec;
+        // let timer;
+        // function startTimer() {
+        //     min = document.querySelector("#startMin").value;
+        //     if (min === "") min = 0;
+        //     sec = document.querySelector("#startSec").value;
+        //     if (sec === "") sec = 0;
+        //     timer = setInterval(countTimer, 1000);
+        // }
+        // function countTimer() {
+        //     if (sec != 0) {
+        //         sec--;
+        //         document.querySelector("#display").innerText =
+        //             min + "분" + sec + "초 남았습니다.";
+        //     } else {
+        //         if (min != 0) {
+        //             min--;
+        //             sec = 59;
+        //         } else {
+        //             clearTimer(timer, "이벤트 종료");
+        //         }
+        //     }
+        // }
+        // function resetTimer() { // 리셋 버튼 연결
+        //     clearTimer(timer, "리셋 종료");
+        // }
+        // function clearTimer(t, text) {
+        //     clearInterval(t);
+        //     document.getElementById("display").innerText = text;
+        //     document.getElementById("startMin").value = "";
+        //     document.getElementById("startSec").value = "";
+        // }
 
-        function startTimer() {
-            min = document.querySelector("#startMin").value;
-            if (min === "") min = 0;
-            sec = document.querySelector("#startSec").value;
-            if (sec === "") sec = 0;
-            timer = setInterval(countTimer, 1000);
-        }
 
-        function countTimer() {
-            if (sec != 0) {
-                sec--;
-                document.querySelector("#display").innerText =
-                    min + "분" + sec + "초 남았습니다.";
-            } else {
-                if (min != 0) {
-                    min--;
-                    sec = 59;
-                } else {
-                    clearTimer(timer, "이벤트 종료");
+        /// vote
+        function vote(teamType, eventId, eventType)
+        {
+            console.log("vote : ",teamType, eventId, eventType)
+            $.ajax({
+                url:  '/v1/vote/save',
+                method: 'get',
+                data: {
+                    teamType: teamType,
+                    eventId: eventId,
+                    eventType: eventType
                 }
-            }
+            }).done(function(res) {
+                console.log("== res", res);
+
+
+                if (res) {
+                    console.log("1== res", res.data.home);
+                    var homeGraph = document.getElementById("home_graph");
+                    homeGraph.style.flexBasis=res.data.home;
+
+                    var awayGraph = document.getElementById("away_graph");
+                    awayGraph.style.flexBasis=res.data.away;
+
+                } else {
+
+                }
+            });
+
         }
 
-        function resetTimer() { // 리셋 버튼 연결
-            clearTimer(timer, "리셋 종료");
-        }
-
-        function clearTimer(t, text) {
-            clearInterval(t);
-            document.getElementById("display").innerText = text;
-            document.getElementById("startMin").value = "";
-            document.getElementById("startSec").value = "";
-        }
     </script>
+
+
 </body>
 </html>

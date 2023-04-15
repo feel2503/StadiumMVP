@@ -3,6 +3,7 @@ package kr.co.thiscat.stadiumamp.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -20,16 +21,25 @@ public class Stadiumserver extends BaseEntity {
     @Column(name = "event_id")
     private Long id;
 
+    @Size(max = 200)
     @Column(unique = true)
     String name;
 
+    @Size(max = 500)
     String defaultMusic;
+    @Size(max = 500)
     String homeMusic1;
+    @Size(max = 500)
     String homeMusic2;
+    @Size(max = 500)
     String awayMusic1;
+    @Size(max = 500)
     String awayMusic2;
+    @Size(max = 500)
     String defaultImage;
+    @Size(max = 500)
     String homeImage;
+    @Size(max = 500)
     String awayImage;
 
 //    @Column(unique = true)
