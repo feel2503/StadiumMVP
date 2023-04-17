@@ -124,6 +124,18 @@ public class RestApiController extends BaseController{
         return getResponseEntity(null, "success", HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Last Event")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @GetMapping(value = "/v1/event/eventdto", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultWithValue> getLastEventDto(@RequestParam Long serverId) throws Exception {
+        Stadiumserver stadiumserver = stadiumServerRepository.findById(serverId).orElseThrow(EntityNotFoundException::new);
+        Runevent runevent = runEventRepository.findFirstByStadiumserverOrderByIdDesc(stadiumserver).orElseThrow(EntityNotFoundException::new);
+
+        VoteResultDto voteResultDto =getVoteResult(runevent);
+        //VoteResultDto voteResultDto = new VoteResultDto("95%", "5%");
+        return getResponseEntity(voteResultDto, "success", HttpStatus.OK);
+    }
+
     @ApiOperation(value = "Event State")
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @GetMapping(value = "/v1/event/state", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -273,6 +285,11 @@ public class RestApiController extends BaseController{
         int vTime = runevent.getVoteTime();
         LocalDateTime endTime = startTime.plusMinutes(vTime);
         LocalDateTime nowTime = LocalDateTime.now();
+        if(nowTime.isAfter(endTime))
+        {
+            VoteResultDto voteResultDto = new VoteResultDto("50%", "50%");
+            return getResponseEntity(voteResultDto, "success", HttpStatus.OK);
+        }
 
         int voteCount = 1;
         if(teamType.equalsIgnoreCase("1") || teamType.equalsIgnoreCase("3"))
@@ -333,6 +350,7 @@ public class RestApiController extends BaseController{
         runEventRepository.save(runevent);
 
         VoteResultDto voteResultDto =getVoteResult(runevent);
+        //VoteResultDto voteResultDto = new VoteResultDto("95%", "5%");
         return getResponseEntity(voteResultDto, "success", HttpStatus.OK);
     }
 
@@ -346,8 +364,8 @@ public class RestApiController extends BaseController{
             awayCount = runevent.getAwayCount();
 
         int total = homeCount + awayCount;
-        int home = (homeCount/ total) * 100;
-        int away = (awayCount / total) * 100;
+        int home = (homeCount*100)/ total;
+        int away = (awayCount*100) / total;
         return new VoteResultDto(home+"%", away+"%");
     }
     /////////// timer task

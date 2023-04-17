@@ -24,7 +24,7 @@ spring:
             matching-strategy: ant_path_matcher
 
     datasource:
-        url: jdbc:postgresql://localhost:5432/stadiumamp
+        url: jdbc:postgresql://223.130.134.43:5432/stadiumamp
         driver-class-name: org.postgresql.Driver
         username: thiscat
         password: stadiumamp!

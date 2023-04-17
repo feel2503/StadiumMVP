@@ -20,9 +20,14 @@
             이벤트 서버 <b>[[${server.name}]]</b> 실시간 응원 결과
         </div>
 
+        <div class="result_text">
+            <div class="home_text" >홈팀</div>
+            <div class="away_text">원정팀</div>
+        </div>
+
         <div class="result_graph">
-            <div class="home_graph" id="home_graph">홈팀</div>
-            <div class="away_graph" id="away_graph">원정팀</div>
+            <div class="home_graph" id="home_graph"></div>
+            <div class="away_graph" id="away_graph"></div>
         </div>
 
         <div class="wc_text_02">
@@ -39,17 +44,25 @@
 
         <div class="bt-02">
             <div th:if="${teamtype =='Home'}">
-                <button th:onclick="|location.href='@{/vote/save (teamType = ${team}, eventId = ${event.id}, eventType=1)}'|"
+<!--                <button th:onclick="|location.href='@{/vote/save (teamType = ${team}, eventId = ${event.id}, eventType=1)}'|"-->
+<!--                        class="join_event" >[[${teamtype}]] 팀 응원 1</button>-->
+<!--                <button th:onclick="|location.href='@{/vote/save (teamType = ${team}, eventId = ${event.id}, eventType=2)}'|"-->
+<!--                        class="join_event">[[${teamtype}]] 팀 응원 2</button>-->
+                <button th:onclick="|vote(${team}, ${event.id}, 1);|"
                         class="join_event" >[[${teamtype}]] 팀 응원 1</button>
-                <button th:onclick="|location.href='@{/vote/save (teamType = ${team}, eventId = ${event.id}, eventType=2)}'|"
+                <button th:onclick="|vote(${team}, ${event.id}, 2);|"
                         class="join_event">[[${teamtype}]] 팀 응원 2</button>
-                <button class="join_event_disable" th:onclick="|vote(${team}, ${event.id}, 1);|">[[${teamtype}]] 팀 응원 3</button>
+                <button class="join_event_disable" >[[${teamtype}]] 팀 응원 3</button>
                 <button class="join_event_disable">[[${teamtype}]] 팀 응원 4</button>
             </div>
             <div th:if="${teamtype =='Away'}">
-                <button th:onclick="|location.href='@{/vote/save (teamType = ${team}, eventId = ${event.id}, eventType=1)}'|"
+<!--                <button th:onclick="|location.href='@{/vote/save (teamType = ${team}, eventId = ${event.id}, eventType=1)}'|"-->
+<!--                        class="join_away_event">[[${teamtype}]] 팀 응원 1</button>-->
+<!--                <button th:onclick="|location.href='@{/vote/save (teamType = ${team}, eventId = ${event.id}, eventType=2)}'|"-->
+<!--                        class="join_away_event">[[${teamtype}]] 팀 응원 2</button>-->
+                <button th:onclick="|vote(${team}, ${event.id}, 1);|"
                         class="join_away_event">[[${teamtype}]] 팀 응원 1</button>
-                <button th:onclick="|location.href='@{/vote/save (teamType = ${team}, eventId = ${event.id}, eventType=2)}'|"
+                <button th:onclick="|vote(${team}, ${event.id}, 2);|"
                         class="join_away_event">[[${teamtype}]] 팀 응원 2</button>
                 <button class="join_event_disable">[[${teamtype}]] 팀 응원 3</button>
                 <button class="join_event_disable">[[${teamtype}]] 팀 응원 4</button>
@@ -60,6 +73,7 @@
 
         <input type="hidden" id="startMin" th:value="${min}" >
         <input type="hidden" id="startSec" th:value="${sec}" >
+        <input type="hidden" id="startIdVal" th:value="${server.id}" >
 
 <!--  timer      -->
 <!--        <div id="wrapper">-->
@@ -141,17 +155,24 @@
                     eventType: eventType
                 }
             }).done(function(res) {
-                console.log("== res", res);
-
-
                 if (res) {
-                    console.log("1== res", res.data.home);
+                    console.log("res", res);
                     var homeGraph = document.getElementById("home_graph");
                     homeGraph.style.flexBasis=res.data.home;
-
+                    if(res.data.home === "100%")
+                        homeGraph.style.borderRadius="10px";
+                    else{
+                        homeGraph.style.borderTopRightRadius="0px";
+                        homeGraph.style.borderBottomRightRadius="0px";
+                    }
                     var awayGraph = document.getElementById("away_graph");
                     awayGraph.style.flexBasis=res.data.away;
-
+                    if(res.data.away === "100%")
+                        awayGraph.style.borderRadius="10px";
+                    else{
+                        awayGraph.style.borderTopLeftRadius="0px";
+                        awayGraph.style.borderBottomLeftRadius="0px";
+                    }
                 } else {
 
                 }

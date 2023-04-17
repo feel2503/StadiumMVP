@@ -139,23 +139,37 @@ div{
     display: flex;
     flex-direction: row;
     margin-bottom: 30px;
-
+}
+.result_text{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+.home_text{
+    text-align: center;
+    color:#2552d9;
+    margin-left: 10px;
 }
 .home_graph{
     background-color:#2552d9;
     flex-basis: 50%;
     text-align: left;
-    border-radius: 100px 0px 0px 100px;
-    padding:15px 15px 15px 30px;
+    border-radius: 10px 0px 0px 10px;
+    padding:25px 0px 25px 0px;;
     color:#ffffff;
     font-weight: 600;
+}
+.away_text{
+    text-align: center;
+    color:#f23827;
+    margin-right: 10px;
 }
 .away_graph{
     background-color:#f23827;
     flex-basis: 50%;
     text-align: right;
-    border-radius: 0px 100px 100px 0px;
-    padding:15px 30px 15px 15px;
+    border-radius: 0px 10px 10px 0px;
+    padding:25px 0px 25px 0px;
     color:#ffffff;
     font-weight: 600;
 }
