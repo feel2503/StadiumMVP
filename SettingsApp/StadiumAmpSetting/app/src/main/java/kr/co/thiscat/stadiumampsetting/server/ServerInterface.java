@@ -1,9 +1,10 @@
 package kr.co.thiscat.stadiumampsetting.server;
 
 
+import kr.co.thiscat.stadiumampsetting.server.entity.Entertainment;
+import kr.co.thiscat.stadiumampsetting.server.entity.EventInfoResult;
 import kr.co.thiscat.stadiumampsetting.server.entity.ResultMsg;
 import kr.co.thiscat.stadiumampsetting.server.entity.RunEventResult;
-import kr.co.thiscat.stadiumampsetting.server.entity.StadiumServer;
 import kr.co.thiscat.stadiumampsetting.server.entity.StadiumServerResult;
 import kr.co.thiscat.stadiumampsetting.server.entity.StartEvent;
 import retrofit2.Call;
@@ -15,13 +16,16 @@ import retrofit2.http.Query;
 public interface ServerInterface {
 
     @POST("v1/server/update")
-    Call<ResultMsg> serverUpdate(@Body StadiumServer body);
+    Call<ResultMsg> serverUpdate(@Body Entertainment body);
 
     @GET("v1/server/server")
     Call<StadiumServerResult> getServer(@Query("serverId")long serverId);
 
     @GET("v1/server/list")
     Call<StadiumServerResult> getServerList();
+
+    @GET("v1/event/event-info")
+    Call<EventInfoResult> getEventInfo(@Query("serverId")long serverId, @Query("ssaid")String ssaid);
 
     @GET("v1/event/last-event")
     Call<RunEventResult> getLastEvent(@Query("serverId")long serverId);

@@ -61,11 +61,19 @@ public class EventFragment extends Fragment {
     private boolean isRunning = false;
 
     private ImageView mImgEvent;
-    Timer timer;
+//    Timer timer;
+    private static EventFragment mInstance;
 
-
+    private MainActivity mainActivity;
     public EventFragment() {
         // Required empty public constructor
+    }
+
+    public static EventFragment getInstance()
+    {
+        if(mInstance == null)
+            mInstance = newInstance(null, null);
+        return mInstance;
     }
 
     /**
@@ -94,10 +102,11 @@ public class EventFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
+        mainActivity = (MainActivity)getActivity();
         mPreferenceUtil = new PreferenceUtil(getContext());
         mProgress = new ProgressDialog(getContext());
         mServer = ServerManager.getInstance(getContext());
-         timer = new Timer();
+//        timer = new Timer();
     }
 
     @Override
@@ -117,32 +126,66 @@ public class EventFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        int eventId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_EVENT_ID, -1);
-        //mEventId = 1;
-        if(eventId > 0 )
+//        int eventId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_EVENT_ID, -1);
+//        //mEventId = 1;
+//        if(eventId > 0 )
+//        {
+//            mServer.getEventState(mEventStateCallBack, eventId);
+//            showProgress(getActivity(), true);
+//        }
+//        else
+//        {
+//            mTextCurrent.setText("진행중인 이벤트 없음");
+//            mTextTime.setText("0분 00초");
+//        }
+        updateTimer();
+        if(mainActivity.mStrDefaultImg != null)
         {
-            mServer.getEventState(mEventStateCallBack, eventId);
-            showProgress(getActivity(), true);
-        }
-        else
-        {
-            mTextCurrent.setText("진행중인 이벤트 없음");
-            mTextTime.setText("0분 00초");
-        }
-
-        MainActivity activity = (MainActivity)getActivity();
-        if(activity.mStrDefaultImg != null)
-        {
-            Uri uri = Uri.parse(activity.mStrDefaultImg);
+            Uri uri = Uri.parse(mainActivity.mStrDefaultImg);
             mImgEvent.setImageURI(uri);
             Glide.with(this).load(uri).into(mImgEvent);
         }
+
+        int eventId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_EVENT_ID, -1);
+        if(eventId > 0){
+            Log.d("AAAA", "--- eventId : " + eventId);
+            mServer.eventNowResult(mEventResultCallBack, eventId);
+        }
+
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        timer.cancel();
+//        timer.cancel();
+    }
+
+    public void updateTimer()
+    {
+        try{
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+            Date startTime = sdf.parse(mainActivity.currEventInfo.getStartDateTime());
+
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(startTime);
+            cal.add(Calendar.MINUTE, mainActivity.currEventInfo.getVoteTime());
+            Date endDate = cal.getTime();
+
+            Date nowDate = Calendar.getInstance().getTime();
+
+            long diffTime = endDate.getTime() - nowDate.getTime();
+            if(diffTime <= 0) {
+                updateTimerTextView(0);
+            }else {
+                second = (int)(diffTime / 1000);
+                updateTimerTextView(second);
+            }
+
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
     }
 
     private String getTimeStr(int time)
@@ -156,73 +199,102 @@ public class EventFragment extends Fragment {
 
     private void updateTimerTextView(int time)
     {
-        if(getActivity() != null)
+
+        if(isVisible() && getActivity() != null)
         {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     int min = time / 60;
                     int sec = time % 60;
-                    if(min == 0 && sec <= 0)
+                    if(min <= 0 && sec <= 0)
                     {
                         mTextTime.setText("이벤트 종료");
+                        isRunning = false;
                     }
                     else {
                         mTextTime.setText("" + min + "분" + sec + "초");
+                        isRunning = true;
                     }
-                    
                 }
             });
         }
     }
 
-    private void updateTimeStr(RunEvent runEvent)
+    private void updateResultImageView(int home, int away)
     {
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-            Date startTime = sdf.parse(runEvent.getStartDateTime());
-
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(startTime);
-            cal.add(Calendar.MINUTE, runEvent.getVoteTime());
-            Date endDate = cal.getTime();
-
-            Date nowDate = Calendar.getInstance().getTime();
-
-            long diffTime = endDate.getTime() - nowDate.getTime();
-            if(diffTime <= 0)
-            {
-                mTextTime.setText("이벤트 종료");
-            }
-            else
-            {
-                isRunning = true;
-                second = (int)(diffTime / 1000);
-
-                TimerTask timerTask = new TimerTask() {
-                    @Override
-                    public void run() {
-                        if(second >= 0) {
-                            //1초씩 감소
-                            second--;
-                            updateTimerTextView(second);
-                            // 0분 이상이면
-                        }
-                        else
-                        {
-                            isRunning = false;
-                        }
-
-                        //mTextTime.setText(getTimeStr(second));
-                    }
-                };
-                timer.schedule(timerTask, 0, 1000);
-            }
-        }catch (Exception e)
+        if(isVisible() && getActivity() != null)
         {
-            e.printStackTrace();
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(home > away){
+                        if(mainActivity.mStrHomeImg != null)
+                        {
+                            Uri uri = Uri.parse(mainActivity.mStrHomeImg);
+                            mImgEvent.setImageURI(uri);
+                            Glide.with(mainActivity).load(uri).into(mImgEvent);
+                        }
+                    }else if(home < away){
+                        if(mainActivity.mStrAwayImg != null)
+                        {
+                            Uri uri = Uri.parse(mainActivity.mStrAwayImg);
+                            mImgEvent.setImageURI(uri);
+                            Glide.with(mainActivity).load(uri).into(mImgEvent);
+                        }
+                    }
+                }
+            });
         }
     }
+
+//    private void updateTimeStr(RunEvent runEvent)
+//    {
+//        try {
+//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+//            Date startTime = sdf.parse(runEvent.getStartDateTime());
+//
+//            Calendar cal = Calendar.getInstance();
+//            cal.setTime(startTime);
+//            cal.add(Calendar.MINUTE, runEvent.getVoteTime());
+//            Date endDate = cal.getTime();
+//
+//            Date nowDate = Calendar.getInstance().getTime();
+//
+//            long diffTime = endDate.getTime() - nowDate.getTime();
+//            if(diffTime <= 0)
+//            {
+//                mTextTime.setText("이벤트 종료");
+//            }
+//            else
+//            {
+//                isRunning = true;
+//                second = (int)(diffTime / 1000);
+//
+//                TimerTask timerTask = new TimerTask() {
+//                    @Override
+//                    public void run() {
+//                        if(second >= 0) {
+//                            //1초씩 감소
+//                            second--;
+//                            updateTimerTextView(second);
+//                            // 0분 이상이면
+//                        }
+//                        else
+//                        {
+//                            isRunning = false;
+//                        }
+//
+//                        //mTextTime.setText(getTimeStr(second));
+//                    }
+//                };
+//                timer.schedule(timerTask, 0, 1000);
+//            }
+//        }catch (Exception e)
+//        {
+//            e.printStackTrace();
+//        }
+//    }
 
     private void updateScoreValue(String name, final int home, final int away)
     {
@@ -257,32 +329,39 @@ public class EventFragment extends Fragment {
 
                 }
             });
-
-
         }
     }
     private void updateScore(RunEvent runEvent)
     {
-        int home = runEvent.getHomeCount();
-        int away = runEvent.getAwayCount();
-        if(home == away && home == 0)
-        {
-            home = away = 1;
-        }
-        updateScoreValue(runEvent.getServerName(), home, away);
-
-        Timer timer = new Timer();
-        TimerTask timerTask = new TimerTask() {
-            @Override
-            public void run() {
-                int eventId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_EVENT_ID, -1);
-                mServer.eventNowResult(mEventResultCallBack, eventId);
+        try{
+            int home = runEvent.getHomeCount();
+            int away = runEvent.getAwayCount();
+            if(home == away && home == 0)
+            {
+                home = away = 1;
             }
-        };
-        if(isRunning)
+            updateScoreValue(runEvent.getServerName(), home, away);
+
+            Timer timer = new Timer();
+            TimerTask timerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    int eventId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_EVENT_ID, -1);
+                    mServer.eventNowResult(mEventResultCallBack, eventId);
+                }
+            };
+            if(runEvent.getEventState().equalsIgnoreCase("START")) {
+                timer.schedule(timerTask, 1000);
+            }else {
+                updateResultImageView(runEvent.getHomeCount(), runEvent.getAwayCount());
+                timer.cancel();
+            }
+
+        }catch (Exception e)
         {
-            timer.schedule(timerTask, 1000);
+            e.printStackTrace();
         }
+
     }
 
     public void showProgress(final Activity act, final boolean bShow)
@@ -316,24 +395,24 @@ public class EventFragment extends Fragment {
         });
     }
 
-    private SECallBack<RunEventResult> mEventStateCallBack = new SECallBack<RunEventResult>()
-    {
-        @Override
-        public void onResponseResult(Response<RunEventResult> response)
-        {
-            if (response.isSuccessful())
-            {
-                RunEvent runEvent = response.body().getData();
-                updateTimeStr(runEvent);
-                updateScore(runEvent);
-            }
-            else
-            {
-                // no event
-            }
-            showProgress(getActivity(), false);
-        }
-    };
+//    private SECallBack<RunEventResult> mEventStateCallBack = new SECallBack<RunEventResult>()
+//    {
+//        @Override
+//        public void onResponseResult(Response<RunEventResult> response)
+//        {
+//            if (response.isSuccessful())
+//            {
+//                RunEvent runEvent = response.body().getData();
+//                updateTimeStr(runEvent);
+//                updateScore(runEvent);
+//            }
+//            else
+//            {
+//                // no event
+//            }
+//            showProgress(getActivity(), false);
+//        }
+//    };
 
 
     private SECallBack<RunEventResult> mEventResultCallBack = new SECallBack<RunEventResult>()

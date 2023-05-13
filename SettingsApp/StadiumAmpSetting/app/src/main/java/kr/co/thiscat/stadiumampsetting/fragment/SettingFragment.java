@@ -60,8 +60,8 @@ public class SettingFragment extends Fragment {
     private String mParam2;
 
     private PreferenceUtil mPreferenceUtil;
-    private int mServerId;
-    private int mEventId;
+    //private int mServerId;
+    //private int mEventId;
     private boolean mEventIsRunning = false;
 
     private ServerManager mServer;
@@ -75,8 +75,17 @@ public class SettingFragment extends Fragment {
     private RadioGroup mRadioVote;
     private RadioGroup mRadioResult;
 
+    private static SettingFragment mInstance;
+    private MainActivity mainActivity;
     public SettingFragment() {
         // Required empty public constructor
+    }
+
+    public static SettingFragment getInstance()
+    {
+        if(mInstance == null)
+            mInstance = newInstance(null, null);
+        return mInstance;
     }
 
     /**
@@ -104,7 +113,7 @@ public class SettingFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
+        mainActivity = (MainActivity)getActivity();
         mPreferenceUtil = new PreferenceUtil(getContext());
         mProgress = new ProgressDialog(getContext());
         mServer = ServerManager.getInstance(getContext());
@@ -125,20 +134,20 @@ public class SettingFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        mServerId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_SERVER_ID, -1);
-        mEventId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_EVENT_ID, -1);
-        if(mServerId > 0)
+//        mServerId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_SERVER_ID, -1);
+//        mEventId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_EVENT_ID, -1);
+        if(mainActivity.mServerId > 0)
         {
             String name = mPreferenceUtil.getStringPreference(PreferenceUtil.KEY_SERVER_NAME);
             mTextServrName.setText("이벤트 서버 : " + name);
-            if(mEventId > 0)
+            if(mainActivity.mEventId > 0)
             {
-                mServer.getEventState(mEventStateCallBack, mEventId);
+                mServer.getEventState(mEventStateCallBack, mainActivity.mEventId);
                 showProgress(getActivity(), true);
             }
             else
             {
-                mServer.getLastEvent(mEventStateCallBack, mServerId);
+                mServer.getLastEvent(mEventStateCallBack, mainActivity.mServerId);
                 showProgress(getActivity(), true);
             }
         }
@@ -212,8 +221,7 @@ public class SettingFragment extends Fragment {
 
         if(runEvent.getEventState().equalsIgnoreCase("START"))
         {
-            MainActivity activity = (MainActivity) getActivity();
-            activity.startEventCount();
+            mainActivity.startEventCount();
 
             setEventBtnState(true);
             try{
@@ -229,7 +237,7 @@ public class SettingFragment extends Fragment {
                 TimerTask timerTask = new TimerTask() {
                     @Override
                     public void run() {
-                        mServer.getEventState(mEventStateCallBack, mEventId);
+                        mServer.getEventState(mEventStateCallBack, mainActivity.mEventId);
                     }
                 };
                 timer.schedule(timerTask, endDate);
@@ -247,7 +255,7 @@ public class SettingFragment extends Fragment {
 
     private void saveEventInfo(int eventId)
     {
-        mEventId = eventId;
+        mainActivity.mEventId = eventId;
         mPreferenceUtil.putIntPreference(PreferenceUtil.KEY_EVENT_ID, eventId);
     }
 
@@ -260,8 +268,8 @@ public class SettingFragment extends Fragment {
         }
         ArrayList<Integer> selectItem = new ArrayList<>(); // RadioButton 선택 한 값 담을 ArrayList ( TEXT )
         selectItem.clear();
-        if(mServerId > 0) {
-            selectItem.add(mServerId-1);
+        if(mainActivity.mServerId > 0) {
+            selectItem.add(mainActivity.mServerId-1);
         } else {
             selectItem.add(0);
         }
@@ -286,7 +294,7 @@ public class SettingFragment extends Fragment {
                         int serverId = mServerList.get(selIdx).getId();
                         mPreferenceUtil.putIntPreference(PreferenceUtil.KEY_SERVER_ID, serverId);
                         mPreferenceUtil.putStringPrefrence(PreferenceUtil.KEY_SERVER_NAME, name);
-                        mServerId = serverId;
+                        mainActivity.mServerId = serverId;
                         mTextServrName.setText("이벤트 서버 : " + name);
 
                         mServer.getLastEvent(mLastEventCallBack, serverId);
@@ -311,7 +319,7 @@ public class SettingFragment extends Fragment {
                     return;
                 }
                     
-                if(mServerId < 0)
+                if(mainActivity.mServerId < 0)
                 {
                     new AlertDialog.Builder(getContext())
                             .setMessage("이벤트 서버가 설정되지 않았습니다.\n이벤트 서버를 선택 하시겠습니까?")
@@ -336,22 +344,22 @@ public class SettingFragment extends Fragment {
                 }
 
                 showProgress(getActivity(), true);
-                MainActivity activity = (MainActivity)getActivity();
 
                 StartEvent startEvent = new StartEvent();
-                startEvent.setStadiumServerId(mServerId);
+                startEvent.setStadiumServerId(mainActivity.mServerId);
                 startEvent.setVoteTime(getVoteTime());
                 //startEvent.setVoteTime(1);
+                startEvent.setSsaid(mainActivity.getSSAID());
 
                 startEvent.setResultTime(getResultTime());
-                startEvent.setDefaultMusic(activity.mStrDefault);
-                startEvent.setHomeMusic1(activity.mStrHome1);
-                startEvent.setHomeMusic2(activity.mStrHome2);
-                startEvent.setAwayMusic1(activity.mStrAway1);
-                startEvent.setAwayMusic2(activity.mStrAway2);
-                startEvent.setDefaultImage(activity.mStrDefaultImg);
-                startEvent.setHomeImage(activity.mStrHomeImg);
-                startEvent.setAwayImage(activity.mStrAwayImg);
+                startEvent.setDefaultMusic(mainActivity.mStrDefault);
+                startEvent.setHomeMusic1(mainActivity.mStrHome1);
+                startEvent.setHomeMusic2(mainActivity.mStrHome2);
+                startEvent.setAwayMusic1(mainActivity.mStrAway1);
+                startEvent.setAwayMusic2(mainActivity.mStrAway2);
+                startEvent.setDefaultImage(mainActivity.mStrDefaultImg);
+                startEvent.setHomeImage(mainActivity.mStrHomeImg);
+                startEvent.setAwayImage(mainActivity.mStrAwayImg);
 
                 mServer.eventStart(mEventStartCallBack, startEvent);
             }
@@ -366,7 +374,7 @@ public class SettingFragment extends Fragment {
                         .setPositiveButton("확인", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                mServer.eventStop(mEventStateCallBack, mEventId);
+                                mServer.eventStop(mEventStateCallBack, mainActivity.mEventId);
                             }
                         })
                         .setNegativeButton("취소", new DialogInterface.OnClickListener() {
@@ -443,8 +451,8 @@ public class SettingFragment extends Fragment {
                 // no event
                 mRadioVote.check(R.id.radio_vote_3m);
                 mRadioResult.check(R.id.radio_result_1m);
-                mEventId = -1;
-                mPreferenceUtil.putIntPreference(PreferenceUtil.KEY_EVENT_ID, mEventId);
+                mainActivity.mEventId = -1;
+                mPreferenceUtil.putIntPreference(PreferenceUtil.KEY_EVENT_ID, mainActivity.mEventId);
             }
             showProgress(getActivity(), false);
         }
@@ -461,9 +469,9 @@ public class SettingFragment extends Fragment {
                 updateEventState(runEvent);
                 saveEventInfo((int)runEvent.getId());
 
-                MainActivity activity = (MainActivity) getActivity();
-                if(activity != null)
-                    activity.startEventCount();
+//                MainActivity activity = (MainActivity) getActivity();
+//                if(activity != null)
+//                    activity.startEventCount();
 
                 Toast.makeText(getContext(), "이벤트 를 시작 하였습니다.", Toast.LENGTH_SHORT).show();
             }

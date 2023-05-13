@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.provider.OpenableColumns;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,7 @@ import kr.co.thiscat.stadiumampsetting.PreferenceUtil;
 import kr.co.thiscat.stadiumampsetting.R;
 import kr.co.thiscat.stadiumampsetting.server.SECallBack;
 import kr.co.thiscat.stadiumampsetting.server.ServerManager;
+import kr.co.thiscat.stadiumampsetting.server.entity.Entertainment;
 import kr.co.thiscat.stadiumampsetting.server.entity.ResultMsg;
 import kr.co.thiscat.stadiumampsetting.server.entity.RunEvent;
 import kr.co.thiscat.stadiumampsetting.server.entity.RunEventResult;
@@ -78,7 +80,6 @@ public class EventSettingFragment extends Fragment {
     protected ProgressDialog mProgress = null;
     private PreferenceUtil mPreferenceUtil;
 
-    private int mServerId;
 
     // file
     private String mStrDefault;
@@ -90,10 +91,18 @@ public class EventSettingFragment extends Fragment {
     private String mStrHomeImg;
     private String mStrAwayImg;
 
+    private static EventSettingFragment mInstance;
+    private MainActivity mainActivity;
     public EventSettingFragment() {
         // Required empty public constructor
     }
 
+    public static EventSettingFragment getInstance()
+    {
+        if(mInstance == null)
+            mInstance = newInstance(null, null);
+        return mInstance;
+    }
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -120,6 +129,7 @@ public class EventSettingFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
+        mainActivity = (MainActivity)getActivity();
         mPreferenceUtil = new PreferenceUtil(getContext());
         mProgress = new ProgressDialog(getContext());
         mServer = ServerManager.getInstance(getContext());
@@ -132,12 +142,12 @@ public class EventSettingFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_event_setting, container, false);
         init(view);
 
-        mServerId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_SERVER_ID, -1);
-        if(mServerId > 0)
-        {
-            showProgress(getActivity(), true);
-            mServer.getServer(mServerCallBack, mServerId);
-        }
+//        mServerId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_SERVER_ID, -1);
+//        if(mServerId > 0)
+//        {
+//            showProgress(getActivity(), true);
+//            mServer.getServer(mServerCallBack, mServerId);
+//        }
 
         return view;
     }
@@ -189,20 +199,20 @@ public class EventSettingFragment extends Fragment {
         mTextConfirm = view.findViewById(R.id.text_event_setting_confirm);
         mTextConfirm.setOnClickListener(mOnClickListener);
 
-        MainActivity activity = (MainActivity)getActivity();
-        mStrDefault = activity.mStrDefault;
-        mStrHome1 = activity.mStrHome1;
-        mStrHome2 = activity.mStrHome2;
-        mStrAway1 = activity.mStrAway1;
-        mStrAway2 = activity.mStrAway2;
-        mStrDefaultImg = activity.mStrDefaultImg;
-        mStrHomeImg = activity.mStrHomeImg;
-        mStrAwayImg = activity.mStrAwayImg;
+        mStrDefault = mainActivity.mStrDefault;
+        mStrHome1 = mainActivity.mStrHome1;
+        mStrHome2 = mainActivity.mStrHome2;
+        mStrAway1 = mainActivity.mStrAway1;
+        mStrAway2 = mainActivity.mStrAway2;
+        mStrDefaultImg = mainActivity.mStrDefaultImg;
+        mStrHomeImg = mainActivity.mStrHomeImg;
+        mStrAwayImg = mainActivity.mStrAwayImg;
     }
 
     @Override
     public void onResume() {
         super.onResume();
+
         if(mStrDefault != null)
             mTextDefaultLocal.setText(getFileNameFromUri(mStrDefault));
         if(mStrHome1 != null)
@@ -224,109 +234,196 @@ public class EventSettingFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        MainActivity activity = (MainActivity)getActivity();
 
-        activity.mStrDefault = mStrDefault;
-        activity.mStrHome1 = mStrHome1;
-        activity.mStrHome2 = mStrHome2;
-        activity.mStrAway1 = mStrAway1;
-        activity.mStrAway2 = mStrAway2;
-        activity.mStrDefaultImg = mStrDefaultImg;
-        activity.mStrHomeImg = mStrHomeImg;
-        activity.mStrAwayImg = mStrAwayImg;
-
+        mainActivity.mStrDefault = mStrDefault;
+        mainActivity.mStrHome1 = mStrHome1;
+        mainActivity.mStrHome2 = mStrHome2;
+        mainActivity.mStrAway1 = mStrAway1;
+        mainActivity.mStrAway2 = mStrAway2;
+        mainActivity.mStrDefaultImg = mStrDefaultImg;
+        mainActivity.mStrHomeImg = mStrHomeImg;
+        mainActivity.mStrAwayImg = mStrAwayImg;
     }
 
-    private void initData(StadiumServer stadiumServer)
+//    private void initData(StadiumServer stadiumServer)
+//    {
+//        if(stadiumServer.getDefaultMusic() != null)
+//        {
+//            if(stadiumServer.getDefaultMusic().startsWith("http"))
+//            {
+//                mEditDefaultMedia.setText(stadiumServer.getDefaultMusic());
+//                mRadioDefault.check(R.id.radio_default_media);
+//            }
+//            else
+//            {
+//                mStrDefault = stadiumServer.getDefaultMusic();
+//                mTextDefaultLocal.setText(getFileNameFromUri(mStrDefault));
+//                mRadioDefault.check(R.id.radio_default_local);
+//            }
+//
+//        }
+//        if(stadiumServer.getHomeMusic1() != null)
+//        {
+//            if(stadiumServer.getHomeMusic1().startsWith("http"))
+//            {
+//                mEditHomeMedia01.setText(stadiumServer.getHomeMusic1());
+//                mRadioHome1.check(R.id.radio_home_media_1);
+//            }
+//            else
+//            {
+//                mStrHome1 = stadiumServer.getHomeMusic1();
+//                mTextHomeLocal01.setText(getFileNameFromUri(mStrHome1));
+//                mRadioHome1.check(R.id.radio_home_local_1);
+//            }
+//        }
+//        if(stadiumServer.getHomeMusic2() != null)
+//        {
+//            if(stadiumServer.getHomeMusic2().startsWith("http"))
+//            {
+//                mEditHomeMedia02.setText(stadiumServer.getHomeMusic2());
+//                mRadioHome2.check(R.id.radio_home_media_2);
+//            }
+//            else
+//            {
+//                mStrHome2 = stadiumServer.getHomeMusic2();
+//                mTextHomeLocal02.setText(getFileNameFromUri(mStrHome2));
+//                mRadioHome2.check(R.id.radio_home_local_2);
+//            }
+//        }
+//        if(stadiumServer.getAwayMusic1() != null)
+//        {
+//            if(stadiumServer.getAwayMusic1().startsWith("http"))
+//            {
+//                mEditAwayMedia01.setText(stadiumServer.getAwayMusic1());
+//                mRadioAway1.check(R.id.radio_away_media_1);
+//            }
+//            else
+//            {
+//                mStrAway1 = stadiumServer.getAwayMusic1();
+//                mTextAwayLocal01.setText(getFileNameFromUri(mStrAway1));
+//                mRadioAway1.check(R.id.radio_away_media_1);
+//            }
+//        }
+//        if(stadiumServer.getAwayMusic2() != null)
+//        {
+//            if(stadiumServer.getAwayMusic2().startsWith("http"))
+//            {
+//                mEditAwayMedia02.setText(stadiumServer.getAwayMusic2());
+//                mRadioAway2.check(R.id.radio_away_media_2);
+//            }
+//            else
+//            {
+//                mStrAway2 = stadiumServer.getAwayMusic2();
+//                mTextAwayLocal02.setText(getFileNameFromUri(mStrAway2));
+//                mRadioAway2.check(R.id.radio_away_media_2);
+//            }
+//        }
+//        if(stadiumServer.getDefaultImage() != null)
+//        {
+//            mStrDefaultImg = stadiumServer.getDefaultImage();
+//            mTextEventDefaultImg.setText(getFileNameFromUri(mStrDefaultImg));
+//        }
+//        if(stadiumServer.getHomeImage() != null)
+//        {
+//            mStrHomeImg = stadiumServer.getHomeImage();
+//            mTextEventHomeImg.setText(getFileNameFromUri(mStrHomeImg));
+//        }
+//        if(stadiumServer.getAwayImage() != null)
+//        {
+//            mStrAwayImg = stadiumServer.getAwayImage();
+//            mTextEventAwayImg.setText(getFileNameFromUri(mStrAwayImg));
+//        }
+//    }
+
+    public void updateMediaData()
     {
-        if(stadiumServer.getDefaultMusic() != null)
+        mStrDefault = mainActivity.mStrDefault;
+        mStrHome1 = mainActivity.mStrHome1;
+        mStrHome2 = mainActivity.mStrHome2;
+        mStrAway1 = mainActivity.mStrAway1;
+        mStrAway2 = mainActivity.mStrAway2;
+        mStrDefaultImg = mainActivity.mStrDefaultImg;
+        mStrHomeImg = mainActivity.mStrHomeImg;
+        mStrAwayImg = mainActivity.mStrAwayImg;
+
+        if(mainActivity.mStrDefault != null)
         {
-            if(stadiumServer.getDefaultMusic().startsWith("http"))
+            if(mStrDefault.startsWith("http"))
             {
-                mEditDefaultMedia.setText(stadiumServer.getDefaultMusic());
+                mEditDefaultMedia.setText(mStrDefault);
                 mRadioDefault.check(R.id.radio_default_media);
             }
             else
             {
-                mStrDefault = stadiumServer.getDefaultMusic();
                 mTextDefaultLocal.setText(getFileNameFromUri(mStrDefault));
                 mRadioDefault.check(R.id.radio_default_local);
             }
 
         }
-        if(stadiumServer.getHomeMusic1() != null)
+        if(mStrHome1 != null)
         {
-            if(stadiumServer.getHomeMusic1().startsWith("http"))
+            if(mStrHome1.startsWith("http"))
             {
-                mEditHomeMedia01.setText(stadiumServer.getHomeMusic1());
+                mEditHomeMedia01.setText(mStrHome1);
                 mRadioHome1.check(R.id.radio_home_media_1);
             }
             else
             {
-                mStrHome1 = stadiumServer.getHomeMusic1();
                 mTextHomeLocal01.setText(getFileNameFromUri(mStrHome1));
                 mRadioHome1.check(R.id.radio_home_local_1);
             }
         }
-        if(stadiumServer.getHomeMusic2() != null)
+        if(mStrHome2 != null)
         {
-            if(stadiumServer.getHomeMusic2().startsWith("http"))
+            if(mStrHome2.startsWith("http"))
             {
-                mEditHomeMedia02.setText(stadiumServer.getHomeMusic2());
+                mEditHomeMedia02.setText(mStrHome2);
                 mRadioHome2.check(R.id.radio_home_media_2);
             }
             else
             {
-                mStrHome2 = stadiumServer.getHomeMusic2();
                 mTextHomeLocal02.setText(getFileNameFromUri(mStrHome2));
                 mRadioHome2.check(R.id.radio_home_local_2);
             }
         }
-        if(stadiumServer.getAwayMusic1() != null)
+        if(mStrAway1 != null)
         {
-            if(stadiumServer.getAwayMusic1().startsWith("http"))
+            if(mStrAway1.startsWith("http"))
             {
-                mEditAwayMedia01.setText(stadiumServer.getAwayMusic1());
+                mEditAwayMedia01.setText(mStrAway1);
                 mRadioAway1.check(R.id.radio_away_media_1);
             }
             else
             {
-                mStrAway1 = stadiumServer.getAwayMusic1();
                 mTextAwayLocal01.setText(getFileNameFromUri(mStrAway1));
                 mRadioAway1.check(R.id.radio_away_media_1);
             }
         }
-        if(stadiumServer.getAwayMusic2() != null)
+        if(mStrAway2 != null)
         {
-            if(stadiumServer.getAwayMusic2().startsWith("http"))
+            if(mStrAway2.startsWith("http"))
             {
-                mEditAwayMedia02.setText(stadiumServer.getAwayMusic2());
+                mEditAwayMedia02.setText(mStrAway2);
                 mRadioAway2.check(R.id.radio_away_media_2);
             }
             else
             {
-                mStrAway2 = stadiumServer.getAwayMusic2();
                 mTextAwayLocal02.setText(getFileNameFromUri(mStrAway2));
                 mRadioAway2.check(R.id.radio_away_media_2);
             }
         }
-        if(stadiumServer.getDefaultImage() != null)
+        if(mStrDefaultImg != null)
         {
-            mStrDefaultImg = stadiumServer.getDefaultImage();
             mTextEventDefaultImg.setText(getFileNameFromUri(mStrDefaultImg));
         }
-        if(stadiumServer.getHomeImage() != null)
+        if(mStrHomeImg != null)
         {
-            mStrHomeImg = stadiumServer.getHomeImage();
             mTextEventHomeImg.setText(getFileNameFromUri(mStrHomeImg));
         }
-        if(stadiumServer.getAwayImage() != null)
+        if(mStrAwayImg != null)
         {
-            mStrAwayImg = stadiumServer.getAwayImage();
             mTextEventAwayImg.setText(getFileNameFromUri(mStrAwayImg));
         }
-
-
     }
 
     private void openFileDialog(int reqCode, String type)
@@ -430,54 +527,56 @@ public class EventSettingFragment extends Fragment {
 
     private void updateServer(int serverId)
     {
-        StadiumServer stadiumServer = new StadiumServer();
-        stadiumServer.setId(serverId);
+        Entertainment entertainment = new Entertainment();
+        entertainment.setSsaid(mainActivity.getSSAID());
+        entertainment.setServerId(serverId);
         if(mRadioDefault.getCheckedRadioButtonId() == R.id.radio_default_media)
-            stadiumServer.setDefaultMusic(mEditDefaultMedia.getText().toString());
+            entertainment.setDefaultMusic(mEditDefaultMedia.getText().toString());
         else
-            stadiumServer.setDefaultMusic(mStrDefault);
+            entertainment.setDefaultMusic(mStrDefault);
 
         if(mRadioHome1.getCheckedRadioButtonId() == R.id.radio_home_media_1)
-            stadiumServer.setHomeMusic1(mEditHomeMedia01.getText().toString());
+            entertainment.setHomeMusic1(mEditHomeMedia01.getText().toString());
         else
-            stadiumServer.setHomeMusic1(mStrHome1);
+            entertainment.setHomeMusic1(mStrHome1);
 
         if(mRadioHome2.getCheckedRadioButtonId() == R.id.radio_home_media_2)
-            stadiumServer.setHomeMusic2(mEditHomeMedia02.getText().toString());
+            entertainment.setHomeMusic2(mEditHomeMedia02.getText().toString());
         else
-            stadiumServer.setHomeMusic2(mStrHome2);
+            entertainment.setHomeMusic2(mStrHome2);
 
         if(mRadioAway1.getCheckedRadioButtonId() == R.id.radio_away_media_1)
-            stadiumServer.setAwayMusic1(mEditAwayMedia01.getText().toString());
+            entertainment.setAwayMusic1(mEditAwayMedia01.getText().toString());
         else
-            stadiumServer.setAwayMusic1(mStrAway1);
+            entertainment.setAwayMusic1(mStrAway1);
 
         if(mRadioAway2.getCheckedRadioButtonId() == R.id.radio_away_media_2)
-            stadiumServer.setAwayMusic2(mEditAwayMedia02.getText().toString());
+            entertainment.setAwayMusic2(mEditAwayMedia02.getText().toString());
         else
-            stadiumServer.setAwayMusic2(mStrAway2);
+            entertainment.setAwayMusic2(mStrAway2);
 
-        if(mStrDefaultImg.startsWith("content"))
-            stadiumServer.setDefaultImage(mStrDefaultImg);
-        if(mStrHomeImg.startsWith("content"))
-            stadiumServer.setHomeImage(mStrHomeImg);
-        if(mStrAwayImg.startsWith("content"))
-            stadiumServer.setAwayImage(mStrAwayImg);
+        if(mStrDefaultImg!= null && mStrDefaultImg.startsWith("content"))
+            entertainment.setDefaultImage(mStrDefaultImg);
+        if(mStrHomeImg != null && mStrHomeImg.startsWith("content"))
+            entertainment.setHomeImage(mStrHomeImg);
+        if(mStrAwayImg != null && mStrAwayImg.startsWith("content"))
+            entertainment.setAwayImage(mStrAwayImg);
 
         showProgress(getActivity(), true);
-        mServer.serverUpdate(mServerUpdateCallBack, stadiumServer);
+
+        mServer.serverUpdate(mServerUpdateCallBack, entertainment);
     }
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if(v.getId() == R.id.text_event_setting_confirm)
             {
-                if(mServerId < 1)
+                if(mainActivity.mServerId < 1)
                 {
                     Toast.makeText(getContext(), "서버를 선택해 주세요.", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                updateServer(mServerId);
+                updateServer(mainActivity.mServerId);
             }
             else if(v.getId() == R.id.text_default_local || v.getId() == R.id.text_home_local_1 || v.getId() == R.id.text_home_local_2
                 || v.getId() == R.id.text_away_local_1 || v.getId() == R.id.text_away_local_2 )
@@ -533,8 +632,14 @@ public class EventSettingFragment extends Fragment {
         {
             if (response.isSuccessful())
             {
-                //RunEvent runEvent = response.body().getData();
-
+                mainActivity.mStrDefault = mStrDefault;
+                mainActivity.mStrHome1 = mStrHome1;
+                mainActivity.mStrHome2 = mStrHome2;
+                mainActivity.mStrAway1 = mStrAway1;
+                mainActivity.mStrAway2 = mStrAway2;
+                mainActivity.mStrDefaultImg = mStrDefaultImg;
+                mainActivity.mStrHomeImg = mStrHomeImg;
+                mainActivity.mStrAwayImg = mStrAwayImg;
             }
             else
             {
@@ -544,23 +649,5 @@ public class EventSettingFragment extends Fragment {
         }
     };
 
-    private SECallBack<StadiumServerResult> mServerCallBack = new SECallBack<StadiumServerResult>()
-    {
-        @Override
-        public void onResponseResult(Response<StadiumServerResult> response)
-        {
-            if (response.isSuccessful())
-            {
-                //StadiumServer stadiumServer = response.body().getData();
-
-                ArrayList<StadiumServer>  serverArrayList = response.body().getData();
-                initData(serverArrayList.get(0));
-            }
-            else
-            {
-                // no event
-            }
-            showProgress(getActivity(), false);
-        }
-    };
+  
 }

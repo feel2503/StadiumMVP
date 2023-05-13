@@ -4,9 +4,10 @@ import android.content.Context;
 
 import java.util.concurrent.TimeUnit;
 
+import kr.co.thiscat.stadiumampsetting.server.entity.Entertainment;
+import kr.co.thiscat.stadiumampsetting.server.entity.EventInfoResult;
 import kr.co.thiscat.stadiumampsetting.server.entity.ResultMsg;
 import kr.co.thiscat.stadiumampsetting.server.entity.RunEventResult;
-import kr.co.thiscat.stadiumampsetting.server.entity.StadiumServer;
 import kr.co.thiscat.stadiumampsetting.server.entity.StadiumServerResult;
 import kr.co.thiscat.stadiumampsetting.server.entity.StartEvent;
 import okhttp3.OkHttpClient;
@@ -15,8 +16,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ServerManager {
-    private String BASE_URL = "http://223.130.134.43/";
-//    private String BASE_URL = "http://192.168.123.195/";     // hanse
+//    private String BASE_URL = "http://223.130.134.43/";
+    private String BASE_URL = "http://192.168.123.195/";     // hanse
     public static int CONNECTION_TIMEOUT = 5000;
     public static int READ_TIMEOUT = 5000;
     public static int WRITE_TIMEOUT = 5000;
@@ -79,9 +80,15 @@ public class ServerManager {
         call.enqueue(callBack);
     }
 
-    public void serverUpdate(SECallBack<ResultMsg> callBack, StadiumServer body)
+    public void serverUpdate(SECallBack<ResultMsg> callBack, Entertainment body)
     {
         Call<ResultMsg> call = mServerInterface.serverUpdate(body);
+        call.enqueue(callBack);
+    }
+
+    public void getEventInfo(SECallBack<EventInfoResult> callBack, long serverId, String ssaid)
+    {
+        Call<EventInfoResult> call = mServerInterface.getEventInfo(serverId, ssaid);
         call.enqueue(callBack);
     }
 

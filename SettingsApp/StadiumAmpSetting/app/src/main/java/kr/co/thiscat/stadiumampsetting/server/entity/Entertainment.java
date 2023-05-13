@@ -3,19 +3,23 @@ package kr.co.thiscat.stadiumampsetting.server.entity;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class StartEvent
+public class Entertainment
 {
     @Expose
-    @SerializedName("stadiumServerId")
-    private long stadiumServerId;
+    @SerializedName("id")
+    private int id;
+    private long serverId;
+    @Expose
+    @SerializedName("ssaid")
+    private String ssaid;
 
     @Expose
-    @SerializedName("voteTime")
-    private int voteTime;
+    @SerializedName("regDateTime")
+    private String regDateTime;
 
     @Expose
-    @SerializedName("resultTime")
-    private int resultTime;
+    @SerializedName("edtDateTime")
+    private String edtDateTime;
 
     String defaultMusic;
     String homeMusic1;
@@ -26,30 +30,36 @@ public class StartEvent
     String homeImage;
     String awayImage;
 
-    String ssaid;
-
-    public long getStadiumServerId() {
-        return stadiumServerId;
+    public int getId() {
+        return id;
     }
 
-    public void setStadiumServerId(long stadiumServerId) {
-        this.stadiumServerId = stadiumServerId;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public int getVoteTime() {
-        return voteTime;
+    public String getSsaid() {
+        return ssaid;
     }
 
-    public void setVoteTime(int voteTime) {
-        this.voteTime = voteTime;
+    public void setSsaid(String ssaid) {
+        this.ssaid = ssaid;
     }
 
-    public int getResultTime() {
-        return resultTime;
+    public String getRegDateTime() {
+        return regDateTime;
     }
 
-    public void setResultTime(int resultTime) {
-        this.resultTime = resultTime;
+    public void setRegDateTime(String regDateTime) {
+        this.regDateTime = regDateTime;
+    }
+
+    public String getEdtDateTime() {
+        return edtDateTime;
+    }
+
+    public void setEdtDateTime(String edtDateTime) {
+        this.edtDateTime = edtDateTime;
     }
 
     public String getDefaultMusic() {
@@ -116,11 +126,11 @@ public class StartEvent
         this.awayImage = awayImage;
     }
 
-    public String getSsaid() {
-        return ssaid;
+    public long getServerId() {
+        return serverId;
     }
 
-    public void setSsaid(String ssaid) {
-        this.ssaid = ssaid;
+    public void setServerId(long serverId) {
+        this.serverId = serverId;
     }
 }

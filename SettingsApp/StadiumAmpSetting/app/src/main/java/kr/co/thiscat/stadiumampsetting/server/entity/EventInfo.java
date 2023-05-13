@@ -3,11 +3,17 @@ package kr.co.thiscat.stadiumampsetting.server.entity;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class StartEvent
+public class EventInfo
 {
     @Expose
-    @SerializedName("stadiumServerId")
+    @SerializedName("id")
+    private long id;
+
+    @Expose
+    @SerializedName("stadiumserver")
     private long stadiumServerId;
+
+    private String serverName;
 
     @Expose
     @SerializedName("voteTime")
@@ -17,16 +23,38 @@ public class StartEvent
     @SerializedName("resultTime")
     private int resultTime;
 
-    String defaultMusic;
-    String homeMusic1;
-    String homeMusic2;
-    String awayMusic1;
-    String awayMusic2;
-    String defaultImage;
-    String homeImage;
-    String awayImage;
+    @Expose
+    @SerializedName("homeCount")
+    private int homeCount;
 
-    String ssaid;
+    @Expose
+    @SerializedName("awayCount")
+    private int awayCount;
+
+    @Expose
+    @SerializedName("eventState")
+    private String eventState;
+
+    @Expose
+    @SerializedName("startDateTime")
+    private String startDateTime;
+
+    private String defaultMusic;
+    private String homeMusic1;
+    private String homeMusic2;
+    private String awayMusic1;
+    private String awayMusic2;
+    private String defaultImage;
+    private String homeImage;
+    private String awayImage;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public long getStadiumServerId() {
         return stadiumServerId;
@@ -50,6 +78,47 @@ public class StartEvent
 
     public void setResultTime(int resultTime) {
         this.resultTime = resultTime;
+    }
+
+    public int getHomeCount() {
+        return homeCount;
+    }
+
+    public void setHomeCount(int homeCount) {
+        this.homeCount = homeCount;
+    }
+
+    public int getAwayCount() {
+        return awayCount;
+    }
+
+    public void setAwayCount(int awayCount) {
+        this.awayCount = awayCount;
+    }
+
+    public String getEventState() {
+        return eventState;
+    }
+
+    public void setEventState(String eventState) {
+        this.eventState = eventState;
+    }
+
+    public String getStartDateTime() {
+        return startDateTime;
+    }
+
+    public void setStartDateTime(String startDateTime) {
+        this.startDateTime = startDateTime;
+    }
+
+
+    public String getServerName() {
+        return serverName;
+    }
+
+    public void setServerName(String serverName) {
+        this.serverName = serverName;
     }
 
     public String getDefaultMusic() {
@@ -114,13 +183,5 @@ public class StartEvent
 
     public void setAwayImage(String awayImage) {
         this.awayImage = awayImage;
-    }
-
-    public String getSsaid() {
-        return ssaid;
-    }
-
-    public void setSsaid(String ssaid) {
-        this.ssaid = ssaid;
     }
 }
