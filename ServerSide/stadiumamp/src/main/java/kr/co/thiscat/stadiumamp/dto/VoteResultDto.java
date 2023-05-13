@@ -19,5 +19,7 @@ import java.time.LocalDateTime;
 public class VoteResultDto {
     private String home;
     private String away;
+    int homeCount;
+    int awayCount;
 
 }

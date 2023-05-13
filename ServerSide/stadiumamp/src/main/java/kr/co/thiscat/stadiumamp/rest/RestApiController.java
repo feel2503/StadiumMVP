@@ -2,8 +2,10 @@ package kr.co.thiscat.stadiumamp.rest;
 
 import io.swagger.annotations.ApiOperation;
 import kr.co.thiscat.stadiumamp.dto.*;
+import kr.co.thiscat.stadiumamp.entity.Entertainment;
 import kr.co.thiscat.stadiumamp.entity.Runevent;
 import kr.co.thiscat.stadiumamp.entity.Stadiumserver;
+import kr.co.thiscat.stadiumamp.entity.repository.EntertainmentRepository;
 import kr.co.thiscat.stadiumamp.entity.repository.RunEventRepository;
 import kr.co.thiscat.stadiumamp.entity.repository.StadiumServerRepository;
 import kr.co.thiscat.stadiumamp.system.common.ApiResultWithValue;
@@ -25,6 +27,8 @@ public class RestApiController extends BaseController{
     StadiumServerRepository stadiumServerRepository;
     @Autowired
     RunEventRepository runEventRepository;
+    @Autowired
+    EntertainmentRepository entertainmentRepository;
 
     @ApiOperation(value = "Add Event Server")
     @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -39,20 +43,57 @@ public class RestApiController extends BaseController{
     @ApiOperation(value = "Add Event Server")
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @PostMapping(value = "/v1/server/update", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ApiResultWithValue> updateEvent(@RequestBody StadiumServerDto stadiumServerDto) throws Exception {
-        Stadiumserver stadiumserver = stadiumServerRepository.findById(stadiumServerDto.getId()).orElseThrow(EntityNotFoundException::new);
-        stadiumserver.setAwayImage(stadiumServerDto.getAwayImage());
-        stadiumserver.setAwayMusic1(stadiumServerDto.getAwayMusic1());
-        stadiumserver.setAwayMusic2(stadiumServerDto.getAwayMusic2());
-        stadiumserver.setHomeImage(stadiumServerDto.getHomeImage());
-        stadiumserver.setHomeMusic1(stadiumServerDto.getHomeMusic1());
-        stadiumserver.setHomeMusic2(stadiumServerDto.getHomeMusic2());
-        stadiumserver.setDefaultImage(stadiumServerDto.getDefaultImage());
-        stadiumserver.setDefaultMusic(stadiumServerDto.getDefaultMusic());
+    public ResponseEntity<ApiResultWithValue> updateEvent(@RequestBody EntertainmentDto entertainmentDto) throws Exception {
+        Stadiumserver stadiumserver = stadiumServerRepository.findById(entertainmentDto.getServerId()).orElseThrow(EntityNotFoundException::new);
+        Entertainment entertainment = entertainmentRepository.findByServerAndSsaid(entertainmentDto.getSsaid(), entertainmentDto.getServerId()).orElse(new Entertainment());
 
-        stadiumServerRepository.save(stadiumserver);
+        entertainment.setStadiumserver(stadiumserver);
+        entertainment.setSsaid(entertainmentDto.getSsaid());
+        entertainment.setAwayImage(entertainmentDto.getAwayImage());
+        entertainment.setAwayMusic1(entertainmentDto.getAwayMusic1());
+        entertainment.setAwayMusic2(entertainmentDto.getAwayMusic2());
+        entertainment.setHomeImage(entertainmentDto.getHomeImage());
+        entertainment.setHomeMusic1(entertainmentDto.getHomeMusic1());
+        entertainment.setHomeMusic2(entertainmentDto.getHomeMusic2());
+        entertainment.setDefaultImage(entertainmentDto.getDefaultImage());
+        entertainment.setDefaultMusic(entertainmentDto.getDefaultMusic());
+
+        entertainmentRepository.save(entertainment);
         return getResponseEntity("success", "success", HttpStatus.OK);
     }
+
+    @ApiOperation(value = "Last Event")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @GetMapping(value = "/v1/event/event-info", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultWithValue> getEventInfo(@RequestParam Long serverId, String ssaid) throws Exception {
+        Stadiumserver stadiumserver = stadiumServerRepository.findById(serverId).orElseThrow(EntityNotFoundException::new);
+        Runevent runevent = runEventRepository.findFirstByStadiumserverOrderByIdDesc(stadiumserver).orElseThrow(EntityNotFoundException::new);
+        Entertainment entertainment = entertainmentRepository.findByServerAndSsaid(ssaid, serverId).orElse(null);
+
+        if(runevent != null)
+        {
+            EventInfoDto eventInfoDto = EventInfoDto.builder()
+                    .stadiumServerId(serverId)
+                    .voteTime(runevent.getVoteTime())
+                    .resultTime(runevent.getResultTime())
+                    .homeCount(runevent.getHomeCount())
+                    .awayCount(runevent.getAwayCount())
+                    .eventState(runevent.getEventState())
+                    .startDateTime(runevent.getStartDateTime())
+                    .defaultMusic(entertainment.getDefaultMusic())
+                    .homeMusic1(entertainment.getHomeMusic1())
+                    .homeMusic2(entertainment.getHomeMusic2())
+                    .awayMusic1(entertainment.getAwayMusic1())
+                    .awayMusic2(entertainment.getAwayMusic2())
+                    .defaultImage(entertainment.getDefaultImage())
+                    .homeImage(entertainment.getHomeImage())
+                    .awayImage(entertainment.getAwayImage())
+                    .build();
+            return getResponseEntity(eventInfoDto, "success", HttpStatus.OK);
+        }
+        return getResponseEntity(null, "success", HttpStatus.OK);
+    }
+
 
     @ApiOperation(value = "Server info")
     @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -90,6 +131,7 @@ public class RestApiController extends BaseController{
         runevent.getStadiumserver().getName();
         EventNowResultDto result = EventNowResultDto.builder()
                 .serverName(runevent.getStadiumserver().getName())
+                .eventState(runevent.getEventState())
                 .homeCount(runevent.getHomeCount())
                 .awayCount(runevent.getAwayCount())
                 .build();
@@ -173,15 +215,30 @@ public class RestApiController extends BaseController{
         Stadiumserver stadiumserver = stadiumServerRepository.findById(runEvent.getStadiumServerId())
                 .orElseThrow(() -> new Exception("Event Server Not found"));
 
-        stadiumserver.setDefaultMusic(runEvent.getDefaultMusic());
-        stadiumserver.setHomeMusic1(runEvent.getHomeMusic1());
-        stadiumserver.setHomeMusic2(runEvent.getHomeMusic2());
-        stadiumserver.setAwayMusic1(runEvent.getAwayMusic1());
-        stadiumserver.setAwayMusic2(runEvent.getAwayMusic2());
-        stadiumserver.setDefaultImage(runEvent.getDefaultImage());
-        stadiumserver.setHomeImage(runEvent.getHomeImage());
-        stadiumserver.setAwayImage(runEvent.getAwayImage());
-        stadiumServerRepository.save(stadiumserver);
+        Entertainment entertainment = entertainmentRepository.findByServerAndSsaid(runEvent.getSsaid(), runEvent.getStadiumServerId()).orElse(new Entertainment());
+
+        entertainment.setStadiumserver(stadiumserver);
+        entertainment.setSsaid(runEvent.getSsaid());
+        entertainment.setAwayImage(runEvent.getAwayImage());
+        entertainment.setAwayMusic1(runEvent.getAwayMusic1());
+        entertainment.setAwayMusic2(runEvent.getAwayMusic2());
+        entertainment.setHomeImage(runEvent.getHomeImage());
+        entertainment.setHomeMusic1(runEvent.getHomeMusic1());
+        entertainment.setHomeMusic2(runEvent.getHomeMusic2());
+        entertainment.setDefaultImage(runEvent.getDefaultImage());
+        entertainment.setDefaultMusic(runEvent.getDefaultMusic());
+
+        entertainmentRepository.save(entertainment);
+
+//        stadiumserver.setDefaultMusic(runEvent.getDefaultMusic());
+//        stadiumserver.setHomeMusic1(runEvent.getHomeMusic1());
+//        stadiumserver.setHomeMusic2(runEvent.getHomeMusic2());
+//        stadiumserver.setAwayMusic1(runEvent.getAwayMusic1());
+//        stadiumserver.setAwayMusic2(runEvent.getAwayMusic2());
+//        stadiumserver.setDefaultImage(runEvent.getDefaultImage());
+//        stadiumserver.setHomeImage(runEvent.getHomeImage());
+//        stadiumserver.setAwayImage(runEvent.getAwayImage());
+//        stadiumServerRepository.save(stadiumserver);
 
         LocalDateTime startDateTime = LocalDateTime.now();
         Runevent runevent = Runevent.builder()
@@ -287,7 +344,7 @@ public class RestApiController extends BaseController{
         LocalDateTime nowTime = LocalDateTime.now();
         if(nowTime.isAfter(endTime))
         {
-            VoteResultDto voteResultDto = new VoteResultDto("50%", "50%");
+            VoteResultDto voteResultDto = new VoteResultDto("50%", "50%", 0, 0);
             return getResponseEntity(voteResultDto, "success", HttpStatus.OK);
         }
 
@@ -366,7 +423,7 @@ public class RestApiController extends BaseController{
         int total = homeCount + awayCount;
         int home = (homeCount*100)/ total;
         int away = (awayCount*100) / total;
-        return new VoteResultDto(home+"%", away+"%");
+        return new VoteResultDto(home+"%", away+"%", homeCount, awayCount);
     }
     /////////// timer task
 

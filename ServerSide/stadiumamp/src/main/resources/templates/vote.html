@@ -21,8 +21,8 @@
         </div>
 
         <div class="result_text">
-            <div class="home_text" >홈팀</div>
-            <div class="away_text">원정팀</div>
+            <div class="home_text" id="home_text">홈팀 [[${event.homeCount}]]</div>
+            <div class="away_text" id="away_text">[[${event.awayCount}]] 원정팀</div>
         </div>
 
         <div class="result_graph">
@@ -75,27 +75,6 @@
         <input type="hidden" id="startSec" th:value="${sec}" >
         <input type="hidden" id="startIdVal" th:value="${server.id}" >
 
-<!--  timer      -->
-<!--        <div id="wrapper">-->
-<!--            <form>-->
-<!--                <label><input type="hidden" id="startMin" />-->
-<!--                <label><input type="text" id="startSec" />초</label>-->
-<!--                <input-->
-<!--                        type="button"-->
-<!--                        value="START"-->
-<!--                        class="start-btn"-->
-<!--                        onclick="startTimer()"                 />-->
-<!--                <input-->
-<!--                        type="button"-->
-<!--                        value="RESET"-->
-<!--                        class="reset-btn"-->
-<!--                        onclick="resetTimer()" // 타이머 리셋 함수-->
-<!--                />-->
-<!--            </form>-->
-<!--            <hr />-->
-<!--            <div id="display" class="remaining"></div> // 진행되는 타이머 시간을 보여주는 곳-->
-<!--        </div>-->
-<!--  timer      -->
 
     </div>
 
@@ -108,39 +87,6 @@
     <script th:src="@{js/timer.js}"></script>
 
     <script>
-        // let min, sec;
-        // let timer;
-        // function startTimer() {
-        //     min = document.querySelector("#startMin").value;
-        //     if (min === "") min = 0;
-        //     sec = document.querySelector("#startSec").value;
-        //     if (sec === "") sec = 0;
-        //     timer = setInterval(countTimer, 1000);
-        // }
-        // function countTimer() {
-        //     if (sec != 0) {
-        //         sec--;
-        //         document.querySelector("#display").innerText =
-        //             min + "분" + sec + "초 남았습니다.";
-        //     } else {
-        //         if (min != 0) {
-        //             min--;
-        //             sec = 59;
-        //         } else {
-        //             clearTimer(timer, "이벤트 종료");
-        //         }
-        //     }
-        // }
-        // function resetTimer() { // 리셋 버튼 연결
-        //     clearTimer(timer, "리셋 종료");
-        // }
-        // function clearTimer(t, text) {
-        //     clearInterval(t);
-        //     document.getElementById("display").innerText = text;
-        //     document.getElementById("startMin").value = "";
-        //     document.getElementById("startSec").value = "";
-        // }
-
 
         /// vote
         function vote(teamType, eventId, eventType)
@@ -173,6 +119,10 @@
                         awayGraph.style.borderTopLeftRadius="0px";
                         awayGraph.style.borderBottomLeftRadius="0px";
                     }
+
+                    document.getElementById("home_text").innerText = "홈팀 "+res.data.homeCount;
+                    document.getElementById("away_text").innerText = ""+res.data.awayCount+" 원정팀";
+
                 } else {
 
                 }

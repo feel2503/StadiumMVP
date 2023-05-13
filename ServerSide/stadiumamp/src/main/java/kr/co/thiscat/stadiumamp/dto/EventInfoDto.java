@@ -2,11 +2,12 @@ package kr.co.thiscat.stadiumamp.dto;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import kr.co.thiscat.stadiumamp.entity.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 
 @Data
@@ -15,12 +16,20 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class RunEventStartDto {
+public class EventInfoDto {
+    private Long id;
     private Long stadiumServerId;
-    String ssaid;
 
     Integer voteTime;
     Integer resultTime;
+    Integer homeCount;
+    Integer awayCount;
+    String eventState;
+
+    LocalDateTime startDateTime;
+    LocalDateTime endDateTime;
+
+    String result;
 
     String defaultMusic;
     String homeMusic1;

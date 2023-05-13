@@ -2,7 +2,6 @@ package kr.co.thiscat.stadiumamp.dto;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import kr.co.thiscat.stadiumamp.entity.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,12 +14,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class RunEventStartDto {
-    private Long stadiumServerId;
-    String ssaid;
+public class EntertainmentDto {
+    private Long id;
 
-    Integer voteTime;
-    Integer resultTime;
+    Long serverId;
+    String ssaid;
 
     String defaultMusic;
     String homeMusic1;
@@ -30,4 +28,6 @@ public class RunEventStartDto {
     String defaultImage;
     String homeImage;
     String awayImage;
+
+
 }

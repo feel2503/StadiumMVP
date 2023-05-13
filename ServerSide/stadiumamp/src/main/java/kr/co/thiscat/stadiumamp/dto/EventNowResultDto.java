@@ -20,4 +20,6 @@ public class EventNowResultDto {
     String serverName;
     Integer homeCount;
     Integer awayCount;
+
+    String eventState;
 }
