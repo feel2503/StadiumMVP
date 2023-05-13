@@ -29,11 +29,31 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="이벤트 서버 xxxx 실시간 응원 결과" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:padding="5dp">
+        <TextView
+            android:id="@+id/text_result_home_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:text="홈팀" />
+        <TextView
+            android:id="@+id/text_result_away_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:textColor="@color/black"
+            android:text="원정팀" />
+    </RelativeLayout>
+
     <LinearLayout
         android:id="@+id/linear_score"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp"
         android:orientation="horizontal">
 
         <TextView
@@ -46,7 +66,7 @@
             android:padding="15dp"
             android:textColor="@color/white"
             android:background="@drawable/bg_round_2552d9"
-            android:text="홈팀" />
+            android:text="" />
         <TextView
             android:id="@+id/text_result_away"
             android:layout_weight="50"
@@ -57,7 +77,7 @@
             android:padding="15dp"
             android:textColor="@color/white"
             android:background="@drawable/bg_round_f23827"
-            android:text="원정팀" />
+            android:text="" />
     </LinearLayout>
 
     <LinearLayout

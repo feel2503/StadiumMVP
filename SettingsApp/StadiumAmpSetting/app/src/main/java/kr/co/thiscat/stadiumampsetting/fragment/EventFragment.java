@@ -57,6 +57,9 @@ public class EventFragment extends Fragment {
     private TextView mTextAway;
     private TextView mTextTime;
 
+    private TextView mTextHomeCount;
+    private TextView mTextAwayCount;
+
     private int second;
     private boolean isRunning = false;
 
@@ -120,6 +123,8 @@ public class EventFragment extends Fragment {
         mImgEvent = view.findViewById(R.id.imageView);
         mTextCurrent = view.findViewById(R.id.text_current_server);
 
+        mTextHomeCount = view.findViewById(R.id.text_result_home_count);
+        mTextAwayCount = view.findViewById(R.id.text_result_away_count);
         return view;
     }
 
@@ -303,12 +308,19 @@ public class EventFragment extends Fragment {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-
+                    mTextHome.setText(""+home);
+                    mTextAway.setText(""+away);
+                    int homwVal = home;
+                    int awayVal = away;
+                    if(homwVal == awayVal && homwVal == 0)
+                    {
+                        homwVal = awayVal = 1;
+                    }
                     mTextCurrent.setText("이벤트 서버 "+name+" 실시간 응원 결과");
-                    ViewGroup.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, home);
+                    ViewGroup.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, homwVal);
                     mTextHome.setLayoutParams(params);
 
-                    ViewGroup.LayoutParams params1 = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, away);
+                    ViewGroup.LayoutParams params1 = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, awayVal);
                     mTextAway.setLayoutParams(params1);
 
                     MainActivity activity = (MainActivity)getActivity();
@@ -336,10 +348,10 @@ public class EventFragment extends Fragment {
         try{
             int home = runEvent.getHomeCount();
             int away = runEvent.getAwayCount();
-            if(home == away && home == 0)
-            {
-                home = away = 1;
-            }
+//            if(home == away && home == 0)
+//            {
+//                home = away = 1;
+//            }
             updateScoreValue(runEvent.getServerName(), home, away);
 
             Timer timer = new Timer();
