@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
     private MediaPlayer mMediaPlayer;
     private MediaPlayer mDefaultMediaPlayer;
+    private int psusePos = 0;
 
     private PermissionUtil mPermUtil;
     public static String[] REQUIRED_PERMISSIONS = {
@@ -249,9 +250,32 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void startEventTimer()
+    private void startDefaultMediaPlayer()
     {
+        try{
+            if(mDefaultMediaPlayer == null) {
+                Uri uri = Uri.parse(mStrDefault);
+                if(mDefaultMediaPlayer == null)
+                {
+                    mDefaultMediaPlayer = new MediaPlayer();
+                }
+                mDefaultMediaPlayer.setDataSource(getApplicationContext(), uri);
+                mDefaultMediaPlayer.prepare();
+                mDefaultMediaPlayer.setLooping(true);
+                mDefaultMediaPlayer.start();
+            }else {
+//                if(mDefaultMediaPlayer.isPlaying()){
+//                    mDefaultMediaPlayer.seekTo(psusePos);
+//                    mDefaultMediaPlayer.start();
+//                }
+                mDefaultMediaPlayer.seekTo(psusePos);
+                mDefaultMediaPlayer.start();
+            }
 
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
     private void updateResultTime(String startDate, int voteTime)
     {
@@ -274,22 +298,24 @@ public class MainActivity extends AppCompatActivity {
             }
             else
             {
-                try{
-                    Uri uri = Uri.parse(mStrDefault);
-//                    mDefaultMediaPlayer.setScreenOnWhilePlaying(true);
-//                    mDefaultMediaPlayer.setWakeMode(getApplicationContext(), PowerManager.ON_AFTER_RELEASE);
-                    if(mDefaultMediaPlayer == null)
-                    {
-                        mDefaultMediaPlayer = new MediaPlayer();
-                    }
-                    mDefaultMediaPlayer.setDataSource(getApplicationContext(), uri);
-                    mDefaultMediaPlayer.prepare();
-                    mDefaultMediaPlayer.setLooping(true);
-                    mDefaultMediaPlayer.start();
-                }catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
+//                try{
+//                    Uri uri = Uri.parse(mStrDefault);
+////                    mDefaultMediaPlayer.setScreenOnWhilePlaying(true);
+////                    mDefaultMediaPlayer.setWakeMode(getApplicationContext(), PowerManager.ON_AFTER_RELEASE);
+//                    if(mDefaultMediaPlayer == null)
+//                    {
+//                        mDefaultMediaPlayer = new MediaPlayer();
+//                    }
+//                    mDefaultMediaPlayer.setDataSource(getApplicationContext(), uri);
+//                    mDefaultMediaPlayer.prepare();
+//                    mDefaultMediaPlayer.setLooping(true);
+//                    mDefaultMediaPlayer.start();
+//                }catch (Exception e)
+//                {
+//                    e.printStackTrace();
+//                }
+
+                startDefaultMediaPlayer();
 
                 if(mTimer != null)
                 {
@@ -310,6 +336,9 @@ public class MainActivity extends AppCompatActivity {
                         else {
                             mTimer.cancel();
                             mTimer = null;
+                            if(settingFragment != null){
+                                settingFragment.updateEventState(false);
+                            }
                             //int serverId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_SERVER_ID, -1);
                             Log.d("AAAA", "serverid : " + mServerId);
                             mServer.getLastEvent(mEventStateCallBack, mServerId);
@@ -433,9 +462,12 @@ public class MainActivity extends AppCompatActivity {
                     if(strUri != null && strUri.length() > 0)
                     {
                         if(mDefaultMediaPlayer != null && mDefaultMediaPlayer.isPlaying()){
-                            mDefaultMediaPlayer.stop();
-                            mDefaultMediaPlayer.release();
-                            mDefaultMediaPlayer = null;
+                            psusePos = mDefaultMediaPlayer.getCurrentPosition();
+//                            mDefaultMediaPlayer.stop();
+//                            mDefaultMediaPlayer.release();
+//                            mDefaultMediaPlayer = null;
+                            mDefaultMediaPlayer.pause();
+
                         }
 
                         Uri uri = Uri.parse(strUri);
@@ -451,6 +483,7 @@ public class MainActivity extends AppCompatActivity {
                             public void onCompletion(MediaPlayer mp) {
                                 mMediaPlayer.release();
                                 mMediaPlayer = null;
+                                startDefaultMediaPlayer();
                             }
                         });
                     }

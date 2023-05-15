@@ -2,8 +2,8 @@ plugins {
     id 'com.android.application'
 }
 ext {
-    AppVersionCode = 100003
-    AppVersionName = "0.3"
+    AppVersionCode = 100004
+    AppVersionName = "0.4"
 }
 
 android {

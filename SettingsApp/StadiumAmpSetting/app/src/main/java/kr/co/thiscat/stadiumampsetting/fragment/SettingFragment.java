@@ -207,6 +207,10 @@ public class SettingFragment extends Fragment {
             return -1;
     }
 
+    public void updateEventState(boolean isRun)
+    {
+        setEventBtnState(isRun);
+    }
     private void updateEventState(RunEvent runEvent)
     {
         if(runEvent.getVoteTime() == 3)
@@ -221,8 +225,7 @@ public class SettingFragment extends Fragment {
 
         if(runEvent.getEventState().equalsIgnoreCase("START"))
         {
-            mainActivity.startEventCount();
-
+//            mainActivity.startEventCount();
             setEventBtnState(true);
             try{
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
@@ -326,7 +329,6 @@ public class SettingFragment extends Fragment {
                             .setPositiveButton("확인", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    //mServer.eventStop(mEventStateCallBack, mEventId);
                                     showEventServerSelector();
                                 }
                             })
@@ -468,6 +470,7 @@ public class SettingFragment extends Fragment {
                 RunEvent runEvent = response.body().getData();
                 updateEventState(runEvent);
                 saveEventInfo((int)runEvent.getId());
+                mainActivity.startEventCount();
 
 //                MainActivity activity = (MainActivity) getActivity();
 //                if(activity != null)
