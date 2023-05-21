@@ -64,6 +64,9 @@ public class MainActivity extends AppCompatActivity {
     public String mStrDefaultImg;
     public String mStrHomeImg;
     public String mStrAwayImg;
+    public String mStrWebUrl;
+
+    public boolean mWebViewState = false;
 
     protected ProgressDialog mProgress = null;
 
@@ -402,6 +405,8 @@ public class MainActivity extends AppCompatActivity {
                 mStrDefaultImg = currEventInfo.getDefaultImage();
                 mStrHomeImg = currEventInfo.getHomeImage();
                 mStrAwayImg = currEventInfo.getAwayImage();
+                mStrWebUrl = currEventInfo.getWebUrl();
+
                 eventSettingFragment.updateMediaData();
 
                 updateResultTime(currEventInfo.getStartDateTime(), currEventInfo.getVoteTime());

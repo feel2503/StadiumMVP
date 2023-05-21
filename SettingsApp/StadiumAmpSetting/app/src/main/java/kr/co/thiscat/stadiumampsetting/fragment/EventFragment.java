@@ -11,11 +11,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -64,6 +68,11 @@ public class EventFragment extends Fragment {
     private boolean isRunning = false;
 
     private ImageView mImgEvent;
+
+    private LinearLayout mLinearEvent;
+    private WebView mWebView;
+    private FloatingActionButton mFab;
+
 //    Timer timer;
     private static EventFragment mInstance;
 
@@ -125,7 +134,55 @@ public class EventFragment extends Fragment {
 
         mTextHomeCount = view.findViewById(R.id.text_result_home_count);
         mTextAwayCount = view.findViewById(R.id.text_result_away_count);
+
+        mLinearEvent = view.findViewById(R.id.linear_event);
+        mWebView = view.findViewById(R.id.web_view);
+        initWebView();
+
+        mFab = view.findViewById(R.id.fab_web);
+        mFab.setOnClickListener(mOnClickListener);
+
+        if(mainActivity.mStrWebUrl != null){
+            mFab.setVisibility(View.VISIBLE);
+            mWebView.loadUrl(mainActivity.mStrWebUrl);
+        } else{
+            mFab.setVisibility(View.GONE);
+        }
+
+        if(mainActivity.mWebViewState){
+            mWebView.setVisibility(View.VISIBLE);
+            mLinearEvent.setVisibility(View.GONE);
+
+        }else{
+            mWebView.setVisibility(View.GONE);
+            mLinearEvent.setVisibility(View.VISIBLE);
+        }
+
         return view;
+    }
+
+    private void initWebView()
+    {
+        WebSettings settings = mWebView.getSettings();
+        settings.setJavaScriptEnabled(true);
+        settings.setSupportMultipleWindows(false); // 새창 띄우기 허용 여부
+        settings.setDatabaseEnabled(true); // 데이터베이스 접근 허용 여부
+        settings.setDomStorageEnabled(true); // 로컬저장소 허용 여부
+        settings.setDefaultTextEncodingName("UTF-8"); // encoding 설정
+        settings.setDisplayZoomControls(true); // 돋보기 없애기
+        settings.setJavaScriptCanOpenWindowsAutomatically(false); // 자바스크립트 새창 띄우기(멀티뷰) 허용 여부
+        settings.setLoadWithOverviewMode(true); // 메타태그 허용 여부
+        // 컨텐츠가 웹뷰보다 클 경우 스크린 크기에 맞게 조정
+        settings.setLoadWithOverviewMode(true);
+        settings.setSupportZoom(false); // 화면 줌 허용 여부
+        settings.setAllowFileAccessFromFileURLs(true); // 파일 URL로부터 파일 접근 허용
+        settings.setAllowContentAccess(true); // 컨텐츠 접근 허용
+        settings.setBuiltInZoomControls(false); // 화면 확대 축소 허용 여부
+        settings.setAllowFileAccess(true); // 파일 접근 허용 여부
+        settings.setCacheMode(WebSettings.LOAD_NO_CACHE); // 브라우저 캐시 허용 여부
+
+        mWebView.setWebViewClient(new WebViewClient()); // 클릭시 새창 안뜨게 (알림 및 요청 관련 설정)
+
     }
 
     @Override
@@ -164,6 +221,23 @@ public class EventFragment extends Fragment {
         super.onPause();
 //        timer.cancel();
     }
+
+    private View.OnClickListener mOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(v.getId() == R.id.fab_web){
+                if(mainActivity.mWebViewState){
+                    mainActivity.mWebViewState = false;
+                    mWebView.setVisibility(View.GONE);
+                    mLinearEvent.setVisibility(View.VISIBLE);
+                }else{
+                    mainActivity.mWebViewState = true;
+                    mWebView.setVisibility(View.VISIBLE);
+                    mLinearEvent.setVisibility(View.GONE);
+                }
+            }
+        }
+    };
 
     public void updateTimer()
     {

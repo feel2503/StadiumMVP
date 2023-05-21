@@ -67,6 +67,7 @@ public class EventSettingFragment extends Fragment {
     private TextView mTextEventDefaultImg;
     private TextView mTextEventHomeImg;
     private TextView mTextEventAwayImg;
+    private EditText mEditWebUrl;
 
     private RadioGroup mRadioDefault;
     private RadioGroup mRadioHome1;
@@ -90,6 +91,7 @@ public class EventSettingFragment extends Fragment {
     private String mStrDefaultImg;
     private String mStrHomeImg;
     private String mStrAwayImg;
+    private String mStrWebUrl;
 
     private static EventSettingFragment mInstance;
     private MainActivity mainActivity;
@@ -199,6 +201,8 @@ public class EventSettingFragment extends Fragment {
         mTextConfirm = view.findViewById(R.id.text_event_setting_confirm);
         mTextConfirm.setOnClickListener(mOnClickListener);
 
+        mEditWebUrl = view.findViewById(R.id.edit_web_stat_url);
+
         mStrDefault = mainActivity.mStrDefault;
         mStrHome1 = mainActivity.mStrHome1;
         mStrHome2 = mainActivity.mStrHome2;
@@ -207,6 +211,7 @@ public class EventSettingFragment extends Fragment {
         mStrDefaultImg = mainActivity.mStrDefaultImg;
         mStrHomeImg = mainActivity.mStrHomeImg;
         mStrAwayImg = mainActivity.mStrAwayImg;
+        mStrWebUrl = mainActivity.mStrWebUrl;
     }
 
     @Override
@@ -229,6 +234,8 @@ public class EventSettingFragment extends Fragment {
             mTextEventHomeImg.setText(getFileNameFromUri(mStrHomeImg));
         if(mStrAwayImg != null)
             mTextEventAwayImg.setText(getFileNameFromUri(mStrAwayImg));
+        if(mStrWebUrl != null)
+            mEditWebUrl.setText(mStrWebUrl);
     }
 
     @Override
@@ -243,6 +250,7 @@ public class EventSettingFragment extends Fragment {
         mainActivity.mStrDefaultImg = mStrDefaultImg;
         mainActivity.mStrHomeImg = mStrHomeImg;
         mainActivity.mStrAwayImg = mStrAwayImg;
+        mainActivity.mStrWebUrl = mStrWebUrl;
     }
 
 //    private void initData(StadiumServer stadiumServer)
@@ -345,6 +353,7 @@ public class EventSettingFragment extends Fragment {
         mStrDefaultImg = mainActivity.mStrDefaultImg;
         mStrHomeImg = mainActivity.mStrHomeImg;
         mStrAwayImg = mainActivity.mStrAwayImg;
+        mStrWebUrl = mainActivity.mStrWebUrl;
 
         if(mainActivity.mStrDefault != null)
         {
@@ -423,6 +432,10 @@ public class EventSettingFragment extends Fragment {
         if(mStrAwayImg != null)
         {
             mTextEventAwayImg.setText(getFileNameFromUri(mStrAwayImg));
+        }
+        if(mStrWebUrl != null)
+        {
+            mEditWebUrl.setText(mStrWebUrl);
         }
     }
 
@@ -562,6 +575,14 @@ public class EventSettingFragment extends Fragment {
         if(mStrAwayImg != null && mStrAwayImg.startsWith("content"))
             entertainment.setAwayImage(mStrAwayImg);
 
+        mStrWebUrl = mEditWebUrl.getText().toString();
+        if(mStrWebUrl != null)
+            entertainment.setWebUrl(mStrWebUrl);
+
+        // for test
+//        mStrWebUrl = mEditWebUrl.getText().toString();
+//        mainActivity.mStrWebUrl = mStrWebUrl;
+
         showProgress(getActivity(), true);
 
         mServer.serverUpdate(mServerUpdateCallBack, entertainment);
@@ -640,6 +661,7 @@ public class EventSettingFragment extends Fragment {
                 mainActivity.mStrDefaultImg = mStrDefaultImg;
                 mainActivity.mStrHomeImg = mStrHomeImg;
                 mainActivity.mStrAwayImg = mStrAwayImg;
+                mainActivity.mStrWebUrl = mStrWebUrl;
             }
             else
             {

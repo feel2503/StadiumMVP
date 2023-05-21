@@ -29,6 +29,7 @@ public class Entertainment
     String defaultImage;
     String homeImage;
     String awayImage;
+    String webUrl;
 
     public int getId() {
         return id;
@@ -132,5 +133,13 @@ public class Entertainment
 
     public void setServerId(long serverId) {
         this.serverId = serverId;
+    }
+
+    public String getWebUrl() {
+        return webUrl;
+    }
+
+    public void setWebUrl(String webUrl) {
+        this.webUrl = webUrl;
     }
 }

@@ -47,6 +47,7 @@ public class EventInfo
     private String defaultImage;
     private String homeImage;
     private String awayImage;
+    private String webUrl;
 
     public long getId() {
         return id;
@@ -183,5 +184,13 @@ public class EventInfo
 
     public void setAwayImage(String awayImage) {
         this.awayImage = awayImage;
+    }
+
+    public String getWebUrl() {
+        return webUrl;
+    }
+
+    public void setWebUrl(String webUrl) {
+        this.webUrl = webUrl;
     }
 }
