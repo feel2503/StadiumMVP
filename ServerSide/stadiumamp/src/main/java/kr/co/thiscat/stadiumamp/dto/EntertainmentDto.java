@@ -28,6 +28,7 @@ public class EntertainmentDto {
     String defaultImage;
     String homeImage;
     String awayImage;
+    String webUrl;
 
 
 }

@@ -25,4 +25,5 @@ public class StadiumServerDto {
     String defaultImage;
     String homeImage;
     String awayImage;
+    String webUrl;
 }

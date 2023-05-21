@@ -57,6 +57,7 @@ public class RestApiController extends BaseController{
         entertainment.setHomeMusic2(entertainmentDto.getHomeMusic2());
         entertainment.setDefaultImage(entertainmentDto.getDefaultImage());
         entertainment.setDefaultMusic(entertainmentDto.getDefaultMusic());
+        entertainment.setWebUrl(entertainmentDto.getWebUrl());
 
         entertainmentRepository.save(entertainment);
         return getResponseEntity("success", "success", HttpStatus.OK);
@@ -88,6 +89,7 @@ public class RestApiController extends BaseController{
                     .defaultImage(entertainment.getDefaultImage())
                     .homeImage(entertainment.getHomeImage())
                     .awayImage(entertainment.getAwayImage())
+                    .webUrl(entertainment.getWebUrl())
                     .build();
             return getResponseEntity(eventInfoDto, "success", HttpStatus.OK);
         }
@@ -227,6 +229,7 @@ public class RestApiController extends BaseController{
         entertainment.setHomeMusic2(runEvent.getHomeMusic2());
         entertainment.setDefaultImage(runEvent.getDefaultImage());
         entertainment.setDefaultMusic(runEvent.getDefaultMusic());
+        entertainment.setWebUrl(runEvent.getWebUrl());
 
         entertainmentRepository.save(entertainment);
 

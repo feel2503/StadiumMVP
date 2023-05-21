@@ -47,6 +47,8 @@ public class Entertainment extends BaseEntity {
     String homeImage;
     @Size(max = 500)
     String awayImage;
+    @Size(max = 500)
+    String webUrl;
 
 //    @Column(unique = true)
 //    private String loginId; // VARCHAR(20) NULL DEFAULT NULL,

@@ -39,4 +39,5 @@ public class EventInfoDto {
     String defaultImage;
     String homeImage;
     String awayImage;
+    String webUrl;
 }

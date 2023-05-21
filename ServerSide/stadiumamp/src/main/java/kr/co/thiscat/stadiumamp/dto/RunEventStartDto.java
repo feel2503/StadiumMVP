@@ -30,4 +30,5 @@ public class RunEventStartDto {
     String defaultImage;
     String homeImage;
     String awayImage;
+    String webUrl;
 }
