@@ -238,3 +238,109 @@ div{
     color:#fff;
     padding:10px;
 }
+
+.bt_google{
+    cursor: pointer;
+    width: 100%;
+    background-color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    padding:15px;
+    font-size: 16px;
+    color:#000000;
+    font-weight:700;
+    margin-bottom: 15px;
+}
+
+.bt_naver{
+    cursor: pointer;
+    width: 100%;
+    background-color: #05a64b;
+    border: none;
+    border-radius: 5px;
+    padding:15px;
+    font-size: 16px;
+    color:#ffffff;
+    font-weight:700;
+    margin-bottom: 15px;
+}
+
+.bt_kakao{
+    cursor: pointer;
+    width: 100%;
+    background-color: #ffe31a;
+    border: none;
+    border-radius: 5px;
+    padding:15px;
+    font-size: 16px;
+    color:#000000;
+    font-weight:700;
+    margin-bottom: 15px;
+}
+
+.bt_custom{
+    cursor: pointer;
+    width: 100%;
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 5px;
+    padding:15px;
+    font-size: 16px;
+    color:#000000;
+    font-weight:700;
+    margin-bottom: 15px;
+}
+
+.btn-floating {
+    color: #fff;
+    padding: 0;
+    width: 55.5px; height: 55.5px;
+    display: inline-block;
+    outline: 0;
+    border: none;
+    text-decoration: none;
+    background: #2196F3;
+    text-align: center;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+}
+.btn-floating:hover {
+    background: #42A5F5;
+}
+.btn-floating div {
+    font-size: 1.8em;
+    padding: 0;
+    margin: .22em 0 0 0;
+}
+
+
+
+ .marquee {
+ cursor: pointer;
+     width: 100%;
+     background-color: #ebebeb;
+     border:none;
+     border-radius: 5px;
+     padding:15px;
+     font-size: 16px;
+     color:#ffffff;
+     font-weight:700;
+     margin-bottom: 15px;
+
+        white-space: nowrap;
+        overflow: hidden;
+    }
+    .marquee span {
+        display: inline-block;
+        text-indent: 0;
+        animation: marquee 10s linear infinite;
+    }
+    .marquee span:hover {
+        animation-play-state: paused
+    }/* Make it move */
+    @keyframes marquee {
+        0% { transform: translate(200px, 0); }
+        30% { transform: translate(0, 0); }
+        60% { transform: translate(0, 0); }
+        100% { transform: translate(-100%, 0); }
+    }

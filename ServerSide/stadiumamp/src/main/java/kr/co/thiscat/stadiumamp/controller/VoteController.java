@@ -27,7 +27,66 @@ public class VoteController {
     RunEventRepository runEventRepository;
 
     @GetMapping("/vote")
-    public String home(Model model,  @RequestParam Integer team, @RequestParam Long server_id ){
+    public String home(Model model,  @RequestParam Integer team, @RequestParam Long server_id,
+        @RequestParam (value = "msg2", required = false) Boolean move){
+        if(team == 1 || team == 3) {
+            model.addAttribute("data", server_id);
+            model.addAttribute("team", team);
+            return "sso";
+        }
+        Stadiumserver stadiumserver = stadiumServerRepository.findById(server_id).orElseThrow(EntityNotFoundException::new);
+        Runevent runevent = runEventRepository.findFirstByStadiumserverOrderByIdDesc(stadiumserver).orElseThrow(EntityNotFoundException::new);
+
+        RunEventDto runEventDto = RunEventDto.builder()
+                .id(runevent.getId())
+                .stadiumServerId(runevent.getStadiumserver().getId())
+                .voteTime(runevent.getVoteTime())
+                .resultTime(runevent.getResultTime())
+                .homeCount(runevent.getHomeCount())
+                .awayCount(runevent.getAwayCount())
+                .eventState(runevent.getEventState())
+                .startDateTime(runevent.getStartDateTime())
+                .build();
+
+        String strTeam = "";
+        if(team == 0 || team == 1)
+            strTeam = "Home";
+        else
+            strTeam = "Away";
+
+
+        LocalDateTime startTime = runevent.getStartDateTime();
+        int vTime = runevent.getVoteTime();
+        LocalDateTime endTime = startTime.plusMinutes(vTime);
+
+        LocalDateTime nowTime = LocalDateTime.now();
+        if(nowTime.isAfter(endTime))
+        {
+            model.addAttribute("state", "이벤트 종료");
+        }
+        else {
+            Duration duration = Duration.between(nowTime, endTime);
+            long sec = duration.getSeconds();
+            long minV = sec / 60;
+            long secV = sec % 60;
+            String tVal = ""+minV+"분"+secV+"초";
+            model.addAttribute("state", tVal);
+            model.addAttribute("min", minV);
+            model.addAttribute("sec", secV);
+
+        }
+
+//        model.addAttribute("min", 1);
+//        model.addAttribute("sec", 10);
+        model.addAttribute("server", stadiumserver);
+        model.addAttribute("event", runEventDto);
+        model.addAttribute("teamtype", strTeam);
+        model.addAttribute("team", team);
+        return "vote";
+    }
+
+    @GetMapping("/votep")
+    public String vote_p(Model model,  @RequestParam Integer team, @RequestParam Long server_id ){
         Stadiumserver stadiumserver = stadiumServerRepository.findById(server_id).orElseThrow(EntityNotFoundException::new);
         Runevent runevent = runEventRepository.findFirstByStadiumserverOrderByIdDesc(stadiumserver).orElseThrow(EntityNotFoundException::new);
 
@@ -157,5 +216,10 @@ public class VoteController {
        // return "redirect:/vote?team=2&server_id=-1";
 
 
+    }
+
+    @GetMapping("/sso")
+    public String home_sso(Model model,  @RequestParam Integer team, @RequestParam Long server_id ){
+        return "sso";
     }
 }

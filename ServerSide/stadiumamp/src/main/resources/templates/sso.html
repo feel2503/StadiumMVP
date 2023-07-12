@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <link rel="shortcut icon" href="favicon.ico">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=9;IE=10;IE=Edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Welcome to Stadium AMP</title>
+
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="wrap">
+    <div class="logo">
+        <img src="asset/StadiumAMP-Logo.svg">
+    </div>
+
+    <form method="get" action="votep">
+        <input type="hidden"  name="team" th:value="${team}" >
+        <input type="hidden" id="gameToken" name="server_id" th:value="${data}" >
+
+        <div style="padding:5px;">
+            <div class="bt">
+                <input type="submit" class="bt_google" value="구글계정으로 계속하기" ></input>
+            </div>
+            <div class="bt">
+                <input type="submit" class="bt_naver" value="네이버계정으로 계속하기" ></input>
+            </div>
+            <div class="bt">
+                <input type="submit" class="bt_kakao" value="카카오계정으로 계속하기" ></input>
+            </div>
+            <div class="bt">
+                <input type="submit" class="bt_custom" value="메일 주소 입력하기" ></input>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div id="bottom_banner">
+    <img src="asset/bg_ad.png">
+</div>
+
+</body>
+</html>

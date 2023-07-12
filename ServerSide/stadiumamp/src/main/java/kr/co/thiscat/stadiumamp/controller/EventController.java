@@ -27,4 +27,6 @@ public class EventController {
         model.addAttribute("data", stadiumserver);
         return "event";
     }
+
+
 }

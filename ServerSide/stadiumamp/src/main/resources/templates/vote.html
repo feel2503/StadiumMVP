@@ -52,6 +52,10 @@
                         class="join_event" >[[${teamtype}]] 팀 응원 1</button>
                 <button th:onclick="|vote(${team}, ${event.id}, 2);|"
                         class="join_event">[[${teamtype}]] 팀 응원 2</button>
+                <button class="join_event" >[[${teamtype}]] 팀 응원 3</button>
+                <button class="marquee">
+                    <span>Lorem Ipsum is simply dummy text</span>
+                </button>
                 <button class="join_event_disable" >[[${teamtype}]] 팀 응원 3</button>
                 <button class="join_event_disable">[[${teamtype}]] 팀 응원 4</button>
             </div>
@@ -79,9 +83,14 @@
     </div>
 
 
-    <div id="bottom_banner">
-        <img src="asset/bg_ad.png">
-    </div>
+    <br>
+    <a href='#' class='btn-floating'><div>+</div></a>
+    <br><br>
+    <a href='#' class='btn-floating'><div>-</div></a>
+
+<!--    <div id="bottom_banner">-->
+<!--        <img src="asset/bg_ad.png">-->
+<!--    </div>-->
 
     <script th:src="@{jquery/jquery-3.4.1.min.js}"></script>
     <script th:src="@{js/timer.js}"></script>
