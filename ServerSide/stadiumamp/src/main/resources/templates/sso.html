@@ -1,48 +1,76 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <link rel="shortcut icon" href="favicon.ico">
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=9;IE=10;IE=Edge,chrome=1"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <title>Welcome to Stadium AMP</title>
+    <head>
+        <link rel="shortcut icon" href="favicon.ico">
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=9;IE=10;IE=Edge,chrome=1"/>
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <title>Welcome to Stadium AMP</title>
 
-    <!-- Global CSS -->
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-<div id="wrap">
-    <div class="logo">
-        <img src="asset/StadiumAMP-Logo.svg">
-    </div>
+        <!-- Global CSS -->
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    <body>
+        <div id="wrap">
+            <div class="logo">
+                <img src="asset/StadiumAMP-Logo.svg">
+            </div>
 
-    <form method="get" action="votep">
-        <input type="hidden"  name="team" th:value="${team}" >
-        <input type="hidden" id="gameToken" name="server_id" th:value="${data}" >
+            <form method="get" action="vote">
+                <input type="hidden"  name="team" th:value="${team}" >
+                <input type="hidden" id="gameToken" name="server_id" th:value="${data}" >
+                <input type="hidden"  name="move" th:value="${team}" >
 
-        <div style="padding:5px;">
-            <div class="bt">
-                <input type="submit" class="bt_google" value="구글계정으로 계속하기" ></input>
-            </div>
-            <div class="bt">
-                <input type="submit" class="bt_naver" value="네이버계정으로 계속하기" ></input>
-            </div>
-            <div class="bt">
-                <input type="submit" class="bt_kakao" value="카카오계정으로 계속하기" ></input>
-            </div>
-            <div class="bt">
-                <input type="submit" class="bt_custom" value="메일 주소 입력하기" ></input>
-            </div>
+                <div style="padding:5px;">
+                    <div class="bt">
+                        <input type="submit" class="bt_google" value="구글계정으로 계속하기" ></input>
+                    </div>
+                    <div class="bt">
+                        <input type="submit" class="bt_naver" value="네이버계정으로 계속하기" ></input>
+                    </div>
+                    <div class="bt">
+                        <input type="submit" class="bt_kakao" value="카카오계정으로 계속하기" ></input>
+                    </div>
+                    <div class="bt">
+                        <input type="submit" class="bt_custom" value="메일 주소 입력하기" ></input>
+                    </div>
+                </div>
+            </form>
         </div>
-    </form>
-</div>
 
-<div id="bottom_banner">
-    <img src="asset/bg_ad.png">
-</div>
+        <div id="bottom_banner" class="bottom_banner">
+            <div style="position: relative">
+                <input  style="float: right;"
+                        type='button'
+                        value='X'
+                        id='btn2'
+                        onclick='toggleBtn1()'/>
+                <img class="bottom_banner_img" src="asset/bg_ad.png">
+            </div>
 
-</body>
+
+        </div>
+
+        <script>
+            function toggleBtn1() {
+
+                // 토글 할 버튼 선택 (btn1)
+                const btn1 = document.getElementById('bottom_banner');
+
+                // btn1 숨기기 (display: none)
+                if(btn1.style.display !== 'none') {
+                    btn1.style.display = 'none';
+                }
+                // btn` 보이기 (display: block)
+                else {
+                    btn1.style.display = 'block';
+                }
+
+            }
+        </script>
+
+    </body>
 </html>

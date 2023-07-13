@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
+import java.net.URLDecoder;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -28,8 +29,8 @@ public class VoteController {
 
     @GetMapping("/vote")
     public String home(Model model,  @RequestParam Integer team, @RequestParam Long server_id,
-        @RequestParam (value = "msg2", required = false) Boolean move){
-        if(team == 1 || team == 3) {
+        @RequestParam ( required = false) Integer move){
+        if((team == 1 || team == 3) && (move == null)) {
             model.addAttribute("data", server_id);
             model.addAttribute("team", team);
             return "sso";
@@ -76,12 +77,19 @@ public class VoteController {
 
         }
 
+        stadiumserver.setHomeMusic1(getFileName(stadiumserver.getHomeMusic1()));
+        stadiumserver.setHomeMusic2(getFileName(stadiumserver.getHomeMusic2()));
+        stadiumserver.setAwayMusic1(getFileName(stadiumserver.getAwayMusic1()));
+        stadiumserver.setAwayMusic2(getFileName(stadiumserver.getAwayMusic2()));
 //        model.addAttribute("min", 1);
 //        model.addAttribute("sec", 10);
         model.addAttribute("server", stadiumserver);
         model.addAttribute("event", runEventDto);
         model.addAttribute("teamtype", strTeam);
         model.addAttribute("team", team);
+
+//        if(move != null && move == false)
+//            return "redirect:vote";
         return "vote";
     }
 
@@ -221,5 +229,15 @@ public class VoteController {
     @GetMapping("/sso")
     public String home_sso(Model model,  @RequestParam Integer team, @RequestParam Long server_id ){
         return "sso";
+    }
+
+    //////////////////
+    public String getFileName(String url)
+    {
+        if(url == null)
+            return url;
+        String strDec = URLDecoder.decode(url);
+        String name = strDec.substring(strDec.lastIndexOf('/')+1, strDec.length());
+        return name;
     }
 }

@@ -48,28 +48,48 @@
 <!--                        class="join_event" >[[${teamtype}]] 팀 응원 1</button>-->
 <!--                <button th:onclick="|location.href='@{/vote/save (teamType = ${team}, eventId = ${event.id}, eventType=2)}'|"-->
 <!--                        class="join_event">[[${teamtype}]] 팀 응원 2</button>-->
-                <button th:onclick="|vote(${team}, ${event.id}, 1);|"
-                        class="join_event" >[[${teamtype}]] 팀 응원 1</button>
-                <button th:onclick="|vote(${team}, ${event.id}, 2);|"
-                        class="join_event">[[${teamtype}]] 팀 응원 2</button>
-                <button class="join_event" >[[${teamtype}]] 팀 응원 3</button>
-                <button class="marquee">
-                    <span>Lorem Ipsum is simply dummy text</span>
+                <button th:onclick="|vote(${team}, ${event.id}, 1);|" class="marquee" >
+                        <span>[[${teamtype}]] 팀 응원 1 - [[${server.homeMusic1}]]</span>
                 </button>
-                <button class="join_event_disable" >[[${teamtype}]] 팀 응원 3</button>
-                <button class="join_event_disable">[[${teamtype}]] 팀 응원 4</button>
+                <button th:onclick="|vote(${team}, ${event.id}, 2);|" class="marquee">
+                        <span>[[${teamtype}]] 팀 응원 2 - [[${server.homeMusic2}]]</span>
+                </button>
+                <button class="marquee" >
+                    <span>[[${teamtype}]] 팀 응원 3 - [[${server.homeMusic1}]]</span>
+                </button>
+                <button class="marquee">
+                    <span>[[${teamtype}]] 팀 응원 4 - [[${server.homeMusic1}]]</span>
+                </button>
+                <button class="join_event_disable" >[[${teamtype}]] 팀 응원 5</button>
+                <button class="join_event_disable">[[${teamtype}]] 팀 응원 6</button>
+                <button class="join_event_disable">[[${teamtype}]] 팀 응원 7</button>
+                <button class="join_event_disable">[[${teamtype}]] 팀 응원 8</button>
+                <button class="join_event_disable">[[${teamtype}]] 팀 응원 9</button>
+                <button class="join_event_disable">[[${teamtype}]] 팀 응원 10</button>
             </div>
             <div th:if="${teamtype =='Away'}">
 <!--                <button th:onclick="|location.href='@{/vote/save (teamType = ${team}, eventId = ${event.id}, eventType=1)}'|"-->
 <!--                        class="join_away_event">[[${teamtype}]] 팀 응원 1</button>-->
 <!--                <button th:onclick="|location.href='@{/vote/save (teamType = ${team}, eventId = ${event.id}, eventType=2)}'|"-->
 <!--                        class="join_away_event">[[${teamtype}]] 팀 응원 2</button>-->
-                <button th:onclick="|vote(${team}, ${event.id}, 1);|"
-                        class="join_away_event">[[${teamtype}]] 팀 응원 1</button>
-                <button th:onclick="|vote(${team}, ${event.id}, 2);|"
-                        class="join_away_event">[[${teamtype}]] 팀 응원 2</button>
-                <button class="join_event_disable">[[${teamtype}]] 팀 응원 3</button>
-                <button class="join_event_disable">[[${teamtype}]] 팀 응원 4</button>
+                <button th:onclick="|vote(${team}, ${event.id}, 1);|" class="marquee">
+                        <span>[[${teamtype}]] 팀 응원 1 - [[${server.awayMusic1}]]</span>
+                </button>
+                <button th:onclick="|vote(${team}, ${event.id}, 2);|" class="marquee">
+                        <span>[[${teamtype}]] 팀 응원 2 - [[${server.awayMusic1}]]</span>
+                </button>
+                <button class="marquee">
+                    <span>[[${teamtype}]] 팀 응원 3 - [[${server.awayMusic1}]]</span>
+                </button>
+                <button class="marquee">
+                    <span>[[${teamtype}]] 팀 응원 4 - [[${server.awayMusic1}]]</span>
+                </button>
+                <button class="join_event_disable" >[[${teamtype}]] 팀 응원 5</button>
+                <button class="join_event_disable">[[${teamtype}]] 팀 응원 6</button>
+                <button class="join_event_disable">[[${teamtype}]] 팀 응원 7</button>
+                <button class="join_event_disable">[[${teamtype}]] 팀 응원 8</button>
+                <button class="join_event_disable">[[${teamtype}]] 팀 응원 9</button>
+                <button class="join_event_disable">[[${teamtype}]] 팀 응원 10</button>
             </div>
         </div>
 
@@ -83,14 +103,25 @@
     </div>
 
 
-    <br>
-    <a href='#' class='btn-floating'><div>+</div></a>
-    <br><br>
-    <a href='#' class='btn-floating'><div>-</div></a>
+<!--    <br>-->
+<!--    <a href='#' class='btn-floating'><div>+</div></a>-->
+<!--    <br><br>-->
+<!--    <a href='#' class='btn-floating'><div>-</div></a>-->
 
 <!--    <div id="bottom_banner">-->
 <!--        <img src="asset/bg_ad.png">-->
 <!--    </div>-->
+
+        <div id="bottom_banner" class="bottom_banner">
+            <a href='https://www.youtube.com/@GJ_eSports/streams' >
+                <div>
+<!--                    <img class="profile" src="asset/floating_button.svg">-->
+                    <div class="box" style="background: #BDBDBD;">
+                        <img class="profile" src="asset/floating_button.svg">
+                    </div>
+                </div>
+            </a>
+        </div>
 
     <script th:src="@{jquery/jquery-3.4.1.min.js}"></script>
     <script th:src="@{js/timer.js}"></script>
