@@ -2,9 +2,13 @@ package kr.co.thiscat.stadiumampsetting.fragment;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -22,11 +26,13 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import kr.co.thiscat.stadiumampsetting.FullsImageActivity;
 import kr.co.thiscat.stadiumampsetting.MainActivity;
 import kr.co.thiscat.stadiumampsetting.PreferenceUtil;
 import kr.co.thiscat.stadiumampsetting.R;
@@ -34,6 +40,8 @@ import kr.co.thiscat.stadiumampsetting.server.SECallBack;
 import kr.co.thiscat.stadiumampsetting.server.ServerManager;
 import kr.co.thiscat.stadiumampsetting.server.entity.RunEvent;
 import kr.co.thiscat.stadiumampsetting.server.entity.RunEventResult;
+import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventDto;
+import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventImageDto;
 import retrofit2.Response;
 
 /**
@@ -77,6 +85,7 @@ public class EventFragment extends Fragment {
     private static EventFragment mInstance;
 
     private MainActivity mainActivity;
+    private OnBackPressedCallback mOnBackPressedCallback;
     public EventFragment() {
         // Required empty public constructor
     }
@@ -118,7 +127,6 @@ public class EventFragment extends Fragment {
         mPreferenceUtil = new PreferenceUtil(getContext());
         mProgress = new ProgressDialog(getContext());
         mServer = ServerManager.getInstance(getContext());
-//        timer = new Timer();
     }
 
     @Override
@@ -142,21 +150,22 @@ public class EventFragment extends Fragment {
         mFab = view.findViewById(R.id.fab_web);
         mFab.setOnClickListener(mOnClickListener);
 
-        if(mainActivity.mStrWebUrl != null){
-            mFab.setVisibility(View.VISIBLE);
-            mWebView.loadUrl(mainActivity.mStrWebUrl);
-        } else{
-            mFab.setVisibility(View.GONE);
-        }
+        view.findViewById(R.id.screen_full_view).setOnClickListener(mOnClickListener);
+//        if(mainActivity.mEventDto.getWebUrl() != null){
+//            mFab.setVisibility(View.VISIBLE);
+//            mWebView.loadUrl(mainActivity.mEventDto.getWebUrl());
+//        } else{
+//            mFab.setVisibility(View.GONE);
+//        }
 
-        if(mainActivity.mWebViewState){
-            mWebView.setVisibility(View.VISIBLE);
-            mLinearEvent.setVisibility(View.GONE);
-
-        }else{
-            mWebView.setVisibility(View.GONE);
-            mLinearEvent.setVisibility(View.VISIBLE);
-        }
+//        if(mainActivity.mWebViewState){
+//            mWebView.setVisibility(View.VISIBLE);
+//            mLinearEvent.setVisibility(View.GONE);
+//
+//        }else{
+//            mWebView.setVisibility(View.GONE);
+//            mLinearEvent.setVisibility(View.VISIBLE);
+//        }
 
         return view;
     }
@@ -188,38 +197,77 @@ public class EventFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-//        int eventId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_EVENT_ID, -1);
-//        //mEventId = 1;
-//        if(eventId > 0 )
-//        {
-//            mServer.getEventState(mEventStateCallBack, eventId);
-//            showProgress(getActivity(), true);
-//        }
-//        else
-//        {
-//            mTextCurrent.setText("진행중인 이벤트 없음");
-//            mTextTime.setText("0분 00초");
-//        }
-        updateTimer();
-        if(mainActivity.mStrDefaultImg != null)
-        {
-            Uri uri = Uri.parse(mainActivity.mStrDefaultImg);
-            mImgEvent.setImageURI(uri);
-            Glide.with(this).load(uri).into(mImgEvent);
+        if(mainActivity.mRunEvent != null){
+            updateScore(mainActivity.mRunEvent);
+            updateTimer(mainActivity.mRunEvent);
         }
-
-        int eventId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_EVENT_ID, -1);
-        if(eventId > 0){
-            Log.d("AAAA", "--- eventId : " + eventId);
-            mServer.eventNowResult(mEventResultCallBack, eventId);
-        }
-
     }
 
     @Override
     public void onPause() {
         super.onPause();
 //        timer.cancel();
+    }
+
+    public void updateEventState(RunEvent runEvent) {
+        if(isVisible() && getActivity() != null) {
+            Log.d("AAAA", "----- eventFragment is visible");
+            //updateTimeStr(runEvent);
+            updateScore(runEvent);
+            if(runEvent.getTriggerType() == 0){
+                updateTimer(runEvent);    
+            } else{
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (runEvent.getEventState().equalsIgnoreCase("START")) {
+                            mTextTime.setText("투표중");
+                            isRunning = true;
+                        } else {
+                            mTextTime.setText("이벤트 종료");
+                            isRunning = false;
+                        }
+                    }
+                });
+            }
+        }else{
+            Log.d("AAAA", "----- eventFragment is invisible");
+        }
+    }
+
+    public void updateEventInfo(RunEvent eventDto) {
+        if(eventDto.getWebUrl() != null){
+            mFab.setVisibility(View.VISIBLE);
+            mWebView.loadUrl(eventDto.getWebUrl());
+        } else{
+            mFab.setVisibility(View.GONE);
+        }
+        String defImage = mainActivity.getTypeImage(eventDto.getEventImageList(), "IMAGE_DEFAULT");
+        if(defImage != null)
+        {
+            //Uri uri = Uri.parse(mainActivity.getContentUri(defImage));
+            Uri uri = mainActivity.getContentUri(defImage);
+            mImgEvent.setImageURI(uri);
+            Glide.with(this).load(uri).into(mImgEvent);
+        }
+    }
+
+    public void setEventInfo(EventDto eventDto) {
+        Log.d("AAAA", "---- SettingFragment setEventInfo");
+        if(eventDto.getWebUrl() != null){
+            mFab.setVisibility(View.VISIBLE);
+            mWebView.loadUrl(eventDto.getWebUrl());
+        } else{
+            mFab.setVisibility(View.GONE);
+        }
+        String defImage = mainActivity.getTypeImage(eventDto.getEventImageList(), "IMAGE_DEFAULT");
+        if(defImage != null)
+        {
+            //Uri uri = Uri.parse(mainActivity.getContentUri(defImage));
+            Uri uri = mainActivity.getContentUri(defImage);
+            mImgEvent.setImageURI(uri);
+            Glide.with(this).load(uri).into(mImgEvent);
+        }
     }
 
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
@@ -236,18 +284,31 @@ public class EventFragment extends Fragment {
                     mLinearEvent.setVisibility(View.GONE);
                 }
             }
+            else if(v.getId() == R.id.screen_full_view){
+                //mainActivity.setFullView(true);
+                Intent intent = new Intent(mainActivity, FullsImageActivity.class);
+                intent.putExtra("RunServerID", mainActivity.mServerId);
+                startActivity(intent);
+            }
         }
     };
 
-    public void updateTimer()
+    public void updateTimer(RunEvent runEvent)
     {
         try{
+            if(runEvent.getEventState().equalsIgnoreCase("STOP"))
+            {
+                updateTimerTextView(0);
+                return;
+            }
+
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-            Date startTime = sdf.parse(mainActivity.currEventInfo.getStartDateTime());
+            Date startTime = sdf.parse(runEvent.getStartDateTime());
 
             Calendar cal = Calendar.getInstance();
             cal.setTime(startTime);
-            cal.add(Calendar.MINUTE, mainActivity.currEventInfo.getVoteTime());
+            //cal.add(Calendar.MINUTE, runEvent.getTriggerTime());
+            cal.add(Calendar.SECOND, runEvent.getTriggerTime());
             Date endDate = cal.getTime();
 
             Date nowDate = Calendar.getInstance().getTime();
@@ -307,20 +368,26 @@ public class EventFragment extends Fragment {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if(home > away){
-                        if(mainActivity.mStrHomeImg != null)
-                        {
-                            Uri uri = Uri.parse(mainActivity.mStrHomeImg);
-                            mImgEvent.setImageURI(uri);
-                            Glide.with(mainActivity).load(uri).into(mImgEvent);
-                        }
-                    }else if(home < away){
-                        if(mainActivity.mStrAwayImg != null)
-                        {
-                            Uri uri = Uri.parse(mainActivity.mStrAwayImg);
-                            mImgEvent.setImageURI(uri);
-                            Glide.with(mainActivity).load(uri).into(mImgEvent);
-                        }
+                    String imageType = "IMAGE_DEFAULT";
+                    if(home == away)
+                    {
+                        imageType = "IMAGE_DEFAULT";
+                    }
+                    else if(home > away)
+                    {
+                        imageType = "IMAGE_HOME";
+                    }
+                    else if(home < away)
+                    {
+                        imageType = "IMAGE_AWAY";
+                    }
+                    String viewImage = mainActivity.getTypeImage(mainActivity.mEventDto.getEventImageList(), imageType);
+                    if(viewImage != null)
+                    {
+                        //Uri uri = Uri.parse(mainActivity.getContentUri(defImage));
+                        Uri uri = mainActivity.getContentUri(viewImage);
+                        mImgEvent.setImageURI(uri);
+                        Glide.with(mainActivity).load(uri).into(mImgEvent);
                     }
                 }
             });
@@ -397,28 +464,52 @@ public class EventFragment extends Fragment {
                     ViewGroup.LayoutParams params1 = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, awayVal);
                     mTextAway.setLayoutParams(params1);
 
-                    MainActivity activity = (MainActivity)getActivity();
-                    if(activity.mStrDefaultImg != null)
+                    String imageType = "IMAGE_DEFAULT";
+                    if(home == away)
                     {
-                        Uri uri = Uri.parse(activity.mStrDefaultImg);
-                        if(home > away)
-                        {
-                            uri = Uri.parse(activity.mStrHomeImg);
-                        }
-                        else if(home < away)
-                        {
-                            uri = Uri.parse(activity.mStrAwayImg);
-                        }
-                        mImgEvent.setImageURI(uri);
-                        Glide.with(activity).load(uri).into(mImgEvent);
+                        imageType = "IMAGE_DEFAULT";
                     }
+                    else if(home > away)
+                    {
+                        imageType = "IMAGE_HOME";
+                    }
+                    else if(home < away)
+                    {
+                        imageType = "IMAGE_AWAY";
+                    }
+                    String viewImage = mainActivity.getTypeImage(mainActivity.mEventDto.getEventImageList(), imageType);
+                    if(viewImage != null)
+                    {
+                        //Uri uri = Uri.parse(mainActivity.getContentUri(defImage));
+                        Uri uri = mainActivity.getContentUri(viewImage);
+                        mImgEvent.setImageURI(uri);
+                        Glide.with(mainActivity).load(uri).into(mImgEvent);
+                    }
+
+//                    MainActivity activity = (MainActivity)getActivity();
+//                    if(activity.mStrDefaultImg != null)
+//                    {
+//                        Uri uri = Uri.parse(activity.mStrDefaultImg);
+//                        if(home > away)
+//                        {
+//                            uri = Uri.parse(activity.mStrHomeImg);
+//                        }
+//                        else if(home < away)
+//                        {
+//                            uri = Uri.parse(activity.mStrAwayImg);
+//                        }
+//                        mImgEvent.setImageURI(uri);
+//                        Glide.with(activity).load(uri).into(mImgEvent);
+//                    }
 
                 }
             });
         }
     }
+
     private void updateScore(RunEvent runEvent)
     {
+        Log.d("AAAA", "------- updateScore");
         try{
             int home = runEvent.getHomeCount();
             int away = runEvent.getAwayCount();
@@ -426,23 +517,24 @@ public class EventFragment extends Fragment {
 //            {
 //                home = away = 1;
 //            }
+            Log.d("AAAA", "home : " + home);
             updateScoreValue(runEvent.getServerName(), home, away);
 
-            Timer timer = new Timer();
-            TimerTask timerTask = new TimerTask() {
-                @Override
-                public void run() {
-                    int eventId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_EVENT_ID, -1);
-                    mServer.eventNowResult(mEventResultCallBack, eventId);
-                }
-            };
-            if(runEvent.getEventState().equalsIgnoreCase("START")) {
-                timer.schedule(timerTask, 1000);
-            }else {
-                updateResultImageView(runEvent.getHomeCount(), runEvent.getAwayCount());
-                timer.cancel();
-            }
-
+//            updateResultImageView(runEvent.getHomeCount(), runEvent.getAwayCount());
+//            Timer timer = new Timer();
+//            TimerTask timerTask = new TimerTask() {
+//                @Override
+//                public void run() {
+//                    int eventId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_EVENT_ID, -1);
+//                    mServer.eventNowResult(mEventResultCallBack, eventId);
+//                }
+//            };
+//            if(runEvent.getEventState().equalsIgnoreCase("START")) {
+//                timer.schedule(timerTask, 1000);
+//            }else {
+//                updateResultImageView(runEvent.getHomeCount(), runEvent.getAwayCount());
+//                timer.cancel();
+//            }
         }catch (Exception e)
         {
             e.printStackTrace();

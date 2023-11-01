@@ -7,17 +7,24 @@ import java.util.concurrent.TimeUnit;
 import kr.co.thiscat.stadiumampsetting.server.entity.Entertainment;
 import kr.co.thiscat.stadiumampsetting.server.entity.EventInfoResult;
 import kr.co.thiscat.stadiumampsetting.server.entity.ResultMsg;
+import kr.co.thiscat.stadiumampsetting.server.entity.RunEvent;
 import kr.co.thiscat.stadiumampsetting.server.entity.RunEventResult;
 import kr.co.thiscat.stadiumampsetting.server.entity.StadiumServerResult;
 import kr.co.thiscat.stadiumampsetting.server.entity.StartEvent;
+import kr.co.thiscat.stadiumampsetting.server.entity.result.EventListResult;
+import kr.co.thiscat.stadiumampsetting.server.entity.result.EventResult;
+import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventDto;
+import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventRequestDto;
+import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventStartReqDto;
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Query;
 
 public class ServerManager {
     private String BASE_URL = "http://223.130.134.43/";
-//    private String BASE_URL = "http://192.168.123.195/";     // hanse
+    //private String BASE_URL = "http://192.168.123.195/";
     public static int CONNECTION_TIMEOUT = 5000;
     public static int READ_TIMEOUT = 5000;
     public static int WRITE_TIMEOUT = 5000;
@@ -92,9 +99,9 @@ public class ServerManager {
         call.enqueue(callBack);
     }
 
-    public void getServerList(SECallBack<StadiumServerResult> callBack)
+    public void getServerList(SECallBack<EventListResult> callBack)
     {
-        Call<StadiumServerResult> call = mServerInterface.getServerList();
+        Call<EventListResult> call = mServerInterface.getServerList();
         call.enqueue(callBack);
     }
 
@@ -110,15 +117,15 @@ public class ServerManager {
         call.enqueue(callBack);
     }
 
-    public void eventStart(SECallBack<RunEventResult> callBack, StartEvent body)
+    public void eventStart(SECallBack<RunEventResult> callBack, EventStartReqDto eventStartReqDto)
     {
-        Call<RunEventResult> call = mServerInterface.eventStart(body);
+        Call<RunEventResult> call = mServerInterface.eventStart(eventStartReqDto);
         call.enqueue(callBack);
     }
 
-    public void eventStop(SECallBack<RunEventResult> callBack, long eventId)
+    public void eventStop(SECallBack<RunEventResult> callBack, long runEventId)
     {
-        Call<RunEventResult> call = mServerInterface.eventStop(eventId);
+        Call<RunEventResult> call = mServerInterface.eventStop(runEventId);
         call.enqueue(callBack);
     }
 
@@ -131,6 +138,19 @@ public class ServerManager {
     public void eventNowResult(SECallBack<RunEventResult> callBack, long eventId)
     {
         Call<RunEventResult> call = mServerInterface.eventNowResult(eventId);
+        call.enqueue(callBack);
+    }
+
+    // V2
+    public void getEvent(SECallBack<EventResult> callBack, long eventId)
+    {
+        Call<EventResult> call = mServerInterface.getEvent(eventId);
+        call.enqueue(callBack);
+    }
+
+    public void getRunEventState(SECallBack<RunEventResult> callBack, long eventId)
+    {
+        Call<RunEventResult> call = mServerInterface.getRunEventState(eventId);
         call.enqueue(callBack);
     }
 }

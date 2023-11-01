@@ -1,0 +1,36 @@
+package kr.co.thiscat.stadiumampsetting.server.entity.result;
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+import java.util.ArrayList;
+
+import kr.co.thiscat.stadiumampsetting.server.entity.ResultMsg;
+import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventDto;
+
+public class EventListResult
+{
+    @Expose
+    @SerializedName("result")
+    private ResultMsg result;
+
+    @Expose
+    @SerializedName("data")
+    private ArrayList<EventDto> data;
+
+    public ResultMsg getResult() {
+        return result;
+    }
+
+    public void setResult(ResultMsg result) {
+        this.result = result;
+    }
+
+    public ArrayList<EventDto> getData() {
+        return data;
+    }
+
+    public void setData(ArrayList<EventDto> data) {
+        this.data = data;
+    }
+}

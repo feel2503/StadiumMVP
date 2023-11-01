@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 
@@ -14,6 +15,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -40,6 +43,11 @@ import kr.co.thiscat.stadiumampsetting.server.entity.RunEventResult;
 import kr.co.thiscat.stadiumampsetting.server.entity.StadiumServer;
 import kr.co.thiscat.stadiumampsetting.server.entity.StadiumServerResult;
 import kr.co.thiscat.stadiumampsetting.server.entity.StartEvent;
+import kr.co.thiscat.stadiumampsetting.server.entity.result.EventListResult;
+import kr.co.thiscat.stadiumampsetting.server.entity.result.EventResult;
+import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventDto;
+import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventImageDto;
+import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventStartReqDto;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -67,13 +75,24 @@ public class SettingFragment extends Fragment {
     private ServerManager mServer;
     protected ProgressDialog mProgress = null;
 
-    private ArrayList<StadiumServer> mServerList;
+    private ArrayList<EventDto> mServerList;
 
     private TextView mTextServrName;
+    private RadioGroup mRadioTrigger;
+    private EditText mEditTriggerTime;
+    private EditText mEditTriggerVote;
+    private TextView mTextDefaultImage;
+    private TextView mTextHomeImage;
+    private TextView mTextAwayImage;
+    private EditText mEditWebUrl;
+    private TextView mTextQrImage;
+    private TextView mTextAdvImage;
+
+    private CheckBox mCheckContinuous;
+    private EditText mEditEventDelay;
+
     private TextView mTextEventStart;
     private TextView mTextEventStop;
-    private RadioGroup mRadioVote;
-    private RadioGroup mRadioResult;
 
     private static SettingFragment mInstance;
     private MainActivity mainActivity;
@@ -136,34 +155,95 @@ public class SettingFragment extends Fragment {
         super.onResume();
 //        mServerId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_SERVER_ID, -1);
 //        mEventId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_EVENT_ID, -1);
-        if(mainActivity.mServerId > 0)
-        {
-            String name = mPreferenceUtil.getStringPreference(PreferenceUtil.KEY_SERVER_NAME);
-            mTextServrName.setText("이벤트 서버 : " + name);
-            if(mainActivity.mEventId > 0)
-            {
-                mServer.getEventState(mEventStateCallBack, mainActivity.mEventId);
-                showProgress(getActivity(), true);
-            }
-            else
-            {
-                mServer.getLastEvent(mEventStateCallBack, mainActivity.mServerId);
-                showProgress(getActivity(), true);
-            }
-        }
+//        if(mainActivity.mServerId > 0)
+//        {
+//            String name = mPreferenceUtil.getStringPreference(PreferenceUtil.KEY_SERVER_NAME);
+//            mTextServrName.setText("이벤트 서버 : " + name);
+//            if(mainActivity.mEventId > 0)
+//            {
+//                mServer.getEventState(mEventStateCallBack, mainActivity.mEventId);
+//                showProgress(getActivity(), true);
+//            }
+//            else
+//            {
+//                mServer.getLastEvent(mEventStateCallBack, mainActivity.mServerId);
+//                showProgress(getActivity(), true);
+//            }
+//        }
     }
 
     private void initView(View view)
     {
-        view.findViewById(R.id.text_event_select).setOnClickListener(mOnClicklistener);
+        mTextServrName = view.findViewById(R.id.text_event_select);
+        mTextServrName.setOnClickListener(mOnClicklistener);
+
+        mRadioTrigger = view.findViewById(R.id.radio_vote);
+        mRadioTrigger.setOnCheckedChangeListener(mOnCheckChangeLister);
+        mEditTriggerTime = view.findViewById(R.id.edit_only_sec);
+        mEditTriggerVote = view.findViewById(R.id.edit_only_count);
+
+        mTextDefaultImage = view.findViewById(R.id.text_event_default_image);
+        mTextDefaultImage.setOnClickListener(mOnClickListener);
+
+        mTextHomeImage = view.findViewById(R.id.text_event_home_image);
+        mTextHomeImage.setOnClickListener(mOnClickListener);
+
+        mTextAwayImage = view.findViewById(R.id.text_event_away_image);
+        mTextAwayImage.setOnClickListener(mOnClickListener);
+
+        mEditWebUrl = view.findViewById(R.id.edit_web_stat_url);
+
+        mTextQrImage = view.findViewById(R.id.text_event_qr_image);
+        mTextQrImage.setOnClickListener(mOnClickListener);
+
+        mTextAdvImage = view.findViewById(R.id.text_event_adv_image);
+        mTextAdvImage.setOnClickListener(mOnClickListener);
+
+        mCheckContinuous = view.findViewById(R.id.check_event_continuous);
+        mEditEventDelay = view.findViewById(R.id.edit_delay_sec);
+
         mTextEventStart = view.findViewById(R.id.text_event_start);
         mTextEventStart.setOnClickListener(mOnClicklistener);
         mTextEventStop = view.findViewById(R.id.text_event_stop);
         mTextEventStop.setOnClickListener(mOnClicklistener);
 
-        mTextServrName = view.findViewById(R.id.text_event_server);
-        mRadioVote = view.findViewById(R.id.radio_vote);
-        mRadioResult = view.findViewById(R.id.radio_result);
+//        mTextServrName = view.findViewById(R.id.text_event_server);
+//        mRadioVote = view.findViewById(R.id.radio_vote);
+    }
+
+
+    public void setEventInfo(EventDto eventDto){
+        Log.d("AAAA", "---- SettingFragment setEventInfo");
+        mTextServrName.setText(eventDto.getEventName());
+        //trigger type
+        if(eventDto.getTriggerType() == 0){
+            mRadioTrigger.check(R.id.radio_only_time);
+        }else{
+            mRadioTrigger.check(R.id.radio_only_count);
+        }
+        mEditTriggerTime.setText(""+eventDto.getTriggerTime());
+        mEditTriggerVote.setText(""+eventDto.getTriggerVote());
+        // 이벤트 연속진행
+        if(eventDto.getContinuityType() == 0)
+            mCheckContinuous.setChecked(false);
+        else
+            mCheckContinuous.setChecked(true);
+        mEditEventDelay.setText(""+eventDto.getContinuityTime());
+        // image
+        ArrayList<EventImageDto> imgList = eventDto.getEventImageList();
+        for(EventImageDto imageDto : imgList){
+            if(imageDto.getImageType().equalsIgnoreCase("IMAGE_DEFAULT"))
+                mTextDefaultImage.setText(imageDto.getImageName());
+            else if(imageDto.getImageType().equalsIgnoreCase("IMAGE_HOME"))
+                mTextHomeImage.setText(imageDto.getImageName());
+            else if(imageDto.getImageType().equalsIgnoreCase("IMAGE_AWAY"))
+                mTextAwayImage.setText(imageDto.getImageName());
+            else if(imageDto.getImageType().equalsIgnoreCase("IMAGE_QR"))
+                mTextQrImage.setText(imageDto.getImageName());
+            else if(imageDto.getImageType().equalsIgnoreCase("IMAGE_ADV"))
+                mTextAdvImage.setText(imageDto.getImageName());
+        }
+        mEditWebUrl.setText(eventDto.getWebUrl());
     }
 
     private void setEventBtnState(boolean isRunning)
@@ -187,87 +267,169 @@ public class SettingFragment extends Fragment {
         }
     }
 
+    private View.OnClickListener mOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            startMediaActivity(v.getId());
+        }
+    };
+
+    public void startMediaActivity(int resId)
+    {
+        Intent intent = new Intent(Intent.ACTION_VIEW);;
+        Uri uri = null;
+        switch (resId){
+            case R.id.text_event_default_image:
+                uri = mainActivity.getContentUri(mTextDefaultImage.getText().toString());
+                break;
+            case R.id.text_event_home_image:
+                uri = mainActivity.getContentUri(mTextHomeImage.getText().toString());
+                break;
+            case R.id.text_event_away_image:
+                uri = mainActivity.getContentUri(mTextAwayImage.getText().toString());
+                break;
+            case R.id.text_event_qr_image:
+                uri = mainActivity.getContentUri(mTextQrImage.getText().toString());
+                break;
+            case R.id.text_event_adv_image:
+                uri = mainActivity.getContentUri(mTextAdvImage.getText().toString());
+                break;
+        }
+
+        if(uri != null){
+            intent.setDataAndType(uri, "image/*");
+            startActivity(intent);
+        }
+
+    }
+
     private int getVoteTime()
     {
-        if(mRadioVote.getCheckedRadioButtonId() == R.id.radio_vote_3m)
-            return 3;
-        else if(mRadioVote.getCheckedRadioButtonId() == R.id.radio_vote_5m)
-            return 5;
-        else
-            return -1;
+//        if(mRadioVote.getCheckedRadioButtonId() == R.id.radio_vote_3m)
+//            return 3;
+//        else if(mRadioVote.getCheckedRadioButtonId() == R.id.radio_vote_5m)
+//            return 5;
+//        else
+//            return -1;
+        return -1;
     }
 
     private int getResultTime()
     {
-        if(mRadioResult.getCheckedRadioButtonId() == R.id.radio_result_1m)
-            return 1;
-        else if(mRadioResult.getCheckedRadioButtonId() == R.id.radio_result_3m)
-            return 3;
+//        if(mRadioResult.getCheckedRadioButtonId() == R.id.radio_result_1m)
+//            return 1;
+//        else if(mRadioResult.getCheckedRadioButtonId() == R.id.radio_result_3m)
+//            return 3;
+//        else
+//            return -1;
+        return -1;
+    }
+
+    public void updateEventInfo(RunEvent runEvent)
+    {
+        //trigger type
+        if(runEvent.getTriggerType() == 0){
+            mRadioTrigger.check(R.id.radio_only_time);
+        }else{
+            mRadioTrigger.check(R.id.radio_only_count);
+        }
+        mEditTriggerTime.setText(""+runEvent.getTriggerTime());
+        mEditTriggerVote.setText(""+runEvent.getTriggerVote());
+        // 이벤트 연속진행
+        if(runEvent.getContinuityType() == 0)
+            mCheckContinuous.setChecked(false);
         else
-            return -1;
+            mCheckContinuous.setChecked(true);
+        mEditEventDelay.setText(""+runEvent.getContinuityTime());
+        // image
+        ArrayList<EventImageDto> imgList = runEvent.getEventImageList();
+        for(EventImageDto imageDto : imgList){
+            if(imageDto.getImageType().equalsIgnoreCase("IMAGE_DEFAULT"))
+                mTextDefaultImage.setText(imageDto.getImageName());
+            else if(imageDto.getImageType().equalsIgnoreCase("IMAGE_HOME"))
+                mTextHomeImage.setText(imageDto.getImageName());
+            else if(imageDto.getImageType().equalsIgnoreCase("IMAGE_AWAY"))
+                mTextAwayImage.setText(imageDto.getImageName());
+            else if(imageDto.getImageType().equalsIgnoreCase("IMAGE_QR"))
+                mTextQrImage.setText(imageDto.getImageName());
+            else if(imageDto.getImageType().equalsIgnoreCase("IMAGE_ADV"))
+                mTextAdvImage.setText(imageDto.getImageName());
+        }
+        mEditWebUrl.setText(runEvent.getWebUrl());
     }
-
-    public void updateEventState(boolean isRun)
+    public void updateEventState(RunEvent runEvent)
     {
-        setEventBtnState(isRun);
-    }
-    private void updateEventState(RunEvent runEvent)
-    {
-        if(runEvent.getVoteTime() == 3)
-            mRadioVote.check(R.id.radio_vote_3m);
-        else if(runEvent.getVoteTime() == 5)
-            mRadioVote.check(R.id.radio_vote_5m);
-
-        if(runEvent.getResultTime() == 1)
-            mRadioResult.check(R.id.radio_result_1m);
-        else if(runEvent.getVoteTime() == 3)
-            mRadioResult.check(R.id.radio_result_3m);
-
-        if(runEvent.getEventState().equalsIgnoreCase("START"))
+        if(getActivity() != null)
         {
-//            mainActivity.startEventCount();
-            setEventBtnState(true);
-            try{
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-                Date start = sdf.parse(runEvent.getStartDateTime());
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(start);
-                cal.add(Calendar.MINUTE, runEvent.getVoteTime());
-                cal.add(Calendar.SECOND, 1);
-                Date endDate = cal.getTime();
-
-                Timer timer = new Timer();
-                TimerTask timerTask = new TimerTask() {
-                    @Override
-                    public void run() {
-                        mServer.getEventState(mEventStateCallBack, mainActivity.mEventId);
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(runEvent.getEventState().equalsIgnoreCase("START")){
+                        setEventBtnState(true);
+                    }else{
+                        setEventBtnState(false);
                     }
-                };
-                timer.schedule(timerTask, endDate);
 
-            }catch (Exception e)
-            {
-                e.printStackTrace();
-            }
+
+                }
+            });
         }
-        else
-        {
-            setEventBtnState(false);
-        }
+
+//        if(runEvent.getVoteTime() == 3)
+//            mRadioVote.check(R.id.radio_vote_3m);
+//        else if(runEvent.getVoteTime() == 5)
+//            mRadioVote.check(R.id.radio_vote_5m);
+//
+//        if(runEvent.getResultTime() == 1)
+//            mRadioResult.check(R.id.radio_result_1m);
+//        else if(runEvent.getVoteTime() == 3)
+//            mRadioResult.check(R.id.radio_result_3m);
+//
+//        if(runEvent.getEventState().equalsIgnoreCase("START"))
+//        {
+////            mainActivity.startEventCount();
+//            setEventBtnState(true);
+//            try{
+//                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+//                Date start = sdf.parse(runEvent.getStartDateTime());
+//                Calendar cal = Calendar.getInstance();
+//                cal.setTime(start);
+//                cal.add(Calendar.MINUTE, runEvent.getVoteTime());
+//                cal.add(Calendar.SECOND, 1);
+//                Date endDate = cal.getTime();
+//
+//                Timer timer = new Timer();
+//                TimerTask timerTask = new TimerTask() {
+//                    @Override
+//                    public void run() {
+//                        mServer.getEventState(mEventStateCallBack, mainActivity.mEventId);
+//                    }
+//                };
+//                timer.schedule(timerTask, endDate);
+//
+//            }catch (Exception e)
+//            {
+//                e.printStackTrace();
+//            }
+//        }
+//        else
+//        {
+//            setEventBtnState(false);
+//        }
     }
 
     private void saveEventInfo(int eventId)
     {
-        mainActivity.mEventId = eventId;
+        mainActivity.mRunEventId = eventId;
         mPreferenceUtil.putIntPreference(PreferenceUtil.KEY_EVENT_ID, eventId);
     }
 
     private void showEventServerSelector()
     {
         ArrayList<String> items = new ArrayList<>();
-        for(StadiumServer stadiumServer : mServerList)
+        for(EventDto eventDto : mServerList)
         {
-            items.add(stadiumServer.getName());
+            items.add(eventDto.getEventName());
         }
         ArrayList<Integer> selectItem = new ArrayList<>(); // RadioButton 선택 한 값 담을 ArrayList ( TEXT )
         selectItem.clear();
@@ -293,20 +455,27 @@ public class SettingFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         int selIdx = selectItem.get(0);
-                        String name = mServerList.get(selIdx).getName();
-                        int serverId = mServerList.get(selIdx).getId();
+                        String name = mServerList.get(selIdx).getEventName();
+                        int serverId = mServerList.get(selIdx).getEventId();
                         mPreferenceUtil.putIntPreference(PreferenceUtil.KEY_SERVER_ID, serverId);
                         mPreferenceUtil.putStringPrefrence(PreferenceUtil.KEY_SERVER_NAME, name);
                         mainActivity.mServerId = serverId;
                         mTextServrName.setText("이벤트 서버 : " + name);
 
-                        mServer.getLastEvent(mLastEventCallBack, serverId);
+                        //mServer.getLastEvent(mLastEventCallBack, serverId);
+                        mainActivity.initEventInfo();
                     }
                 })
                 .setNegativeButton("취소", null)
                 .show();
     }
 
+    public RadioGroup.OnCheckedChangeListener mOnCheckChangeLister = new RadioGroup.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(RadioGroup group, int checkedId) {
+
+        }
+    };
     public View.OnClickListener mOnClicklistener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -347,23 +516,22 @@ public class SettingFragment extends Fragment {
 
                 showProgress(getActivity(), true);
 
-                StartEvent startEvent = new StartEvent();
-                startEvent.setStadiumServerId(mainActivity.mServerId);
-                startEvent.setVoteTime(getVoteTime());
-                //startEvent.setVoteTime(1);
-                startEvent.setSsaid(mainActivity.getSSAID());
+                try{
+                    int eventId = mainActivity.mServerId;
+                    int triggerType = mRadioTrigger.getCheckedRadioButtonId() == R.id.radio_only_time ? 0 : 1;
+                    int triggerTime = Integer.parseInt(mEditTriggerTime.getText().toString());
+                    int triggerVote = Integer.parseInt(mEditTriggerVote.getText().toString());;
+                    int continuityType = mCheckContinuous.isChecked() ? 1 : 0;
+                    int continuityTime = Integer.parseInt(mEditEventDelay.getText().toString());
+                    EventStartReqDto reqDto = new EventStartReqDto(eventId, triggerType, triggerTime,
+                            triggerVote, continuityType, continuityTime);
 
-                startEvent.setResultTime(getResultTime());
-                startEvent.setDefaultMusic(mainActivity.mStrDefault);
-                startEvent.setHomeMusic1(mainActivity.mStrHome1);
-                startEvent.setHomeMusic2(mainActivity.mStrHome2);
-                startEvent.setAwayMusic1(mainActivity.mStrAway1);
-                startEvent.setAwayMusic2(mainActivity.mStrAway2);
-                startEvent.setDefaultImage(mainActivity.mStrDefaultImg);
-                startEvent.setHomeImage(mainActivity.mStrHomeImg);
-                startEvent.setAwayImage(mainActivity.mStrAwayImg);
+                    mServer.eventStart(mEventStartCallBack, reqDto);
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
 
-                mServer.eventStart(mEventStartCallBack, startEvent);
             }
             else if(v.getId() == R.id.text_event_stop)
             {
@@ -376,7 +544,7 @@ public class SettingFragment extends Fragment {
                         .setPositiveButton("확인", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                mServer.eventStop(mEventStateCallBack, mainActivity.mEventId);
+                                mServer.eventStop(mEventStoptCallBack, mainActivity.mRunEventId);
                             }
                         })
                         .setNegativeButton("취소", new DialogInterface.OnClickListener() {
@@ -425,14 +593,15 @@ public class SettingFragment extends Fragment {
         });
     }
 
-    private SECallBack<StadiumServerResult> mServerListCallBack = new SECallBack<StadiumServerResult>()
+    private SECallBack<EventListResult> mServerListCallBack = new SECallBack<EventListResult>()
     {
         @Override
-        public void onResponseResult(Response<StadiumServerResult> response)
+        public void onResponseResult(Response<EventListResult> response)
         {
             if (response.isSuccessful())
             {
                 mServerList = response.body().getData();
+                int i = 0;
             }
         }
     };
@@ -451,10 +620,10 @@ public class SettingFragment extends Fragment {
             else
             {
                 // no event
-                mRadioVote.check(R.id.radio_vote_3m);
-                mRadioResult.check(R.id.radio_result_1m);
-                mainActivity.mEventId = -1;
-                mPreferenceUtil.putIntPreference(PreferenceUtil.KEY_EVENT_ID, mainActivity.mEventId);
+//                mRadioVote.check(R.id.radio_vote_3m);
+//                mRadioResult.check(R.id.radio_result_1m);
+//                mainActivity.mEventId = -1;
+//                mPreferenceUtil.putIntPreference(PreferenceUtil.KEY_EVENT_ID, mainActivity.mEventId);
             }
             showProgress(getActivity(), false);
         }
@@ -467,10 +636,11 @@ public class SettingFragment extends Fragment {
         {
             if (response.isSuccessful())
             {
+                mainActivity.mEventRepeat = true;
                 RunEvent runEvent = response.body().getData();
                 updateEventState(runEvent);
-                saveEventInfo((int)runEvent.getId());
-                mainActivity.startEventCount();
+//                saveEventInfo((int)runEvent.getId());
+                mainActivity.startEventStateCheck(runEvent.getId());
 
 //                MainActivity activity = (MainActivity) getActivity();
 //                if(activity != null)
@@ -480,11 +650,34 @@ public class SettingFragment extends Fragment {
             }
 
             showProgress(getActivity(), false);
-
-
         }
     };
 
+    private SECallBack<RunEventResult> mEventStoptCallBack = new SECallBack<RunEventResult>()
+    {
+        @Override
+        public void onResponseResult(Response<RunEventResult> response)
+        {
+            if (response.isSuccessful())
+            {
+                mainActivity.mEventRepeat = false;
+
+                RunEvent runEvent = response.body().getData();
+//                updateEventState(runEvent);
+//                saveEventInfo((int)runEvent.getId());
+//                mainActivity.startEventStateCheck(runEvent.getId());
+
+//                MainActivity activity = (MainActivity) getActivity();
+//                if(activity != null)
+//                    activity.startEventCount();
+
+                Toast.makeText(getContext(), "이벤트 를 종료 하였습니다.", Toast.LENGTH_SHORT).show();
+            }
+
+            showProgress(getActivity(), false);
+        }
+    };
+    
     private SECallBack<RunEventResult> mEventStateCallBack = new SECallBack<RunEventResult>()
     {
         @Override
@@ -493,14 +686,14 @@ public class SettingFragment extends Fragment {
             if (response.isSuccessful())
             {
                 RunEvent runEvent = response.body().getData();
-                updateEventState(runEvent);
+                mainActivity.updateEventInfo(runEvent);
                 saveEventInfo((int)runEvent.getId());
             }
             else
             {
                 // no event
-                mRadioVote.check(R.id.radio_vote_3m);
-                mRadioResult.check(R.id.radio_result_1m);
+//                mRadioVote.check(R.id.radio_vote_3m);
+//                mRadioResult.check(R.id.radio_result_1m);
             }
             showProgress(getActivity(), false);
         }

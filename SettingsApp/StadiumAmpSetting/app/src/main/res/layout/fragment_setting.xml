@@ -3,134 +3,433 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="20dp"
-    android:layout_marginRight="20dp"
-    android:layout_marginTop="30dp"
     android:orientation="vertical"
     tools:context=".fragment.SettingFragment">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:background="@drawable/bg_round_gray"
-        android:orientation="vertical">
-        <TextView
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="이벤트 시간 설정" />
-
-        <RadioGroup
-            android:id="@+id/radio_vote"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             android:orientation="vertical">
-            <RadioButton
-                android:id="@+id/radio_vote_3m"
+
+            <TextView
+                style="@style/black_16_font"
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="서버 위치 설정" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="투표시간 3분"/>
-            <RadioButton
-                android:id="@+id/radio_vote_5m"
+                android:background="@drawable/bg_round_gray"
+                android:orientation="vertical"
+                android:padding="10dp">
+
+                <TextView
+                    android:id="@+id/text_event_select"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_round_white"
+                    android:gravity="center"
+                    android:padding="15dp"
+                    android:text="이벤트 서버 선택" />
+            </LinearLayout>
+
+            <TextView
+                style="@style/black_16_font"
+                android:padding="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="이벤트 트리거 설정" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="투표시간 5분"/>
-        </RadioGroup>
+                android:background="@drawable/bg_round_gray"
+                android:orientation="horizontal"
+                android:padding="10dp">
 
-    </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:padding="10dp"
-        android:background="@drawable/bg_round_gray"
-        android:orientation="vertical">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="이벤트 시간 종료 후 결과 표시 설정" />
+                <RadioGroup
+                    android:id="@+id/radio_vote"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <RadioButton
+                        android:id="@+id/radio_only_time"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="지정 시간 동안" />
+                    <RadioButton
+                        android:id="@+id/radio_only_count"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="지정 투표 횟수" />
+                </RadioGroup>
 
-        <RadioGroup
-            android:id="@+id/radio_result"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <RadioButton
-                android:id="@+id/radio_result_1m"
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_round_white">
+                        <EditText
+                            android:id="@+id/edit_only_sec"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="120"
+                            android:padding="10dp"
+                            android:textAlignment="center"
+                            android:inputType="number"
+                            android:background="@null"
+                            android:textSize="15dp" />
+                        <TextView
+                            style="@style/black_14_font"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="10dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:text="초"/>
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/bg_round_white">
+                        <EditText
+                            android:id="@+id/edit_only_count"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="100"
+                            android:padding="10dp"
+                            android:textAlignment="center"
+                            android:inputType="number"
+                            android:background="@null"
+                            android:textSize="15dp" />
+                        <TextView
+                            style="@style/black_14_font"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="10dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:text="표"/>
+                    </RelativeLayout>
+                </LinearLayout>
+
+<!--                <LinearLayout-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:orientation="horizontal">-->
+
+<!--                        <RadioButton-->
+<!--                            android:id="@+id/radio_only_time"-->
+<!--                            android:layout_width="0dp"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_weight="1"-->
+<!--                            android:text="지정 시간 동안" />-->
+<!--                        <RelativeLayout-->
+<!--                            android:layout_width="0dp"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_weight="1"-->
+<!--                            android:background="@drawable/bg_round_white">-->
+<!--                            <EditText-->
+<!--                                android:id="@+id/edit_only_sec"-->
+<!--                                android:layout_width="match_parent"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:hint="120"-->
+<!--                                android:padding="10dp"-->
+<!--                                android:textAlignment="center"-->
+<!--                                android:inputType="number"-->
+<!--                                android:background="@null"-->
+<!--                                android:textSize="15dp" />-->
+<!--                            <TextView-->
+<!--                                style="@style/black_14_font"-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:layout_marginRight="10dp"-->
+<!--                                android:layout_alignParentRight="true"-->
+<!--                                android:layout_centerVertical="true"-->
+<!--                                android:text="초"/>-->
+<!--                        </RelativeLayout>-->
+
+
+<!--                    </LinearLayout>-->
+
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:orientation="horizontal">-->
+
+<!--                        <RadioButton-->
+<!--                            android:id="@+id/radio_only_count"-->
+<!--                            android:layout_width="0dp"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_weight="1"-->
+<!--                            android:text="지정 투표 횟수" />-->
+
+<!--                        <RelativeLayout-->
+<!--                            android:layout_width="0dp"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_weight="1"-->
+<!--                            android:background="@drawable/bg_round_white">-->
+<!--                            <EditText-->
+<!--                                android:id="@+id/edit_only_count"-->
+<!--                                android:layout_width="match_parent"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:hint="100"-->
+<!--                                android:padding="10dp"-->
+<!--                                android:textAlignment="center"-->
+<!--                                android:inputType="number"-->
+<!--                                android:background="@null"-->
+<!--                                android:textSize="15dp" />-->
+<!--                            <TextView-->
+<!--                                style="@style/black_14_font"-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:layout_marginRight="10dp"-->
+<!--                                android:layout_alignParentRight="true"-->
+<!--                                android:layout_centerVertical="true"-->
+<!--                                android:text="표"/>-->
+<!--                        </RelativeLayout>-->
+<!--                    </LinearLayout>-->
+
+<!--                </RadioGroup>-->
+
+            </LinearLayout>
+
+            <TextView
+                style="@style/black_16_font"
+                android:padding="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="이벤트 세부 설정" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="결과표시 1분"/>
-            <RadioButton
-                android:id="@+id/radio_result_3m"
+                android:background="@drawable/bg_round_gray"
+                android:orientation="vertical"
+                android:padding="10dp">
+
+                <TextView
+                    style="@style/black_14_font"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="이벤트 기본 이미지" />
+
+                <TextView
+                    android:id="@+id/text_event_default_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/bg_round_white"
+                    android:gravity="center"
+                    android:padding="15dp"
+                    android:text="스마트폰 안에 파일을 선택하세요"
+                    android:textSize="15dp" />
+
+                <TextView
+                    style="@style/black_14_font"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:text="Home Team 이벤트 이미지" />
+
+                <TextView
+                    android:id="@+id/text_event_home_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/bg_round_white"
+                    android:gravity="center"
+                    android:padding="15dp"
+                    android:text="스마트폰 안에 파일을 선택하세요"
+                    android:textSize="15dp" />
+
+                <TextView
+                    style="@style/black_14_font"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:text="Away Team 이벤트 이미지" />
+
+                <TextView
+                    android:id="@+id/text_event_away_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/bg_round_white"
+                    android:gravity="center"
+                    android:padding="15dp"
+                    android:text="스마트폰 안에 파일을 선택하세요"
+                    android:textSize="15dp" />
+
+                <TextView
+                    style="@style/black_14_font"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:text="Web Stat URL" />
+
+                <EditText
+                    android:id="@+id/edit_web_stat_url"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/bg_round_white"
+                    android:hint="게임 정보가 있는 URL 을 입력하세요"
+                    android:padding="10dp"
+                    android:textAlignment="center"
+                    android:textSize="15dp" />
+
+                <TextView
+                    style="@style/black_14_font"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:text="이벤트 QR코드 이미지" />
+
+                <TextView
+                    android:id="@+id/text_event_qr_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/bg_round_white"
+                    android:gravity="center"
+                    android:padding="15dp"
+                    android:text="스마트폰 안에 파일을 선택하세요"
+                    android:textSize="15dp" />
+
+                <TextView
+                    style="@style/black_14_font"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:text="광고 이미지 " />
+
+                <TextView
+                    android:id="@+id/text_event_adv_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/bg_round_white"
+                    android:gravity="center"
+                    android:padding="15dp"
+                    android:text="스마트폰 안에 파일을 선택하세요"
+                    android:textSize="15dp" />
+
+            </LinearLayout>
+
+            <TextView
+                style="@style/black_16_font"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="10dp"
+                android:layout_marginTop="5dp"
+                android:text="이벤트 연속 설정" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="결과표시 3분"/>
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingBottom="10dp"
+                android:background="@drawable/bg_round_gray"
+                android:orientation="vertical">
 
-        </RadioGroup>
+                <CheckBox
+                    android:id="@+id/check_event_continuous"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="이벤트 연속 진행" />
 
-    </LinearLayout>
+                <TextView
+                    style="@style/black_14_font"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="5dp"
+                    android:text="연속 이벤트 딜레이 시간" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:padding="10dp"
-        android:background="@drawable/bg_round_gray"
-        android:orientation="vertical">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="서버 위치 설정" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:padding="5dp"
+                    android:background="@drawable/bg_round_white">
+                    <EditText
+                        android:id="@+id/edit_delay_sec"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="30"
+                        android:padding="10dp"
+                        android:textAlignment="center"
+                        android:inputType="number"
+                        android:background="@null"
+                        android:textSize="15dp" />
+                    <TextView
+                        style="@style/black_14_font"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:text="초"/>
+                </RelativeLayout>
 
-        <TextView
-            android:id="@+id/text_event_select"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="10dp"
-            android:gravity="center"
-            android:padding="15dp"
-            android:background="@drawable/bg_round_white"
-            android:text="이벤트 서버 선택" />
+            </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp"
+                android:orientation="vertical"
+                android:padding="10dp">
 
-    </LinearLayout>
+                <TextView
+                    android:id="@+id/text_event_start"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_round_06141f"
+                    android:gravity="center"
+                    android:padding="15dp"
+                    android:text="이벤트 시작"
+                    android:textColor="@color/white" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:padding="10dp"
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/text_event_server"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="이벤트 서버 : " />
+                <TextView
+                    android:id="@+id/text_event_stop"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_round_gray"
+                    android:gravity="center"
+                    android:padding="15dp"
+                    android:text="이벤트 종료"
+                    android:textColor="#c2c2c2" />
 
-        <TextView
-            android:id="@+id/text_event_start"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="10dp"
-            android:gravity="center"
-            android:padding="15dp"
-            android:textColor="@color/white"
-            android:background="@drawable/bg_round_06141f"
-            android:text="이벤트 시작" />
+            </LinearLayout>
 
-        <TextView
-            android:id="@+id/text_event_stop"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="10dp"
-            android:gravity="center"
-            android:padding="15dp"
-            android:textColor="#c2c2c2"
-            android:background="@drawable/bg_round_gray"
-            android:text="이벤트 종료" />
+        </LinearLayout>
+    </ScrollView>
 
-
-    </LinearLayout>
 
 </LinearLayout>

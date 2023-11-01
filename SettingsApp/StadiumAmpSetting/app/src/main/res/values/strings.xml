@@ -8,4 +8,8 @@
         <item>맥북</item>
         <item>애플워치</item>
     </string-array>
+    <string name="title_activity_splash">SplashActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_fulls_image">FullsImageActivity</string>
 </resources>

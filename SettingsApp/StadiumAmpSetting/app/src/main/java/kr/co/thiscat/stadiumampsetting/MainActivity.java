@@ -2,45 +2,72 @@ package kr.co.thiscat.stadiumampsetting;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.DownloadManager;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.StrictMode;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.stream.Collectors;
 
+import kr.co.thiscat.stadiumampsetting.fragment.AwaySettingFragment;
 import kr.co.thiscat.stadiumampsetting.fragment.EventFragment;
-import kr.co.thiscat.stadiumampsetting.fragment.EventSettingFragment;
+import kr.co.thiscat.stadiumampsetting.fragment.HomeSettingFragment;
 import kr.co.thiscat.stadiumampsetting.fragment.SettingFragment;
 import kr.co.thiscat.stadiumampsetting.server.SECallBack;
 import kr.co.thiscat.stadiumampsetting.server.ServerManager;
+import kr.co.thiscat.stadiumampsetting.server.entity.DownloadItem;
 import kr.co.thiscat.stadiumampsetting.server.entity.EventInfo;
 import kr.co.thiscat.stadiumampsetting.server.entity.EventInfoResult;
 import kr.co.thiscat.stadiumampsetting.server.entity.RunEvent;
 import kr.co.thiscat.stadiumampsetting.server.entity.RunEventResult;
+import kr.co.thiscat.stadiumampsetting.server.entity.result.EventResult;
+import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventDto;
+import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventImageDto;
+import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventMusicDto;
+import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventStartReqDto;
 import retrofit2.Response;
 
 
 public class MainActivity extends AppCompatActivity {
-    private EventSettingFragment eventSettingFragment;
+    private HomeSettingFragment homeSettingFragment;
+    private AwaySettingFragment awaySettingFragment;
     private EventFragment eventFragment;
     private SettingFragment settingFragment;
+    private FragmentManager fm;
+    Fragment active;
 
-    LinearLayout home_ly;
+    FrameLayout home_fl;
     BottomNavigationView bottomNavigationView;
 
     private ServerManager mServer;
@@ -64,39 +91,56 @@ public class MainActivity extends AppCompatActivity {
     public String mStrDefaultImg;
     public String mStrHomeImg;
     public String mStrAwayImg;
-    public String mStrWebUrl;
+//    public String mStrWebUrl;
 
     public boolean mWebViewState = false;
 
     protected ProgressDialog mProgress = null;
 
     public int mServerId;
-    public int mEventId;
-    public EventInfo currEventInfo = null;
+    public int mRunEventId = -1;
     private Timer mTimer;
+
+    public EventDto mEventDto = null;
+    public RunEvent mRunEvent = null;
+    public boolean mEventRepeat = false;
+
+    public String contentDirPath = Environment.getExternalStoragePublicDirectory(
+            Environment.DIRECTORY_DOWNLOADS) + "/StadiumAmp/";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        getSupportActionBar().setTitle("stadiumAMP");
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
+
+        getSupportActionBar().setTitle("stadiumAMP Setting App");
         mPreferenceUtil = new PreferenceUtil(MainActivity.this);
         mServer = ServerManager.getInstance(MainActivity.this);
 
         mServerId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_SERVER_ID, -1);
-        mEventId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_EVENT_ID, -1);
-        home_ly = findViewById(R.id.home_ly);
+        //mEventId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_EVENT_ID, -1);
+        //home_ly = findViewById(R.id.home_ly);
+        home_fl = findViewById(R.id.main_container);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
 
-        eventSettingFragment = EventSettingFragment.getInstance();
+        homeSettingFragment = HomeSettingFragment.getInstance();
+        awaySettingFragment = AwaySettingFragment.getInstance();
         settingFragment = SettingFragment.getInstance();
         eventFragment = EventFragment.getInstance();
 
         SettingListener(); //리스너 등록
 
         //맨 처음 시작할 탭 설정
-        bottomNavigationView.setSelectedItemId(R.id.tab_event_setting);
-
+        fm = getSupportFragmentManager();
+        fm.beginTransaction().add(R.id.main_container, awaySettingFragment).hide(awaySettingFragment).commit();
+        fm.beginTransaction().add(R.id.main_container, eventFragment).hide(eventFragment).commit();
+        fm.beginTransaction().add(R.id.main_container, homeSettingFragment).hide(homeSettingFragment).commit();
+        fm.beginTransaction().add(R.id.main_container, settingFragment).commit();
+        active = homeSettingFragment;
+        bottomNavigationView.setSelectedItemId(R.id.tab_setting);
 
 
         //mMediaPlayer = new MediaPlayer();
@@ -106,26 +150,53 @@ public class MainActivity extends AppCompatActivity {
         mPermUtil.onSetPermission();
 
         mProgress = new ProgressDialog(this);
-        mTimer = new Timer();
+        //mTimer = new Timer();
         initEventInfo();
+
+        IntentFilter completeFilter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+        registerReceiver(downloadCompleteReceiver, completeFilter);
+    }
+
+    public String getSSAID()
+    {
+        String android_id = Settings.Secure.getString(getApplicationContext().getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+        return android_id;
     }
 
     @Override
     protected void onResume() {
 
         super.onResume();
-
+        if(mRunEventId > 0)
+        {
+            //mTimer.schedule(timerTask, 0, 1000);
+            startEventStateCheck(mRunEventId);
+            //mServer.getRunEventState(mFirstEventStateCallBack, mRunEventId);
+        }
     }
 
-    public String getSSAID()
-    {
-        String android_id = Settings.Secure.getString(getApplicationContext().getContentResolver(),
-                        Settings.Secure.ANDROID_ID);
-        return android_id;
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(mTimer != null)
+        {
+            mTimer.cancel();
+            mTimer = null;
+        }
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        unregisterReceiver(downloadCompleteReceiver);
+
+        if(mTimer != null)
+        {
+            mTimer.cancel();
+            mTimer = null;
+        }
+
 //        mMediaPlayer.stop();
 //        mMediaPlayer.release();
 //        try {
@@ -157,6 +228,32 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+
+
+    public Uri getContentUri(String name){
+        File outputFile = new File(contentDirPath+name);
+//        if (!outputFile.getParentFile().exists()) {
+//            outputFile.getParentFile().mkdirs();
+//        }
+        if(outputFile.exists())
+            return Uri.fromFile(outputFile);
+        else
+            return null;
+    }
+
+    public String getTypeImage(ArrayList<EventImageDto> imageDtos, String typeStr){
+        if(imageDtos == null)
+            return null;
+        String result = null;
+        for(EventImageDto imageDto : imageDtos){
+            if(imageDto.getImageType().equalsIgnoreCase(typeStr)){
+                result = imageDto.getImageName();
+                break;
+            }
+        }
+        return result;
     }
 
     @Override
@@ -192,30 +289,80 @@ public class MainActivity extends AppCompatActivity {
         if(mServerId > 0)
         {
             showProgress(MainActivity.this, true);
-            mServer.getEventInfo(mEventInfoCallBack, mServerId, getSSAID());
+            mServer.getEvent(mEventCallBack, mServerId);
+        }
+        else{
+            bottomNavigationView.setSelectedItemId(R.id.tab_setting);
         }
     }
 
-    public void startEventCount()
+//    TimerTask timerTask = new EventTimerTask() {
+//        @Override
+//        public void run() {
+//            mServer.getRunEventState(mEventStateCallBack, mEventId);
+//        }
+//    };
+
+    public void startEventStateCheck(long eventId)
     {
-        //int serverId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_SERVER_ID, -1);
-        //mEventId = 1;
-        if(mServerId > 0)
+        mRunEventId = (int)eventId;
+        if(mTimer != null)
         {
-            if(mMediaPlayer != null ){
-                if( mMediaPlayer.isPlaying())
-                    mMediaPlayer.stop();
-                mMediaPlayer.release();
-                mMediaPlayer = null;
-            }
-            //mServer.getLastEvent(mLastEventCallBack, mServerId);
-            mServer.getEventInfo(mEventInfoCallBack, mServerId, getSSAID());
+            mTimer.cancel();
+            mTimer = null;
         }
-    }
+        mTimer = new Timer();
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                if(mRunEvent != null && mRunEvent.getId() == mRunEventId)
+                {
+                    if(mRunEvent.getEventState().equalsIgnoreCase("STOP"))
+                    {
+                        mTimer.cancel();
+                        mTimer = null;
 
-    public void stopEvent()
-    {
+                        Log.d("AAAA", "contype : " + mEventDto.getContinuityType());
+                        if(mEventDto.getContinuityType() == 1 && mEventRepeat)
+                        {
+                            long delayTime = mEventDto.getContinuityTime() * 1000;
+                            Log.d("AAAA", "delayTime : " + delayTime);
+                            runOnUiThread(() -> {
+                                new Handler().postDelayed(new Runnable() {// 1 초 후에 실행
+                                    @Override
+                                    public void run() {
+                                        //mHandler.sendEmptyMessage(0);	// 실행이 끝난후 알림
+                                        EventStartReqDto reqDto = new EventStartReqDto(mServerId, -1, -1, -1, -1, -1);
+                                        mServer.eventStart(mEventStartCallBack, reqDto);
+                                    }
+                                }, delayTime);
+                            });
+//                            new Handler().postDelayed(new Runnable() {// 1 초 후에 실행
+//                                @Override
+//                                public void run() {
+//                                    //mHandler.sendEmptyMessage(0);	// 실행이 끝난후 알림
+//                                    EventStartReqDto reqDto = new EventStartReqDto(mServerId, -1, -1, -1, -1, -1);
+//                                    mServer.eventStart(mEventStartCallBack, reqDto);
+//                                }
+//                            }, delayTime);
 
+//                            Thread.sleep();
+//
+//                            mTimerTask = new EventTimerTask();
+//                            long delayTime = mEventDto.getContinuityTime() * 1000;
+//                            mTimer.schedule(mTimerTask, delayTime, 1000);
+
+                        }
+                        return;
+                    }
+                }
+                mServer.getRunEventState(mEventStateCallBack, mRunEventId);
+            }
+        };
+        mTimer.schedule(timerTask, 0, 1000);
+
+//        mTimerTask = new EventTimerTask();
+//        mTimer.schedule(mTimerTask, 0, 1000);
     }
 
     private void SettingListener() {
@@ -223,32 +370,31 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setOnNavigationItemSelectedListener(new TabSelectedListener());
     }
 
-
     class TabSelectedListener implements BottomNavigationView.OnNavigationItemSelectedListener{
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
             switch (menuItem.getItemId()) {
-                case R.id.tab_event_setting: {
-                    Log.d("AAAA", "----- onNavigationItemSelected : " + eventSettingFragment);
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.home_ly, eventSettingFragment)
-                            .commit();
+                case R.id.tab_home_setting: {
+                    fm.beginTransaction().hide(active).show(homeSettingFragment).commit();
+                    active = homeSettingFragment;
+                    return true;
+                }
+                case R.id.tab_away_setting: {
+                    fm.beginTransaction().hide(active).show(awaySettingFragment).commit();
+                    active = awaySettingFragment;
                     return true;
                 }
                 case R.id.tab_setting: {
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.home_ly, settingFragment)
-                            .commit();
+                    fm.beginTransaction().hide(active).show(settingFragment).commit();
+                    active = settingFragment;
                     return true;
                 }
                 case R.id.tab_event: {
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.home_ly, eventFragment)
-                            .commit();
+                    fm.beginTransaction().hide(active).show(eventFragment).commit();
+                    active = eventFragment;
                     return true;
                 }
             }
-
             return false;
         }
     }
@@ -318,40 +464,132 @@ public class MainActivity extends AppCompatActivity {
 //                    e.printStackTrace();
 //                }
 
-                startDefaultMediaPlayer();
-
-                if(mTimer != null)
-                {
-                    mTimer.cancel();
-                    mTimer = null;
-                }
-                mTimer = new Timer();
-                TimerTask timerTask = new TimerTask() {
-                    @Override
-                    public void run() {
-                        Date currentDate = Calendar.getInstance().getTime();
-                        long diffTime = endDate.getTime() - currentDate.getTime();
-                        if(diffTime > 0){
-                            if(eventFragment != null){
-                                eventFragment.updateTimer();
-                            }
-                        }
-                        else {
-                            mTimer.cancel();
-                            mTimer = null;
-                            if(settingFragment != null){
-                                settingFragment.updateEventState(false);
-                            }
-                            //int serverId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_SERVER_ID, -1);
-                            Log.d("AAAA", "serverid : " + mServerId);
-                            mServer.getLastEvent(mEventStateCallBack, mServerId);
-                        }
-                    }
-                };
-                mTimer.schedule(timerTask, 0, 1000);
+//                startDefaultMediaPlayer();
+//
+//                if(mTimer != null)
+//                {
+//                    mTimer.cancel();
+//                    mTimer = null;
+//                }
+//                mTimer = new Timer();
+//                TimerTask timerTask = new TimerTask() {
+//                    @Override
+//                    public void run() {
+//                        Date currentDate = Calendar.getInstance().getTime();
+//                        long diffTime = endDate.getTime() - currentDate.getTime();
+//                        if(diffTime > 0){
+//                            if(eventFragment != null){
+//                                eventFragment.updateTimer();
+//                            }
+//                        }
+//                        else {
+//                            mTimer.cancel();
+//                            mTimer = null;
+//                            if(settingFragment != null){
+//                                settingFragment.updateEventState(false);
+//                            }
+//                            //int serverId = mPreferenceUtil.getIntPreference(PreferenceUtil.KEY_SERVER_ID, -1);
+//                            Log.d("AAAA", "serverid : " + mServerId);
+//                            //mServer.getLastEvent(mEventStateCallBack, mServerId);
+//                        }
+//                    }
+//                };
+//                mTimer.schedule(timerTask, 0, 1000);
             }
         }catch (Exception e)
         {
+            e.printStackTrace();
+        }
+    }
+
+    public String getHomeMusic(RunEvent runEvent){
+        int max = runEvent.getHome1Count();
+        String name = homeSettingFragment.mTextHome1.getText().toString();
+        if(max < runEvent.getHome2Count()){
+            max = runEvent.getHome2Count();
+            name = homeSettingFragment.mTextHome2.getText().toString();
+        }
+        if(max < runEvent.getHome3Count()){
+            max = runEvent.getHome3Count();
+            name = homeSettingFragment.mTextHome3.getText().toString();
+        }
+        if(max < runEvent.getHome4Count()){
+            max = runEvent.getHome4Count();
+            name = homeSettingFragment.mTextHome4.getText().toString();
+        }
+        if(max < runEvent.getHome5Count()){
+            max = runEvent.getHome5Count();
+            name = homeSettingFragment.mTextHome5.getText().toString();
+        }
+        return name;
+    }
+
+    public String getAwayMusic(RunEvent runEvent){
+        int max = runEvent.getAway1Count();
+        String name = awaySettingFragment.mTextAway1.getText().toString();
+        if(max < runEvent.getAway2Count()){
+            max = runEvent.getAway2Count();
+            name = awaySettingFragment.mTextAway2.getText().toString();
+        }
+        if(max < runEvent.getAway3Count()){
+            max = runEvent.getAway3Count();
+            name = awaySettingFragment.mTextAway3.getText().toString();
+        }
+        if(max < runEvent.getAway4Count()){
+            max = runEvent.getAway4Count();
+            name = awaySettingFragment.mTextAway4.getText().toString();
+        }
+        if(max < runEvent.getAway5Count()){
+            max = runEvent.getAway5Count();
+            name = awaySettingFragment.mTextAway5.getText().toString();
+        }
+        return name;
+    }
+
+    public void playMusic(RunEvent runEvent){
+        try{
+            String strUri = null;
+            if(runEvent.getHomeCount() >= runEvent.getAwayCount())
+            {
+                strUri = getHomeMusic(runEvent);
+            }
+            else
+            {
+                strUri = getAwayMusic(runEvent);
+            }
+
+            if(strUri != null && strUri.length() > 0)
+            {
+                if(mDefaultMediaPlayer != null && mDefaultMediaPlayer.isPlaying()){
+                    psusePos = mDefaultMediaPlayer.getCurrentPosition();
+                    mDefaultMediaPlayer.pause();
+                }
+
+                if(mMediaPlayer == null)
+                    mMediaPlayer = new MediaPlayer();
+
+                //strUri = "도시인.mp3";
+                Uri uri = getContentUri(strUri);
+                mMediaPlayer.setDataSource(getApplicationContext(), uri);
+
+//                File medFile = new File(contentDirPath+strUri);
+//                FileInputStream fs = new FileInputStream(medFile);
+//                FileDescriptor fd = fs.getFD();
+//                mMediaPlayer.reset();
+//                mMediaPlayer.setDataSource(fd);
+
+                mMediaPlayer.prepare();
+                mMediaPlayer.start();
+                mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        mMediaPlayer.release();
+                        mMediaPlayer = null;
+                        startDefaultMediaPlayer();
+                    }
+                });
+            }
+        }catch (Exception e){
             e.printStackTrace();
         }
     }
@@ -389,53 +627,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private SECallBack<EventInfoResult> mEventInfoCallBack = new SECallBack<EventInfoResult>()
-    {
-        @Override
-        public void onResponseResult(Response<EventInfoResult> response)
-        {
-            if (response.isSuccessful())
-            {
-                currEventInfo = response.body().getData();
-                mStrDefault = currEventInfo.getDefaultMusic();
-                mStrHome1 = currEventInfo.getHomeMusic1();
-                mStrHome2 = currEventInfo.getHomeMusic2();
-                mStrAway1 = currEventInfo.getAwayMusic1();
-                mStrAway2 = currEventInfo.getAwayMusic2();
-                mStrDefaultImg = currEventInfo.getDefaultImage();
-                mStrHomeImg = currEventInfo.getHomeImage();
-                mStrAwayImg = currEventInfo.getAwayImage();
-                mStrWebUrl = currEventInfo.getWebUrl();
-
-                eventSettingFragment.updateMediaData();
-
-                updateResultTime(currEventInfo.getStartDateTime(), currEventInfo.getVoteTime());
-            }
-            else
-            {
-                // no event
-            }
-            showProgress(MainActivity.this, false);
-        }
-    };
-
-    private SECallBack<RunEventResult> mLastEventCallBack = new SECallBack<RunEventResult>()
-    {
-        @Override
-        public void onResponseResult(Response<RunEventResult> response)
-        {
-            if (response.isSuccessful())
-            {
-                RunEvent runEvent = response.body().getData();
-                updateResultTime(runEvent.getStartDateTime(), runEvent.getVoteTime());
-            }
-            else
-            {
-                // no event
-            }
-        }
-    };
-
     private SECallBack<RunEventResult> mEventStateCallBack = new SECallBack<RunEventResult>()
     {
         @Override
@@ -444,53 +635,79 @@ public class MainActivity extends AppCompatActivity {
             if (response.isSuccessful())
             {
                 try{
-                    String strUri = "";
-                    RunEvent runEvent = response.body().getData();
-                    if(runEvent.getHomeCount() >= runEvent.getAwayCount())
-                    {
-                        if(runEvent.getHome1Count() > runEvent.getHome2Count())
-                            strUri = mStrHome1;
-                        else
-                            strUri = mStrHome2;
+                    mRunEvent = response.body().getData();
+
+                    settingFragment.updateEventState(mRunEvent);
+                    eventFragment.updateEventState(mRunEvent);
+
+                    if(mRunEvent.getEventState().equalsIgnoreCase("STOP")){
+                        playMusic(mRunEvent);
                     }
-                    else
-                    {
-                        if(runEvent.getAway1Count() > 0)
-                            strUri = mStrAway1;
-                        else
-                            strUri = mStrAway2;
-                    }
-//                    if(strUri == null || strUri.length() < 1)
-//                        strUri = mStrDefault;
+//                    if(runEvent.getHomeCount() >= runEvent.getAwayCount())
+//                    {
+//                        if(runEvent.getHome1Count() > runEvent.getHome2Count())
+//                            strUri = mStrHome1;
+//                        else
+//                            strUri = mStrHome2;
+//                    }
+//                    else
+//                    {
+//                        if(runEvent.getAway1Count() > 0)
+//                            strUri = mStrAway1;
+//                        else
+//                            strUri = mStrAway2;
+//                    }
+//
+//                    if(strUri != null && strUri.length() > 0)
+//                    {
+//                        if(mDefaultMediaPlayer != null && mDefaultMediaPlayer.isPlaying()){
+//                            psusePos = mDefaultMediaPlayer.getCurrentPosition();
+//                            mDefaultMediaPlayer.pause();
+//                        }
+//
+//                        Uri uri = Uri.parse(strUri);
+//                        if(mMediaPlayer == null)
+//                            mMediaPlayer = new MediaPlayer();
+//                        mMediaPlayer.setDataSource(getApplicationContext(), uri);
+//                        mMediaPlayer.prepare();
+//                        mMediaPlayer.start();
+//                        mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+//                            @Override
+//                            public void onCompletion(MediaPlayer mp) {
+//                                mMediaPlayer.release();
+//                                mMediaPlayer = null;
+//                                startDefaultMediaPlayer();
+//                            }
+//                        });
+//                    }
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
 
-                    Log.d("AAAA", "player Uri : " + strUri);
-                    if(strUri != null && strUri.length() > 0)
-                    {
-                        if(mDefaultMediaPlayer != null && mDefaultMediaPlayer.isPlaying()){
-                            psusePos = mDefaultMediaPlayer.getCurrentPosition();
-//                            mDefaultMediaPlayer.stop();
-//                            mDefaultMediaPlayer.release();
-//                            mDefaultMediaPlayer = null;
-                            mDefaultMediaPlayer.pause();
+            }
+            else
+            {
+                // no event
+            }
+        }
+    };
 
-                        }
 
-                        Uri uri = Uri.parse(strUri);
-//                        mMediaPlayer.setScreenOnWhilePlaying(true);
-//                        mMediaPlayer.setWakeMode(getApplicationContext(), PowerManager.ON_AFTER_RELEASE);
-                        if(mMediaPlayer == null)
-                            mMediaPlayer = new MediaPlayer();
-                        mMediaPlayer.setDataSource(getApplicationContext(), uri);
-                        mMediaPlayer.prepare();
-                        mMediaPlayer.start();
-                        mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                            @Override
-                            public void onCompletion(MediaPlayer mp) {
-                                mMediaPlayer.release();
-                                mMediaPlayer = null;
-                                startDefaultMediaPlayer();
-                            }
-                        });
+    private SECallBack<RunEventResult> mFirstEventStateCallBack = new SECallBack<RunEventResult>()
+    {
+        @Override
+        public void onResponseResult(Response<RunEventResult> response)
+        {
+            if (response.isSuccessful())
+            {
+                try{
+                    mRunEvent = response.body().getData();
+
+                    settingFragment.updateEventState(mRunEvent);
+                    eventFragment.updateEventState(mRunEvent);
+                    if(mRunEvent.getEventState().equalsIgnoreCase("START")){
+                        startEventStateCheck(mRunEvent.getId());
                     }
                 }catch (Exception e)
                 {
@@ -501,6 +718,189 @@ public class MainActivity extends AppCompatActivity {
             else
             {
                 // no event
+            }
+        }
+    };
+
+    /// V2
+    private DownloadManager mDownloadManager;
+    private Long mDownloadQueueId;
+    ArrayList<DownloadItem> mDownloadList = new ArrayList<>();
+    private int mDownloadPos = 0;
+
+    private void startDownload(int position){
+        if(mDownloadList.size() > position){
+            DownloadItem item = mDownloadList.get(position);
+            if(isExistFile(item.getName())){
+                startDownload(position+1);
+            }else{
+                Uri uri = Uri.parse(item.getUrl());
+                downloadRequest(uri, item.getName());
+                mDownloadPos = position;
+            }
+
+        }
+    }
+
+    private void downloadRequest(Uri url, String name) {
+        if (mDownloadManager == null) {
+            mDownloadManager = (DownloadManager) getApplicationContext().getSystemService(Context.DOWNLOAD_SERVICE);
+        }
+        File outputFile = new File(contentDirPath+name);
+//        if (!outputFile.getParentFile().exists()) {
+//            outputFile.getParentFile().mkdirs();
+//        }
+
+        Uri downloadUri = url;
+        DownloadManager.Request request = new DownloadManager.Request(downloadUri);
+        List<String> pathSegmentList = downloadUri.getPathSegments();
+        request.setTitle("다운로드 항목");
+        request.setDestinationUri(Uri.fromFile(outputFile));
+        request.setAllowedOverMetered(true);
+
+        mDownloadQueueId = mDownloadManager.enqueue(request);
+    }
+
+    private BroadcastReceiver downloadCompleteReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            long reference = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+
+            if(mDownloadQueueId == reference){
+                DownloadManager.Query query = new DownloadManager.Query();  // 다운로드 항목 조회에 필요한 정보 포함
+                query.setFilterById(reference);
+                Cursor cursor = mDownloadManager.query(query);
+
+                cursor.moveToFirst();
+
+                int columnIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
+                int columnReason = cursor.getColumnIndex(DownloadManager.COLUMN_REASON);
+
+                int status = cursor.getInt(columnIndex);
+                int reason = cursor.getInt(columnReason);
+
+                cursor.close();
+
+                switch (status) {
+                    case DownloadManager.STATUS_SUCCESSFUL :
+                        //Toast.makeText(mContext, "다운로드를 완료하였습니다.", Toast.LENGTH_SHORT).show();
+                        // next download start
+                        startDownload(mDownloadPos+1);
+                        break;
+
+                    case DownloadManager.STATUS_PAUSED :
+                        //Toast.makeText(mContext, "다운로드가 중단되었습니다.", Toast.LENGTH_SHORT).show();
+                        break;
+
+                    case DownloadManager.STATUS_FAILED :
+                        //Toast.makeText(mContext, "다운로드가 취소되었습니다.", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        }
+    };
+
+    private boolean isExistFile(String name){
+        File file = new File(contentDirPath);
+        if(!file.exists())
+        {
+            file.mkdirs();
+            return false;
+        }
+
+        String files[] = file.list();
+        boolean result = false;
+        for(String fileName : files){
+            if(name.equalsIgnoreCase(fileName)){
+                result = true;
+                break;
+            }
+        }
+
+        return result;
+    }
+
+    public void updateEventInfo(RunEvent runEvent)
+    {
+        homeSettingFragment.setEventInfo(runEvent.getEventMusicList());
+        awaySettingFragment.setEventInfo(runEvent.getEventMusicList());
+        settingFragment.updateEventInfo(runEvent);
+        eventFragment.updateEventInfo(runEvent);
+    }
+
+    private void setEventInfo(EventDto eventDto)
+    {
+//        homeSettingFragment.setEventInfo(eventDto);
+//        awaySettingFragment.setEventInfo(eventDto);
+        homeSettingFragment.setEventInfo(eventDto.getEventMusicList());
+        awaySettingFragment.setEventInfo(eventDto.getEventMusicList());
+        settingFragment.setEventInfo(eventDto);
+        eventFragment.setEventInfo(eventDto);
+    }
+
+    private SECallBack<EventResult> mEventCallBack = new SECallBack<EventResult>()
+    {
+        @Override
+        public void onResponseResult(Response<EventResult> response)
+        {
+            if (response.isSuccessful())
+            {
+                mDownloadList.clear();
+
+                mEventDto = response.body().getData();
+                ArrayList<EventMusicDto> musicList = mEventDto.getEventMusicList();
+                if(musicList != null && musicList.size() > 0){
+                    List<DownloadItem> downloadItems = musicList.stream()
+                            .map(x -> new DownloadItem(x.getMusicName(), x.getMusicUrl()))
+                            .collect(Collectors.toList());
+
+                    mDownloadList.addAll(downloadItems);
+                }
+
+                ArrayList<EventImageDto> imageList = mEventDto.getEventImageList();
+                if(imageList != null && imageList.size() > 0){
+                    List<DownloadItem> downloadItems = imageList.stream()
+                            .map(x -> new DownloadItem(x.getImageName(), x.getImageUrl()))
+                            .collect(Collectors.toList());
+
+                    mDownloadList.addAll(downloadItems);
+                }
+
+                if(mDownloadList != null && mDownloadList.size() > 0)
+                {
+                    startDownload(0);
+                }
+                setEventInfo(mEventDto);
+                //startEventStateCheck(mEventDto.getRunEvent());
+                mServer.getRunEventState(mFirstEventStateCallBack, mEventDto.getRunEvent());
+            }
+            else
+            {
+                // no event
+            }
+            showProgress(MainActivity.this, false);
+        }
+    };
+
+    private SECallBack<RunEventResult> mEventStartCallBack = new SECallBack<RunEventResult>()
+    {
+        @Override
+        public void onResponseResult(Response<RunEventResult> response)
+        {
+            if (response.isSuccessful()) {
+                mRunEvent = response.body().getData();
+
+                settingFragment.updateEventState(mRunEvent);
+                eventFragment.updateEventState(mRunEvent);
+
+                updateEventInfo(mRunEvent);
+
+                startEventStateCheck(mRunEvent.getId());
+                Toast.makeText(getApplicationContext(), "이벤트 를 시작 하였습니다.", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                Log.d("AAAA", "----- Start Event fail : " );
             }
         }
     };

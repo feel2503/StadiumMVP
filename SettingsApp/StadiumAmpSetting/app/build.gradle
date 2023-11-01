@@ -2,8 +2,8 @@ plugins {
     id 'com.android.application'
 }
 ext {
-    AppVersionCode = 100005
-    AppVersionName = "0.5"
+    AppVersionCode = 10010
+    AppVersionName = "0.0.10"
 }
 
 android {
@@ -21,7 +21,7 @@ android {
     defaultConfig {
         applicationId "kr.co.thiscat.stadiumampsetting"
         minSdk 28
-        targetSdk 30
+        targetSdk 31
         versionCode AppVersionCode
         versionName AppVersionName
 
@@ -42,6 +42,9 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    buildFeatures {
+        viewBinding true
     }
 }
 
