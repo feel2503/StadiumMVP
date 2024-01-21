@@ -2,6 +2,7 @@ package kr.co.thiscat.stadiumampsetting;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Build;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.bumptech.glide.Glide;
 
@@ -34,6 +36,7 @@ import kr.co.thiscat.stadiumampsetting.server.entity.RunEventResult;
 import kr.co.thiscat.stadiumampsetting.server.entity.result.EventResult;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventDto;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventImageDto;
+import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventMusicDto;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventStartReqDto;
 import retrofit2.Response;
 
@@ -75,6 +78,17 @@ public class FullsImageActivity extends AppCompatActivity {
     private Timer mTimer;
 
     private String viewImageType = "IMAGE_DEFAULT";
+
+    public String mTextHome1;
+    public String mTextHome2;
+    public String mTextHome3;
+    public String mTextHome4;
+    public String mTextHome5;
+    public String mTextAway1;
+    public String mTextAway2;
+    public String mTextAway3;
+    public String mTextAway4;
+    public String mTextAway5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -418,7 +432,121 @@ public class FullsImageActivity extends AppCompatActivity {
         });
     }
 
+    public void playMusic(RunEvent runEvent){
+        Log.d("AAAA", "full - playMusic");
+        try{
+            String strUri = null;
+            if(runEvent.getHomeCount() >= runEvent.getAwayCount())
+            {
+                strUri = getHomeMusic(runEvent);
+            }
+            else
+            {
+                strUri = getAwayMusic(runEvent);
+            }
 
+            Intent intent = new Intent(MusicPlayService.ACTION_PLAY_START);
+            intent.putExtra(MusicPlayService.EXTRA_FILE_URL, strUri);
+            intent.putExtra(MusicPlayService.EXTRA_IS_NEW, true);
+            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public String getHomeMusic(RunEvent runEvent){
+        int max = runEvent.getHome1Count();
+        String name = mTextHome1;
+        if(max < runEvent.getHome2Count()){
+            max = runEvent.getHome2Count();
+            name = mTextHome2;
+        }
+        if(max < runEvent.getHome3Count()){
+            max = runEvent.getHome3Count();
+            name = mTextHome3;
+        }
+        if(max < runEvent.getHome4Count()){
+            max = runEvent.getHome4Count();
+            name = mTextHome4;
+        }
+        if(max < runEvent.getHome5Count()){
+            max = runEvent.getHome5Count();
+            name = mTextHome5;
+        }
+        return name;
+    }
+
+    public String getAwayMusic(RunEvent runEvent){
+        int max = runEvent.getAway1Count();
+        String name = mTextAway1;
+        if(max < runEvent.getAway2Count()){
+            max = runEvent.getAway2Count();
+            name = mTextAway2;
+        }
+        if(max < runEvent.getAway3Count()){
+            max = runEvent.getAway3Count();
+            name = mTextAway3;
+        }
+        if(max < runEvent.getAway4Count()){
+            max = runEvent.getAway4Count();
+            name = mTextAway4;
+        }
+        if(max < runEvent.getAway5Count()){
+            max = runEvent.getAway5Count();
+            name = mTextAway5;
+        }
+        return name;
+    }
+
+    public void setEventInfo(ArrayList<EventMusicDto> musicDtos){
+        for(EventMusicDto musicDto : musicDtos){
+            if(musicDto.getTeamType().equalsIgnoreCase("TEAM_HOME"))
+                setHomeMusicSequenc(musicDto.getSequence(), musicDto.getMusicName());
+            else if(musicDto.getTeamType().equalsIgnoreCase("TEAM_AWAY"))
+                setAwayMusicSequenc(musicDto.getSequence(), musicDto.getMusicName());
+
+        }
+    }
+
+    private void setHomeMusicSequenc(int sequenc, String name){
+        switch (sequenc){
+            case 0:
+                mTextHome1 = name;
+                break;
+            case 1:
+                mTextHome2 = name;
+                break;
+            case 2:
+                mTextHome3 = name;
+                break;
+            case 3:
+                mTextHome4 = name;
+                break;
+            case 4:
+                mTextHome5 = name;
+                break;
+        }
+    }
+    private void setAwayMusicSequenc(int sequenc, String name){
+        switch (sequenc){
+            case 0:
+                mTextAway1 = name;
+                break;
+            case 1:
+                mTextAway2 = name;
+                break;
+            case 2:
+                mTextAway3 = name;
+                break;
+            case 3:
+                mTextAway4 = name;
+                break;
+            case 4:
+                mTextAway5 = name;
+                break;
+        }
+    }
 
     public void showProgress(final Activity act, final boolean bShow)
     {
@@ -462,8 +590,8 @@ public class FullsImageActivity extends AppCompatActivity {
             if (response.isSuccessful())
             {
                 mEventDto = response.body().getData();
-                Log.d("AAAA", "EventState : " + mEventDto.getEventState());
-
+                Log.d("AAAA", "1 EventState : " + mEventDto.getEventState());
+                setEventInfo(mEventDto.getEventMusicList());
                 if(mEventDto.getEventState().equalsIgnoreCase("START"))
                 {
                     startEventStateCheck(mEventDto.getRunEvent());
@@ -491,14 +619,14 @@ public class FullsImageActivity extends AppCompatActivity {
             {
                 try{
                     mRunEvent = response.body().getData();
-                    Log.d("AAAA", "EventState : " + mRunEvent.getEventState());
+                    Log.d("AAAA", "2 EventState : " + mRunEvent.getEventState());
                     if(mRunEvent.getEventState().equalsIgnoreCase("START"))
                     {
                         updateScore(mRunEvent);
                     }
-                    else
+                    else if(mRunEvent.getEventState().equalsIgnoreCase("STOP"))
                     {
-
+                        playMusic(mRunEvent);
                     }
                     //setImageView01();
 
@@ -526,7 +654,7 @@ public class FullsImageActivity extends AppCompatActivity {
             {
                 try{
                     mRunEvent = response.body().getData();
-                    Log.d("AAAA", "EventState : " + mRunEvent.getEventState());
+                    Log.d("AAAA", "3 EventState : " + mRunEvent.getEventState());
                     if(mRunEvent.getEventState().equalsIgnoreCase("STOP"))
                     {
                         updateScore(mRunEvent);

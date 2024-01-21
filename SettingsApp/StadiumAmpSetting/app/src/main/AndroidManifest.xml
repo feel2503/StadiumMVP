@@ -21,6 +21,11 @@
         android:theme="@style/Theme.StadiumAmpSetting"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <service
+            android:name=".MusicPlayService"
+            android:enabled="true"
+            android:exported="true"></service>
+
         <activity
             android:name=".FullsImageActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -29,12 +34,12 @@
             android:theme="@style/FullScreenTheme" />
         <activity
             android:name=".DialogServerSelect"
-            android:configChanges="orientation|keyboardHidden"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Holo.Light.Dialog" />
         <activity
             android:name=".MainActivity"
-            android:configChanges="orientation|keyboardHidden|screenLayout|screenSize"
+            android:configChanges="orientation|keyboardHidden|screenLayout|screenSize|keyboard|uiMode|navigation|smallestScreenSize"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

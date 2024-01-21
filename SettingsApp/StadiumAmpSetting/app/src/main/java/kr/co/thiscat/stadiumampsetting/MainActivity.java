@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -25,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -105,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
     public RunEvent mRunEvent = null;
     public boolean mEventRepeat = false;
 
-    public String contentDirPath = Environment.getExternalStoragePublicDirectory(
+    public static String contentDirPath = Environment.getExternalStoragePublicDirectory(
             Environment.DIRECTORY_DOWNLOADS) + "/StadiumAmp/";
 
     @Override
@@ -127,9 +129,11 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
 
         homeSettingFragment = HomeSettingFragment.getInstance();
+
         awaySettingFragment = AwaySettingFragment.getInstance();
         settingFragment = SettingFragment.getInstance();
         eventFragment = EventFragment.getInstance();
+
 
         SettingListener(); //리스너 등록
 
@@ -155,6 +159,9 @@ public class MainActivity extends AppCompatActivity {
 
         IntentFilter completeFilter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
         registerReceiver(downloadCompleteReceiver, completeFilter);
+
+        Intent servIntent = new Intent(getApplicationContext(), MusicPlayService.class);
+        getApplicationContext().startService(servIntent);
     }
 
     public String getSSAID()
@@ -171,8 +178,9 @@ public class MainActivity extends AppCompatActivity {
         if(mRunEventId > 0)
         {
             //mTimer.schedule(timerTask, 0, 1000);
-            startEventStateCheck(mRunEventId);
-            //mServer.getRunEventState(mFirstEventStateCallBack, mRunEventId);
+            //startEventStateCheck(mRunEventId);
+            mServer.getRunEventState(mFirstEventStateCallBack, mRunEventId);
+            //mServer.getEvent(mResumeEventCallBack, mRunEventId);
         }
     }
 
@@ -209,11 +217,15 @@ public class MainActivity extends AppCompatActivity {
 //            e.printStackTrace();
 //        }
 
+        Intent intent = new Intent(MusicPlayService.ACTION_PLAY_STOP);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        Intent intent = new Intent(MusicPlayService.ACTION_PLAY_STOP);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
         try {
             if(mMediaPlayer != null && mMediaPlayer.isPlaying()) {
                 mMediaPlayer.stop();
@@ -230,7 +242,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }
 
     public Uri getContentUri(String name){
         File outputFile = new File(contentDirPath+name);
@@ -558,38 +573,56 @@ public class MainActivity extends AppCompatActivity {
                 strUri = getAwayMusic(runEvent);
             }
 
-            if(strUri != null && strUri.length() > 0)
-            {
-                if(mDefaultMediaPlayer != null && mDefaultMediaPlayer.isPlaying()){
-                    psusePos = mDefaultMediaPlayer.getCurrentPosition();
-                    mDefaultMediaPlayer.pause();
-                }
+            Intent intent = new Intent(MusicPlayService.ACTION_PLAY_START);
+            intent.putExtra(MusicPlayService.EXTRA_FILE_URL, strUri);
+            intent.putExtra(MusicPlayService.EXTRA_IS_NEW, true);
+            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
 
-                if(mMediaPlayer == null)
-                    mMediaPlayer = new MediaPlayer();
 
-                //strUri = "도시인.mp3";
-                Uri uri = getContentUri(strUri);
-                mMediaPlayer.setDataSource(getApplicationContext(), uri);
-
-//                File medFile = new File(contentDirPath+strUri);
-//                FileInputStream fs = new FileInputStream(medFile);
-//                FileDescriptor fd = fs.getFD();
-//                mMediaPlayer.reset();
-//                mMediaPlayer.setDataSource(fd);
-
-                mMediaPlayer.prepare();
-                mMediaPlayer.start();
-                mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        mMediaPlayer.release();
-                        mMediaPlayer = null;
-                        startDefaultMediaPlayer();
-                    }
-                });
-            }
+//            if(strUri != null && strUri.length() > 0)
+//            {
+//                if(mDefaultMediaPlayer != null && mDefaultMediaPlayer.isPlaying()){
+//                    psusePos = mDefaultMediaPlayer.getCurrentPosition();
+//                    mDefaultMediaPlayer.pause();
+//                }
+//
+//                if(mMediaPlayer == null)
+//                    mMediaPlayer = new MediaPlayer();
+//
+//                //strUri = "도시인.mp3";
+//                Uri uri = getContentUri(strUri);
+//                mMediaPlayer.setDataSource(getApplicationContext(), uri);
+//
+//                mMediaPlayer.prepare();
+//                mMediaPlayer.start();
+//                mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+//                    @Override
+//                    public void onCompletion(MediaPlayer mp) {
+//                        mMediaPlayer.release();
+//                        mMediaPlayer = null;
+//                        startDefaultMediaPlayer();
+//                    }
+//                });
+//            }
         }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void stopMusic()
+    {
+        try {
+            if(mMediaPlayer != null && mMediaPlayer.isPlaying()) {
+                mMediaPlayer.stop();
+                mMediaPlayer.release();
+                mMediaPlayer = null;
+            }
+            if(mDefaultMediaPlayer != null && mDefaultMediaPlayer.isPlaying()){
+                mDefaultMediaPlayer.stop();
+                mDefaultMediaPlayer.release();
+                mDefaultMediaPlayer = null;
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -712,6 +745,33 @@ public class MainActivity extends AppCompatActivity {
                 }catch (Exception e)
                 {
                     e.printStackTrace();
+                }
+
+            }
+            else
+            {
+                // no event
+            }
+        }
+    };
+
+    private SECallBack<EventResult> mResumeEventCallBack = new SECallBack<EventResult>()
+    {
+        @Override
+        public void onResponseResult(Response<EventResult> response)
+        {
+            if (response.isSuccessful())
+            {
+                mEventDto = response.body().getData();
+
+                if(mEventDto.getEventState().equalsIgnoreCase("START"))
+                {
+                    startEventStateCheck(mRunEventId);
+                }
+                else
+                {
+                    //setImageView01();
+
                 }
 
             }

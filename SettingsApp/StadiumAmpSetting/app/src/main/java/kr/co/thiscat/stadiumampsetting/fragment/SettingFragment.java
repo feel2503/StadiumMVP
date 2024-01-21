@@ -490,7 +490,8 @@ public class SettingFragment extends Fragment {
                     Toast.makeText(getContext(), "이벤트가 진행중 입니다.", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                    
+
+                //mainActivity.stopMusic();
                 if(mainActivity.mServerId < 0)
                 {
                     new AlertDialog.Builder(getContext())
