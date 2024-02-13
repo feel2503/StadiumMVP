@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="favicon.ico">
+    <meta http-equiv="X-UA-Compatible" content="IE=9;IE=10;IE=Edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Welcome to Stadium AMP</title>
+
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <h1>Server 테이블</h1>
+    <table border="1">
+        <tr>
+            <th>Server ID</th>
+            <th>Server Name</th>
+        </tr>
+        <tr th:each="server : ${server}">
+            <td th:text="${server.id}">Server ID</td>
+            <td th:text="${server.name}">Server Name</td>
+        </tr>
+    </table>
+
+    <h1>Event 테이블</h1>
+    <table border="1">
+        <tr>
+            <th>Event ID</th>
+            <th>RunEvent</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>State</th>
+            <th>Result</th>
+            <th>Home</th>
+            <th>Home1</th>
+            <th>Home2</th>
+            <th>Home3</th>
+            <th>Home4</th>
+            <th>Home5</th>
+            <th>Away</th>
+            <th>Away1</th>
+            <th>Away2</th>
+            <th>Away3</th>
+            <th>Away4</th>
+            <th>Away5</th>
+        </tr>
+        <tr th:each="event : ${event}">
+            <td th:text="${event.eventId}">Event ID</td>
+            <td th:text="${event.id}">RunEvent ID</td>
+            <td th:text="${event.startDateTime}">Start Date</td>
+            <td th:text="${event.endDateTime}">End Date</td>
+            <td th:text="${event.eventState}">State</td>
+            <td th:text="${event.result}">Result</td>
+            <td th:text="${event.homeCount}">Home Count</td>
+            <td th:text="${event.home1Count}">Home1 Count</td>
+            <td th:text="${event.home2Count}">Home2 Count</td>
+            <td th:text="${event.home3Count}">Home3 Count</td>
+            <td th:text="${event.home4Count}">Home4 Count</td>
+            <td th:text="${event.home5Count}">Home5 Count</td>
+
+            <td th:text="${event.awayCount}">Away Count</td>
+            <td th:text="${event.away1Count}">Away1 Count</td>
+            <td th:text="${event.away2Count}">Away2 Count</td>
+            <td th:text="${event.away3Count}">Away3 Count</td>
+            <td th:text="${event.away4Count}">Away4 Count</td>
+            <td th:text="${event.away5Count}">Away5 Count</td>
+        </tr>
+    </table>
+
+</body>
+</html>

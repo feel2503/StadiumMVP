@@ -1,0 +1,353 @@
+package com.thiscat.stadiumamp.rest.service;
+
+import com.thiscat.stadiumamp.dto.*;
+import com.thiscat.stadiumamp.entity.Event;
+import com.thiscat.stadiumamp.entity.EventImage;
+import com.thiscat.stadiumamp.entity.EventMusic;
+import com.thiscat.stadiumamp.entity.RunEvent;
+import com.thiscat.stadiumamp.entity.repository.*;
+import com.thiscat.stadiumamp.rest.RestApiController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Service
+public class RestService {
+    @Autowired
+    private EventRepository eventRepository;
+    @Autowired
+    private MusicRepository musicRepository;
+    @Autowired
+    private ImageRepository imageRepository;
+    @Autowired
+    EventMusicRepository eventMusicRepository;
+    @Autowired
+    private EventImageRepository eventImageRepository;
+    @Autowired
+    RunEventRepository runEventRepository;
+
+    public EventDto getEventInfo(Event event) throws Exception
+    {
+//        List<EventMusic> eventMusicList =  eventMusicRepository.findAllByEventOrderBySequenceAsc(event);
+//        List<EventMusicDto> eventMusicDtoList = eventMusicList
+//                .stream()
+//                .map(x -> new EventMusicDto(x))
+//                .collect(Collectors.toList());
+        List<Object[]> objects = eventMusicRepository.findAllEventMusic(event.getId());
+        List<EventMusicDto> eventMusicDtos = objects.stream()
+                .map(x -> new EventMusicDto(((BigInteger)(x[0])).longValue(), ((BigInteger)(x[1])).longValue(),
+                        (String)x[2], (Integer)x[3], (String)x[4],(String)x[5]))
+                .collect(Collectors.toList());
+
+        List<EventImage> eventImageList = eventImageRepository.findAllByEventOrderByImageTypeAsc(event);
+        List<EventImageDto> eventImageDtoList = eventImageList
+                .stream()
+                .map(x -> new EventImageDto(x))
+                .collect(Collectors.toList());
+
+        EventDto eventDto = EventDto.builder()
+                .eventId(event.getId())
+                .eventName(event.getName())
+                .triggerType(event.getTriggerType())
+                .triggerTime(event.getTriggerTime())
+                .triggerVote(event.getTriggerVote())
+                .webUrl(event.getWebUrl())
+                .continuityTime(event.getContinuityTime())
+                .continuityType(event.getContinuityType())
+                .eventMusicList(new ArrayList<>(eventMusicDtos))
+                .eventImageList(new ArrayList<>(eventImageDtoList))
+                .homeColor(event.getHomeColor())
+                .awayColor(event.getAwayColor())
+                .build();
+
+        RunEvent runEvent = runEventRepository.findByEventLimit(event.getId()).orElse(null);
+        if(runEvent != null)
+        {
+            eventDto.setRunEvent(runEvent.getId());
+            eventDto.setEventState(runEvent.getEventState());
+        }
+
+        return eventDto;
+    }
+
+    public RunEventDto startEvent(EventDto eventDto) throws Exception
+    {
+        long id = eventDto.getEventId();
+        Event event = eventRepository.findById(eventDto.getEventId()).orElseThrow(()->new Exception("event-not-found"));
+        RunEvent lastEvent = runEventRepository.findByEventLimit(event.getId()).orElse(null);
+        if(lastEvent != null && lastEvent.getEventState().equalsIgnoreCase("START")){
+            throw new Exception("event-is-running");
+        }
+
+        if(eventDto.getTriggerType() >= 0)
+            event.setTriggerType(eventDto.getTriggerType());
+        if(eventDto.getTriggerTime() > 0)
+            event.setTriggerTime(eventDto.getTriggerTime());
+        if(eventDto.getTriggerVote() > 0)
+            event.setTriggerVote(eventDto.getTriggerVote());
+        if(eventDto.getContinuityType() >= 0)
+            event.setContinuityType(eventDto.getContinuityType());
+        if(eventDto.getContinuityTime() > 0)
+            event.setContinuityTime(eventDto.getContinuityTime());
+
+        Event saveEvent = eventRepository.save(event);
+
+        LocalDateTime startDateTime = LocalDateTime.now();
+        RunEvent runEvent = RunEvent.builder()
+                .event(saveEvent)
+                .startDateTime(startDateTime)
+                .eventState("START")
+                .build();
+
+        RunEvent saveSaveRunEvent =  runEventRepository.save(runEvent);
+
+        if(saveEvent.getTriggerType() == 0){ // 시간
+            long stopTime = 1000 * saveEvent.getTriggerTime();
+            EventStateTimer eventStateTimer = new EventStateTimer(saveSaveRunEvent.getId());
+            Timer timer = new Timer();
+            timer.schedule(eventStateTimer, stopTime );
+        }else{  // 득표
+
+        }
+
+//        List<EventMusic> eventMusicList =  eventMusicRepository.findAllByEventOrderBySequenceAsc(saveEvent);
+//        List<EventMusicDto> eventMusicDtoList = eventMusicList
+//                .stream()
+//                .map(x -> new EventMusicDto(x))
+//                .collect(Collectors.toList());
+
+        List<Object[]> objects = eventMusicRepository.findAllEventMusic(event.getId());
+        List<EventMusicDto> eventMusicDtos = objects.stream()
+                .map(x -> new EventMusicDto(((BigInteger)(x[0])).longValue(), ((BigInteger)(x[1])).longValue(),
+                        (String)x[2], (Integer)x[3], (String)x[4],(String)x[5]))
+                .collect(Collectors.toList());
+
+        List<EventImage> eventImageList = eventImageRepository.findAllByEventOrderByImageTypeAsc(saveEvent);
+        List<EventImageDto> eventImageDtoList = eventImageList
+                .stream()
+                .map(x -> new EventImageDto(x))
+                .collect(Collectors.toList());
+
+        RunEventDto runEventDto = RunEventDto.builder()
+                .id(saveSaveRunEvent.getId())
+                .eventId(saveSaveRunEvent.getEvent().getId())
+                .eventState(saveSaveRunEvent.getEventState())
+                .triggerType(saveEvent.getTriggerType())
+                .triggerTime(saveEvent.getTriggerTime())
+                .triggerVote(saveEvent.getTriggerVote())
+                .continuityType(saveEvent.getContinuityType())
+                .continuityTime(saveEvent.getContinuityTime())
+                .webUrl(saveEvent.getWebUrl())
+                .eventMusicList(new ArrayList<>(eventMusicDtos))
+                .eventImageList(new ArrayList<>(eventImageDtoList))
+                .build();
+
+        eventRepository.flush();
+        runEventRepository.flush();
+
+        return runEventDto;
+    }
+
+    public RunEventDto stopEvent(Long runEventId) throws Exception
+    {
+        RunEvent runEvent = runEventRepository.findById(runEventId).orElseThrow(() -> new Exception("runevent-not-fount"));
+        runEvent.setEventState("STOP");
+        LocalDateTime endDateTime = LocalDateTime.now();
+        runEvent.setEndDateTime(endDateTime);
+        RunEvent saveSaveRunEvent = runEventRepository.save(runEvent);
+
+        if(runEvent.getEvent().getContinuityType() == 1){
+            long delayTime = 1000 * runEvent.getEvent().getContinuityTime();
+            EventContinueTimer eventContinueTimer = new EventContinueTimer(saveSaveRunEvent.getEvent().getId());
+            Timer timer = new Timer();
+            timer.schedule(eventContinueTimer, delayTime );
+        }
+
+        RunEventDto runEventDto = RunEventDto.builder()
+                .id(saveSaveRunEvent.getId())
+                .eventId(saveSaveRunEvent.getEvent().getId())
+                .eventState(saveSaveRunEvent.getEventState())
+                .build();
+
+        return runEventDto;
+    }
+
+    public RunEvent updateVoteCount(RunEvent runEvent, String teamType, Long eventType)
+    {
+        int voteCount = 1;
+        if(teamType.equalsIgnoreCase("1") || teamType.equalsIgnoreCase("3"))
+            voteCount = 3;
+
+        if(teamType.equalsIgnoreCase("0") || teamType.equalsIgnoreCase("1"))
+        {
+            Integer homeCount = runEvent.getHomeCount();
+            int total = voteCount;
+            if(homeCount != null)
+                total += homeCount;
+            runEvent.setHomeCount(total);
+
+            if(eventType == 1)
+            {
+                Integer home1 = runEvent.getHome1Count();
+                int tot1 = voteCount;
+                if(home1 != null)
+                    tot1 += home1;
+                runEvent.setHome1Count(tot1);
+            }
+            else if(eventType == 2)
+            {
+                Integer home2 = runEvent.getHome2Count();
+                int tot2 = voteCount;
+                if(home2 != null)
+                    tot2 += home2;
+                runEvent.setHome2Count(tot2);
+            }
+            else if(eventType == 3)
+            {
+                Integer home = runEvent.getHome3Count();
+                int tot2 = voteCount;
+                if(home != null)
+                    tot2 += home;
+                runEvent.setHome3Count(tot2);
+            }
+            else if(eventType == 4)
+            {
+                Integer home2 = runEvent.getHome4Count();
+                int tot2 = voteCount;
+                if(home2 != null)
+                    tot2 += home2;
+                runEvent.setHome4Count(tot2);
+            }
+            else if(eventType == 5)
+            {
+                Integer home2 = runEvent.getHome5Count();
+                int tot2 = voteCount;
+                if(home2 != null)
+                    tot2 += home2;
+                runEvent.setHome5Count(tot2);
+            }
+
+        }
+        else
+        {
+            Integer awayCount = runEvent.getAwayCount();
+            int total = voteCount;
+            if(awayCount != null)
+                total += awayCount;
+            runEvent.setAwayCount(total);
+
+            if(eventType == 1)
+            {
+                Integer away = runEvent.getAway1Count();
+                int tot = voteCount;
+                if(away != null)
+                    tot += away;
+                runEvent.setAway1Count(tot);
+            }
+            else if(eventType == 2)
+            {
+                Integer away = runEvent.getAway2Count();
+                int tot = voteCount;
+                if(away != null)
+                    tot += away;
+                runEvent.setAway2Count(tot);
+            }
+            else if(eventType == 3)
+            {
+                Integer away = runEvent.getAway3Count();
+                int tot = voteCount;
+                if(away != null)
+                    tot += away;
+                runEvent.setAway3Count(tot);
+            }
+            else if(eventType == 4)
+            {
+                Integer away = runEvent.getAway4Count();
+                int tot = voteCount;
+                if(away != null)
+                    tot += away;
+                runEvent.setAway4Count(tot);
+            }
+            else if(eventType == 5)
+            {
+                Integer away = runEvent.getAway5Count();
+                int tot = voteCount;
+                if(away != null)
+                    tot += away;
+                runEvent.setAway5Count(tot);
+            }
+        }
+        RunEvent saveResult = runEventRepository.save(runEvent);
+        return saveResult;
+    }
+
+    class EventStateTimer extends TimerTask
+    {
+        long eventId;
+        public EventStateTimer(long eventId)
+        {
+            this.eventId = eventId;
+        }
+
+        @Override
+        public void run() {
+            Calendar nowTime = Calendar.getInstance();
+            SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String strNowTime = sd.format(nowTime.getTime());
+
+            RunEvent runevent = runEventRepository.findById(eventId).orElse(null);
+            if(runevent != null && runevent.getEventState().equalsIgnoreCase("START"))
+            {
+                LocalDateTime endDateTime = LocalDateTime.now();
+                runevent.setEndDateTime(endDateTime);
+                runevent.setEventState("STOP");
+                runEventRepository.save(runevent);
+
+                strNowTime = runevent.getEdtDateTime().toString();
+            }
+            System.out.println("[ " + strNowTime + " ] : " + eventId + " STOP");
+        }
+    }
+
+    class EventContinueTimer extends TimerTask
+    {
+        long eventId;
+        public EventContinueTimer(long eventId)
+        {
+            this.eventId = eventId;
+        }
+
+        @Override
+        public void run() {
+            Event event = eventRepository.findById(eventId).orElse(null);
+            if(event == null)
+                return;
+
+            LocalDateTime startDateTime = LocalDateTime.now();
+            RunEvent runEvent = RunEvent.builder()
+                    .event(event)
+                    .startDateTime(startDateTime)
+                    .eventState("START")
+                    .build();
+
+            RunEvent saveSaveRunEvent =  runEventRepository.save(runEvent);
+
+            if(event.getTriggerType() == 0){ // 시간
+                long stopTime = 1000 * event.getTriggerTime();
+                EventStateTimer eventStateTimer = new EventStateTimer(saveSaveRunEvent.getId());
+                Timer timer = new Timer();
+                timer.schedule(eventStateTimer, stopTime );
+            }else{  // 득표
+
+            }
+
+            System.out.println("[ " + startDateTime + " ] : " + eventId + " START");
+        }
+    }
+}

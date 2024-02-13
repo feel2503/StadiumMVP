@@ -1,0 +1,77 @@
+########################################### SSL  ##############################
+#server.port: 443
+#server.ssl:
+#  key-store: cert/pmdmcert.p12
+#  key-store-password: pTTUhd
+#  keyStoreType: PKCS12
+########################################### SPRING  ##############################
+server:
+    port: 80
+    error:
+        include-message: always
+        include-binding-errors: always
+
+spring:
+    thymeleaf:
+        cache: false
+        check-template-location: true
+        prefix: classpath:/templates/
+        suffix: .html
+    mvc:
+        async:
+            request-timeout: 300000 # 5 minute
+        pathmatch:
+            matching-strategy: ant_path_matcher
+
+    datasource:
+        #url: jdbc:postgresql://223.130.134.43:5432/stadiumamp
+        #url: jdbc:postgresql://localhost:5432/stadiumamp2
+        url: jdbc:postgresql://localhost:5432/stadiumamp
+        driver-class-name: org.postgresql.Driver
+        username: thiscat
+        password: stadiumamp!
+
+    sql.init.mode: always
+    ###################  [[  JPA ]] ########################
+    jpa:
+        database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+        show-sql: true
+        open-in-view: true
+
+        hibernate:
+            ddl-auto: update
+        properties:
+            hibernate:
+                jdbc:
+                    batch-size: 100
+                format_sql: true
+                dialect: org.hibernate.dialect.PostgreSQLDialect
+                #use_sql_comments: true
+    ####################  [[  DEV Setting ]] ########################
+    devtools:
+        livereload:
+            enabled: true
+
+    ########################################### multipart ##############################
+    # Enable multipart uploads
+    servlet:
+        multipart:
+            enabled: true
+            file-size-threshold: 2KB # Threshold after which files are written to disk.
+            max-file-size: 200MB # Max file size.
+            max-request-size: 215MB # Max Request Size
+
+##################  [[  Swagger ]] ########################
+swagger.base.package: com.thiscat.stadiumamp.rest
+
+##################  [[  Logging ]] ########################
+#logging.level.org.hibernate.SQL: info
+#logging:
+#    config: classpath:logback-spring.xml
+
+
+
+
+api:
+    version: STADIUMAMP V0.0.2
+

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"  >
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=9;IE=10;IE=Edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Welcome to Stadium AMP</title>
+
+    <!-- Global CSS -->
+<!--    <link rel="stylesheet" href="css/style.css">-->
+    <link rel="stylesheet"
+          th:href="@{css/style.css}"/>
+
+</head>
+<body >
+    <div class="remain_text_02" id="display">
+        현재 응원 이벤트 남은 시간 0분 0초
+    </div>
+    <div  >
+
+        <div style="padding:20px;">
+            <div class="wc_text_02">
+                이벤트 서버 <b>[[${event.name}]]</b> 실시간 응원 결과
+            </div>
+
+            <div class="result_text">
+                <div class="home_text" id="home_text">[[${event.homeName}]] [[${runevent.homeCount}]]</div>
+                <div class="away_text" id="away_text">[[${event.awayName}]] [[${runevent.awayCount}]]</div>
+            </div>
+
+            <div class="result_graph">
+                <div class="home_graph" id="home_graph"></div>
+                <div class="away_graph" id="away_graph"></div>
+            </div>
+        </div>
+
+        <div class="event_bg" style="padding:20px;">
+
+            <div class="wc_text_02">
+                응원할 음원을 투표해 주세요.
+            </div>
+
+           <!-- <div class="video_container">
+                <video id="videoPlay" width="300" height="200" controls autoplay muted>
+                    <source type="video/mp4"
+                            th:src="@{https://www.dropbox.com/scl/fi/7rjpuv11pgqiqmmtdxpnv/square-30sec1.mp4?rlkey=u5yqxcvw14l2dx8io6qxy6bwk&raw=1}" />
+                </video>
+            </div>-->
+
+            <div class="bt-02">
+                <div th:if="${teamtype =='Home'}">
+                    <button th:onclick="|vote(${team}, ${runevent.id}, 1);|" class="marquee" style="background-color: #ec0f32;">
+                            <span>[[${runevent.home1Name}]]</span>
+                    </button>
+                    <button th:onclick="|vote(${team}, ${runevent.id}, 2);|" class="marquee" style="background-color: #ec0f32;">
+                            <span>[[${runevent.home2Name}]]</span>
+                    </button>
+                    <button th:onclick="|vote(${team}, ${runevent.id}, 3);|" class="marquee" style="background-color: #ec0f32;">
+                        <span>[[${runevent.home3Name}]]</span>
+                    </button>
+                    <button th:onclick="|vote(${team}, ${runevent.id}, 4);|" class="marquee" style="background-color: #ec0f32;">
+                        <span>[[${runevent.home4Name}]]</span>
+                    </button>
+                    <button th:onclick="|vote(${team}, ${runevent.id}, 5);|" class="marquee" style="background-color: #ec0f32;">
+                        <span>[[${runevent.home5Name}]]</span>
+                    </button>
+
+                </div>
+                <div th:if="${teamtype =='Away'}">
+                    <button th:onclick="|vote(${team}, ${runevent.id}, 1);|" class="marquee" style="background-color: #326295;">
+                        <span>[[${runevent.away1Name}]]</span>
+                    </button>
+                    <button th:onclick="|vote(${team}, ${runevent.id}, 2);|" class="marquee" style="background-color: #326295;">
+                        <span>[[${runevent.away2Name}]]</span>
+                    </button>
+                    <button th:onclick="|vote(${team}, ${runevent.id}, 3);|" class="marquee" style="background-color: #326295;">
+                        <span>[[${runevent.away3Name}]]</span>
+                    </button>
+                    <button th:onclick="|vote(${team}, ${runevent.id}, 4);|" class="marquee" style="background-color: #326295;">
+                        <span>[[${runevent.away4Name}]]</span>
+                    </button>
+                    <button th:onclick="|vote(${team}, ${runevent.id}, 5);|" class="marquee" style="background-color: #326295;">
+                        <span>[[${runevent.away5Name}]]</span>
+                    </button>
+
+                </div>
+            </div>
+        </div>
+
+        <p></p>
+
+        <input type="hidden" id="startMin" th:value="${min}" >
+        <input type="hidden" id="startSec" th:value="${sec}" >
+        <input type="hidden" id="startIdVal" th:value="${event.id}" >
+
+
+
+
+    </div>
+
+
+<!--    <br>-->
+<!--    <a href='#' class='btn-floating'><div>+</div></a>-->
+<!--    <br><br>-->
+<!--    <a href='#' class='btn-floating'><div>-</div></a>-->
+
+<!--    <div id="bottom_banner">-->
+<!--        <img src="asset/bg_ad.png">-->
+<!--    </div>-->
+
+    <div id="bottom_banner" class="bottom_banner">
+        <a th:href="@{${event.webUrl}}" >
+            <div>
+                <!--                    <img class="profile" src="asset/floating_button.svg">-->
+                <div class="box" style="background: #BDBDBD;">
+                    <img class="profile" src="asset/floating_button.svg">
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <script th:src="@{jquery/jquery-3.4.1.min.js}"></script>
+    <script th:src="@{js/timer.js}"></script>
+
+    <script>
+
+        /// vote
+        function vote(teamType, eventId, eventType)
+        {
+            console.log("vote : ",teamType, eventId, eventType)
+            $.ajax({
+                url:  '/v1/vote/save',
+                method: 'get',
+                data: {
+                    teamType: teamType,
+                    eventId: eventId,
+                    eventType: eventType
+                }
+            }).done(function(res) {
+                if (res) {
+                    console.log("res", res);
+                    var homeGraph = document.getElementById("home_graph");
+                    homeGraph.style.flexBasis=res.data.home;
+                    if(res.data.home === "100%")
+                        homeGraph.style.borderRadius="10px";
+                    else{
+                        homeGraph.style.borderTopRightRadius="0px";
+                        homeGraph.style.borderBottomRightRadius="0px";
+                    }
+                    var awayGraph = document.getElementById("away_graph");
+                    awayGraph.style.flexBasis=res.data.away;
+                    if(res.data.away === "100%")
+                        awayGraph.style.borderRadius="10px";
+                    else{
+                        awayGraph.style.borderTopLeftRadius="0px";
+                        awayGraph.style.borderBottomLeftRadius="0px";
+                    }
+
+                    document.getElementById("home_text").innerText = "홈팀 "+res.data.homeCount;
+                    document.getElementById("away_text").innerText = ""+res.data.awayCount+" 원정팀";
+
+                } else {
+
+                }
+            });
+
+        }
+
+    </script>
+
+
+</body>
+</html>

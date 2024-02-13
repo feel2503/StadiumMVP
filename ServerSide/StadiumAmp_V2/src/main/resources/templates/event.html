@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <link rel="shortcut icon" href="favicon.ico">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=9;IE=10;IE=Edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Welcome to Stadium AMP</title>
+
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="css/style.css">
+
+<!--    <style>-->
+<!--        body {-->
+<!--            margin: 0;-->
+<!--        }-->
+<!--        .container {-->
+<!--            width: 100vw;-->
+<!--            height: 100vh;-->
+<!--            background: pink;-->
+<!--        }-->
+<!--    </style>-->
+
+</head>
+<body >
+
+    <div>
+        <div class="logo">
+            <img src="asset/StadiumAMP-Logo.svg">
+        </div>
+
+        <div class="event_bg">
+
+            <div class="wc_text">
+                <li>서버 <span th:text="${data.name}"/> 에 접속 하셨습니다.</li>
+                <li>응원 권한을 선택해주세요.</li>
+            </div>
+
+            <form method="get" action="vote" style="padding:20px;">
+                <input type="hidden" id="gameToken" name="event_id" th:value="${data.id}" >
+                <div style="padding:5px;">
+                    <div class="select_home">
+                        <div>
+                            <input type="radio" name="team" value=0 checked>
+                            <span style="color:white">[[${data.homeName}]] Fan </span>
+                            <div> </div>
+                        </div>
+                        <div>
+                            <input type="radio" name="team" value=1 >
+                            <span style="color:white">[[${data.homeName}]] MVP Fan </span>
+                        </div>
+                    </div>
+
+                    <div class="select_away">
+                        <div>
+                            <input type="radio" name="team" value=2 >
+                            <span style="color:white" t>[[${data.awayName}]] Fan </span>
+                            <div> </div>
+                        </div>
+                        <div>
+                            <input type="radio" name="team" value=3 >
+                            <span style="color:white" t>[[${data.awayName}]] MVP Fan </span>
+                        </div>
+                    </div>
+
+                    <div class="wc_text_center">
+                        <li>응원이벤트에 대한 마케팅 활용에 동의합니다.</li>
+                        <li style="text-decoration: underline;">
+                            <a href="https://sites.google.com/view/stadiumamp-policy/">서비스 이용 약관 확인 하기</a>
+                        </li>
+                    </div>
+
+
+                    <div class="bt">
+                        <input type="submit" class="join_event" value="응원 이벤트 참가하기" ></input>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="bottom_banner" class="bottom_banner">
+        <div style="position: relative">
+            <input  style="float: right;"
+                    type='button'
+                    value='X'
+                    id='btn2'
+                    onclick='toggleBtn1()'/>
+            <img class="bottom_banner_img" src="asset/banner2.png">
+<!--            <img class="bottom_banner_img" th:src="${data.adUrl}">-->
+        </div>
+
+
+    </div>
+
+    <script>
+        function toggleBtn1() {
+
+            // 토글 할 버튼 선택 (btn1)
+            const btn1 = document.getElementById('bottom_banner');
+
+            // btn1 숨기기 (display: none)
+            if(btn1.style.display !== 'none') {
+                btn1.style.display = 'none';
+            }
+            // btn` 보이기 (display: block)
+            else {
+                btn1.style.display = 'block';
+            }
+
+        }
+    </script>
+
+</body>
+</html>
