@@ -17,3 +17,12 @@ M4GfGH@NR6ARd
 Stadium AMP DB
 user/pwd : thiscat / stadiumamp!
 database : stadiumamp
+
+
+Stadium Git
+ thiscat.dev1@gmail.com
+ =Devcat2sid2=
+
+ google
+ thiscat.dev1@gmail.com
+ =Dksemfhdlem=

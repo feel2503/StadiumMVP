@@ -56,6 +56,14 @@ public class EventDto
     @SerializedName("eventState")
     String eventState;
 
+    @Expose
+    @SerializedName("homeColor")
+    String homeColor;
+
+    @Expose
+    @SerializedName("awayColor")
+    String awayColor;
+
     public int getEventId() {
         return eventId;
     }
@@ -158,5 +166,21 @@ public class EventDto
 
     public void setEventState(String eventState) {
         this.eventState = eventState;
+    }
+
+    public String getHomeColor() {
+        return homeColor;
+    }
+
+    public void setHomeColor(String homeColor) {
+        this.homeColor = homeColor;
+    }
+
+    public String getAwayColor() {
+        return awayColor;
+    }
+
+    public void setAwayColor(String awayColor) {
+        this.awayColor = awayColor;
     }
 }
