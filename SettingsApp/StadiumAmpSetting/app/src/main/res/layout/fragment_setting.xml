@@ -305,6 +305,24 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="10dp"
+                    android:text="Open Chat URL" />
+
+                <EditText
+                    android:id="@+id/edit_open_chat_url"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/bg_round_white"
+                    android:hint="Open Chat URL 을 입력하세요"
+                    android:padding="10dp"
+                    android:textAlignment="center"
+                    android:textSize="15dp" />
+
+                <TextView
+                    style="@style/black_14_font"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
                     android:text="이벤트 QR코드 이미지" />
 
                 <TextView

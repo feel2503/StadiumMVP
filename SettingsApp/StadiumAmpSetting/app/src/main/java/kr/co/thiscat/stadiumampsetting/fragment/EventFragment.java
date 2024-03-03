@@ -270,6 +270,20 @@ public class EventFragment extends Fragment {
         }
     }
 
+    public void setEventColor(String colorHome, String colorAway){
+
+        try{
+            int iColorHome = 0xff000000 | Integer.parseUnsignedInt(colorHome, 16);
+            mTextHome.setBackgroundColor(iColorHome);
+
+            int iColorAway = 0xff000000 | Integer.parseUnsignedInt(colorAway, 16);
+            mTextAway.setBackgroundColor(iColorAway);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {

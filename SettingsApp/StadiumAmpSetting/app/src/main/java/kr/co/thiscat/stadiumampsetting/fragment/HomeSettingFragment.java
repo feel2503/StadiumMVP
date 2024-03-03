@@ -59,6 +59,8 @@ public class HomeSettingFragment extends Fragment {
     protected ProgressDialog mProgress = null;
     private PreferenceUtil mPreferenceUtil;
 
+    public TextView mTextHomeColor;
+    public TextView mTextHomeFont;
     public TextView mTextHome1;
     public TextView mTextHome2;
     public TextView mTextHome3;
@@ -122,6 +124,8 @@ public class HomeSettingFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home_setting, container, false);
+        mTextHomeColor = view.findViewById(R.id.text_home_color);
+        mTextHomeFont = view.findViewById(R.id.text_home_font);
         mTextHome1 = view.findViewById(R.id.text_home_1);
         mTextHome1.setOnClickListener(mOnClickListener);
         mTextHome2 = view.findViewById(R.id.text_home_2);
@@ -212,6 +216,21 @@ public class HomeSettingFragment extends Fragment {
         }
     }
 
+    public void setEventColor(String color, String font){
+        Log.d("AAAA", "---- HomeSettingFragment updateEventColor");
+        try{
+            int iColor = 0xff000000 | Integer.parseUnsignedInt(color, 16);
+            mTextHomeColor.setTextColor(iColor);
+            mTextHomeColor.setText(color);
+
+//            int iFont = 0xff000000 | Integer.parseUnsignedInt(font, 16);
+//            mTextHomeFont.setTextColor(iFont);
+            mTextHomeFont.setText(font);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
 
     public void startMediaActivity(int resId)
     {

@@ -894,9 +894,12 @@ public class MainActivity extends AppCompatActivity {
 //        homeSettingFragment.setEventInfo(eventDto);
 //        awaySettingFragment.setEventInfo(eventDto);
         homeSettingFragment.setEventInfo(eventDto.getEventMusicList());
+        homeSettingFragment.setEventColor(eventDto.getHomeColor(), eventDto.getHomeFont());
         awaySettingFragment.setEventInfo(eventDto.getEventMusicList());
+        awaySettingFragment.setEventColor(eventDto.getAwayColor(), eventDto.getAwayFont());
         settingFragment.setEventInfo(eventDto);
         eventFragment.setEventInfo(eventDto);
+        eventFragment.setEventColor(eventDto.getHomeColor(), eventDto.getAwayColor());
     }
 
     private SECallBack<EventResult> mEventCallBack = new SECallBack<EventResult>()

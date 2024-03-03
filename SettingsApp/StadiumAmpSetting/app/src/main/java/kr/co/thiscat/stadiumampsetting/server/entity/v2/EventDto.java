@@ -59,10 +59,19 @@ public class EventDto
     @Expose
     @SerializedName("homeColor")
     String homeColor;
-
+    @Expose
+    @SerializedName("homeFont")
+    String homeFont;
     @Expose
     @SerializedName("awayColor")
     String awayColor;
+    @Expose
+    @SerializedName("awayFont")
+    String awayFont;
+
+    @Expose
+    @SerializedName("openchaUrl")
+    String openchaUrl;
 
     public int getEventId() {
         return eventId;
@@ -182,5 +191,29 @@ public class EventDto
 
     public void setAwayColor(String awayColor) {
         this.awayColor = awayColor;
+    }
+
+    public String getHomeFont() {
+        return homeFont;
+    }
+
+    public void setHomeFont(String homeFont) {
+        this.homeFont = homeFont;
+    }
+
+    public String getAwayFont() {
+        return awayFont;
+    }
+
+    public void setAwayFont(String awayFont) {
+        this.awayFont = awayFont;
+    }
+
+    public String getOpenchaUrl() {
+        return openchaUrl;
+    }
+
+    public void setOpenchaUrl(String openchaUrl) {
+        this.openchaUrl = openchaUrl;
     }
 }

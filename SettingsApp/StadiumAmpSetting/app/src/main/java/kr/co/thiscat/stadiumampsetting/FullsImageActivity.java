@@ -383,11 +383,86 @@ public class FullsImageActivity extends AppCompatActivity {
             int home = runEvent.getHomeCount();
             int away = runEvent.getAwayCount();
             updateScoreValue(runEvent.getServerName(), home, away);
+            updateMusicRanking(runEvent);
         }catch (Exception e)
         {
             e.printStackTrace();
         }
 
+    }
+
+    private void updateMusicRanking(RunEvent runEvent)
+    {
+        runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run() {
+                if(runEvent.getHomeCount() >= runEvent.getAwayCount()){
+                    int[] nums = {runEvent.getHome1Count(), runEvent.getHome2Count(), runEvent.getHome3Count(), runEvent.getHome4Count(), runEvent.getHome5Count()};
+                    int[] ranks = getRank(nums);
+
+                    mTextResult1.setText(getHomeRankMusic(ranks, 1));
+                    mTextResult2.setText(getHomeRankMusic(ranks, 2));
+                    mTextResult3.setText(getHomeRankMusic(ranks, 3));
+                }
+                else
+                {
+                    int[] nums = {runEvent.getAway1Count(), runEvent.getAway2Count(), runEvent.getAway3Count(), runEvent.getAway4Count(), runEvent.getAway5Count()};
+                    int[] ranks = getRank(nums);
+
+                    mTextResult1.setText(getAwayRankMusic(ranks, 1));
+                    mTextResult2.setText(getAwayRankMusic(ranks, 2));
+                    mTextResult3.setText(getAwayRankMusic(ranks, 3));
+                }
+            }
+        });
+
+    }
+
+    private int[] getRank(int[] nums)
+    {
+        int[] ranks = new int[5];
+        for (int i = 0; i < 5; i++) {
+            int rank = 1;
+            for (int j = 0; j < 5; j++) {
+                if (nums[i] < nums[j]) {
+                    rank++;
+                }
+            }
+            ranks[i] = rank;
+        }
+
+        return ranks;
+    }
+
+    private String getHomeRankMusic(int[] arrRank, int rank)
+    {
+        String[] homeMusics = {mTextHome1, mTextHome2, mTextHome3, mTextHome4, mTextHome5};
+        String result = "";
+        for(int i = 0; i < 5; i++)
+        {
+            if(arrRank[i] == rank)
+            {
+                result = homeMusics[i];
+                break;
+            }
+        }
+        return result;
+    }
+
+    private String getAwayRankMusic(int[] arrRank, int rank)
+    {
+        String[] awayMusics = {mTextAway1, mTextAway2, mTextAway3, mTextAway4, mTextAway5};
+        String result = "";
+        for(int i = 0; i < 5; i++)
+        {
+            if(arrRank[i] == rank)
+            {
+                result = awayMusics[i];
+                break;
+            }
+        }
+        return result;
     }
 
     private void updateScoreValue(String name, final int home, final int away)

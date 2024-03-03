@@ -32,13 +32,36 @@
                 android:orientation="vertical">
 
                 <TextView
+                    style="@style/black_16_font"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="5dp"
+                    android:text="Color code" />
+                <TextView
                     android:id="@+id/text_home_color"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/bg_round_white"
                     android:gravity="center"
                     android:padding="15dp"
-                    android:text="Color code : "
+                    android:text="Color code"
+                    android:textSize="15dp" />
+
+                <TextView
+                    style="@style/black_16_font"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:text="Font code" />
+                <TextView
+                    android:id="@+id/text_home_font"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_round_white"
+                    android:gravity="center"
+                    android:padding="15dp"
+                    android:text="Font code"
                     android:textSize="15dp" />
 
             </LinearLayout>

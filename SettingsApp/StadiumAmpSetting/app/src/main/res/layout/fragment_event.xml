@@ -145,7 +145,7 @@
                         android:layout_marginTop="10dp"
                         android:gravity="center"
                         android:padding="15dp"
-                        android:background="@drawable/bg_round_05a64b"
+                        android:background="@drawable/bg_round_dark_gray"
                         android:textColor="@color/white"
                         android:text="이벤트 종료" />
                 </LinearLayout>

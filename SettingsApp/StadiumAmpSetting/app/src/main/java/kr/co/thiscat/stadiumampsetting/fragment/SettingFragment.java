@@ -85,6 +85,7 @@ public class SettingFragment extends Fragment {
     private TextView mTextHomeImage;
     private TextView mTextAwayImage;
     private EditText mEditWebUrl;
+    private EditText mEditOpenChat;
     private TextView mTextQrImage;
     private TextView mTextAdvImage;
 
@@ -192,6 +193,7 @@ public class SettingFragment extends Fragment {
         mTextAwayImage.setOnClickListener(mOnClickListener);
 
         mEditWebUrl = view.findViewById(R.id.edit_web_stat_url);
+        mEditOpenChat = view.findViewById(R.id.edit_open_chat_url);
 
         mTextQrImage = view.findViewById(R.id.text_event_qr_image);
         mTextQrImage.setOnClickListener(mOnClickListener);

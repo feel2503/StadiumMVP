@@ -33,7 +33,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginRight="5dp"
-                android:scaleType="center" />
+                android:scaleType="centerInside" />
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -112,7 +112,7 @@
                             android:layout_height="match_parent"
                             android:orientation="vertical">
                             <TextView
-                                style="@style/white_16_font"
+                                style="@style/white_18_font"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:gravity="left"
@@ -125,9 +125,10 @@
                                 android:layout_height="wrap_content"
                                 android:gravity="left"
                                 android:padding="5dp"
+                                android:layout_marginLeft="15dp"
                                 android:text="1위 음원" />
                             <TextView
-                                style="@style/white_16_font"
+                                style="@style/white_18_font"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:gravity="left"
@@ -140,9 +141,10 @@
                                 android:layout_height="wrap_content"
                                 android:gravity="left"
                                 android:padding="5dp"
+                                android:layout_marginLeft="15dp"
                                 android:text="2위 음원" />
                             <TextView
-                                style="@style/white_16_font"
+                                style="@style/white_18_font"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:gravity="left"
@@ -155,6 +157,7 @@
                                 android:layout_height="wrap_content"
                                 android:gravity="left"
                                 android:padding="5dp"
+                                android:layout_marginLeft="15dp"
                                 android:text="3위 음원" />
                         </LinearLayout>
 

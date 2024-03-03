@@ -45,7 +45,8 @@ public class AwaySettingFragment extends Fragment {
 
 //    Timer timer;
     private static AwaySettingFragment mInstance;
-
+    public TextView mTextAwayColor;
+    public TextView mTextAwayFont;
     public TextView mTextAway1;
     public TextView mTextAway2;
     public TextView mTextAway3;
@@ -107,6 +108,8 @@ public class AwaySettingFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_awsy_setting, container, false);
+        mTextAwayColor = view.findViewById(R.id.text_away_color);
+        mTextAwayFont = view.findViewById(R.id.text_away_font);
         mTextAway1 = view.findViewById(R.id.text_away_1);
         mTextAway1.setOnClickListener(mOnClickListener);
         mTextAway2 = view.findViewById(R.id.text_away_2);
@@ -194,6 +197,22 @@ public class AwaySettingFragment extends Fragment {
         for (EventMusicDto musicDto : musicDtos) {
             if (musicDto.getTeamType().equalsIgnoreCase("TEAM_AWAY"))
                 setMusicSequenc(musicDto.getSequence(), musicDto.getMusicName());
+        }
+    }
+
+    public void setEventColor(String color, String font){
+        Log.d("AAAA", "---- HomeSettingFragment updateEventColor");
+        try{
+            int iColor = 0xff000000 | Integer.parseUnsignedInt(color, 16);
+            mTextAwayColor.setTextColor(iColor);
+            mTextAwayColor.setText(color);
+
+//            int iFont = 0xff000000 | Integer.parseUnsignedInt(font, 16);
+//            mTextAwayFont.setTextColor(iFont);
+            mTextAwayFont.setText(font);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
         }
     }
 
