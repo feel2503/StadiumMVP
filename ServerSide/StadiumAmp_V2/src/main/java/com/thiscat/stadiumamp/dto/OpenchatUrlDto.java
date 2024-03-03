@@ -14,11 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class TeamColorDto {
+public class OpenchatUrlDto {
     long eventId;
-    String homeColor;
-    String homeFont;
-    String awayColor;
-    String awayFont;
-
+    String openchatUrl;
 }

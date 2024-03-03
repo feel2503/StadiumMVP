@@ -50,6 +50,7 @@ public class RunEventWebDto {
     String eventState;
 
     String webUrl;
+    String openchatUrl;
 
     private LocalDateTime startDateTime;
     int triggerType;

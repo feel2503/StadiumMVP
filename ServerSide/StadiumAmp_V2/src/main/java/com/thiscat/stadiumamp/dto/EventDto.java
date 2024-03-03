@@ -42,5 +42,9 @@ public class EventDto {
     String eventState;
 
     String homeColor;
+    String homeFont;
     String awayColor;
+    String awayFont;
+
+    String openchatUrl;
 }

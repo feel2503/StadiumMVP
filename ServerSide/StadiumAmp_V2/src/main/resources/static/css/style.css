@@ -162,6 +162,15 @@ div{
     width: 100%;
 }
 
+.open_chat{
+    position: fixed;
+    bottom:0px;
+    width: 85%;
+}
+.open_chat_img{
+    width: 100%;
+}
+
 .result_graph{
     display: flex;
     flex-direction: row;

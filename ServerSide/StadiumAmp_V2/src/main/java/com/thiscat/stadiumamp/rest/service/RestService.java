@@ -63,7 +63,9 @@ public class RestService {
                 .eventMusicList(new ArrayList<>(eventMusicDtos))
                 .eventImageList(new ArrayList<>(eventImageDtoList))
                 .homeColor(event.getHomeColor())
+                .homeFont(event.getHomeFont())
                 .awayColor(event.getAwayColor())
+                .awayFont(event.getAwayFont())
                 .build();
 
         RunEvent runEvent = runEventRepository.findByEventLimit(event.getId()).orElse(null);

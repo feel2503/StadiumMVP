@@ -7,6 +7,7 @@ import com.thiscat.stadiumamp.dto.RunEventWebDto;
 import com.thiscat.stadiumamp.entity.Event;
 import com.thiscat.stadiumamp.entity.EventMusic;
 import com.thiscat.stadiumamp.entity.RunEvent;
+import com.thiscat.stadiumamp.entity.repository.EventImageRepository;
 import com.thiscat.stadiumamp.entity.repository.EventMusicRepository;
 import com.thiscat.stadiumamp.entity.repository.EventRepository;
 import com.thiscat.stadiumamp.entity.repository.RunEventRepository;
@@ -37,6 +38,8 @@ public class VoteController {
     RunEventRepository runEventRepository;
     @Autowired
     EventMusicRepository eventMusicRepository;
+    @Autowired
+    EventImageRepository eventImageRepository;
 
     @GetMapping("/vote")
     public String home(Model model,  @RequestParam Integer team, @RequestParam Long event_id,
@@ -59,6 +62,7 @@ public class VoteController {
                 .triggerTime(runevent.getEvent().getTriggerTime())
                 .triggerVote(runevent.getEvent().getTriggerVote())
                 .webUrl(event.getWebUrl())
+                .openchatUrl(event.getOpenchatUrl())
                 .build();
 
 
@@ -116,11 +120,17 @@ public class VoteController {
         }
 
         String strTeam = "";
+        String bgImage = "";
         if(team == 0 || team == 1)
+        {
+            bgImage = eventImageRepository.findTypeEventImage(event_id, "IMAGE_HOME");
             strTeam = "Home";
+        }
         else
+        {
+            bgImage = eventImageRepository.findTypeEventImage(event_id, "IMAGE_AWAY");
             strTeam = "Away";
-
+        }
 
         LocalDateTime startTime = runevent.getStartDateTime();
         int vTime = runEventDto.getTriggerTime();
@@ -143,10 +153,15 @@ public class VoteController {
 
         }
 
+
         model.addAttribute("event", event);
         model.addAttribute("runevent", runEventDto);
         model.addAttribute("teamtype", strTeam);
         model.addAttribute("team", team);
+        model.addAttribute("homeColor", "#"+event.getHomeColor());
+        model.addAttribute("awayColor", "#"+event.getAwayColor());
+        model.addAttribute("bgimg", bgImage);
+
 
 //        if((team == 1 || team == 3) && (move == null)) {
 //            model.addAttribute("data", server_id);

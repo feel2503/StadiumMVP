@@ -45,5 +45,10 @@ public class Event extends BaseEntity {
     int continuityTime;
 
     String homeColor;
+    String homeFont;
     String awayColor;
+    String awayFont;
+
+    @Column(columnDefinition = "TEXT")
+    String openchatUrl;
 }

@@ -10,8 +10,11 @@ import com.thiscat.stadiumamp.entity.repository.*;
 import com.thiscat.stadiumamp.rest.service.RestService;
 import com.thiscat.stadiumamp.system.common.ApiResultResponse;
 import com.thiscat.stadiumamp.system.common.ApiResultWithValue;
+import com.thiscat.stadiumamp.system.common.InputRequestBodyWriteFile;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -45,6 +48,7 @@ public class RestApiController extends BaseController{
     private RunEventRepository runEventRepository;
 
 
+    Logger logger = LoggerFactory.getLogger(RestApiController.class);
     @ApiOperation(value = "Add Event Server")
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @PostMapping(value = "/v1/server/add", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -296,6 +300,35 @@ public class RestApiController extends BaseController{
         return getResponseEntity( runEventDto, "success", HttpStatus.OK);
     }
 
+    @ApiOperation(value = "RunEvent State")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @GetMapping(value = "/v1/event/runscorestate", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultWithValue> getRunScoreEventState(@RequestParam Long runEventId) throws Exception {
+        RunEvent runEvent = runEventRepository.findById(runEventId).orElseThrow(() -> new Exception("runevent-not-fount"));
+        RunEventDto runEventDto = RunEventDto.builder()
+                .id(runEvent.getId())
+                .eventId(runEvent.getEvent().getId())
+                .eventState(runEvent.getEventState())
+                .startDateTime(runEvent.getStartDateTime())
+                .triggerType(runEvent.getEvent().getTriggerType())
+                .triggerTime(runEvent.getEvent().getTriggerTime())
+                .triggerVote(runEvent.getEvent().getTriggerVote())
+                .homeCount(runEvent.getHomeCount())
+                .home1Count(runEvent.getHome1Count())
+                .home2Count(runEvent.getHome2Count())
+                .home3Count(runEvent.getHome3Count())
+                .home4Count(runEvent.getHome4Count())
+                .home5Count(runEvent.getHome5Count())
+                .awayCount(runEvent.getAwayCount())
+                .away1Count(runEvent.getAway1Count())
+                .away2Count(runEvent.getAway2Count())
+                .away3Count(runEvent.getAway3Count())
+                .away4Count(runEvent.getAway4Count())
+                .away5Count(runEvent.getAway5Count())
+                .build();
+        return getResponseEntity( runEventDto, "success", HttpStatus.OK);
+    }
+
     @ApiOperation(value = "Last Event")
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @GetMapping(value = "/v1/event/eventdto", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -341,7 +374,8 @@ public class RestApiController extends BaseController{
                                                        @RequestParam Long eventId, @RequestParam Long eventType) throws Exception
     {
         // 종료 타입이 득표일 경우 여기서 종료 체크
-        RunEvent runEvent = runEventRepository.findById(eventId).orElseThrow(() -> new Exception("runevent-not-fount"));
+        //RunEvent runEvent = runEventRepository.findById(eventId).orElseThrow(() -> new Exception("runevent-not-fount"));
+        RunEvent runEvent = runEventRepository.findByEventLimit(eventId).orElseThrow(EntityNotFoundException::new);
         if(runEvent.getEvent().getTriggerType() == 0)
         {
             LocalDateTime startTime = runEvent.getStartDateTime();
@@ -415,12 +449,24 @@ public class RestApiController extends BaseController{
     public ResponseEntity<ApiResultResponse> setTeamColor(@RequestBody TeamColorDto teamColorDto) throws Exception {
         Event event = eventRepository.findById(teamColorDto.getEventId()).orElseThrow(() -> new Exception("event-not-found"));
         event.setHomeColor(teamColorDto.getHomeColor());
+        event.setHomeFont(teamColorDto.getHomeFont());
         event.setAwayColor(teamColorDto.getAwayColor());
+        event.setAwayFont(teamColorDto.getAwayFont());
         eventRepository.save(event);
 
         return getResponseEntity( "success", HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Add Event Server")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PostMapping(value = "/v1/server/openchatUrl", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultResponse> setOpenchatUrl(@RequestBody OpenchatUrlDto openchatUrlDto) throws Exception {
+        Event event = eventRepository.findById(openchatUrlDto.getEventId()).orElseThrow(() -> new Exception("event-not-found"));
+        event.setOpenchatUrl(openchatUrlDto.getOpenchatUrl());
+        eventRepository.save(event);
+
+        return getResponseEntity( "success", HttpStatus.OK);
+    }
 
     private VoteResultDto getVoteResult(RunEvent runevent)
     {

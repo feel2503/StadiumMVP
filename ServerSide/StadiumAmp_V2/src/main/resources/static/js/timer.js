@@ -43,7 +43,7 @@ function countTimer() {
             if(res.data.eventState == "이벤트 종료" && res.data.playVideo)
             {
                 console.log("---res", res.data.eventState);
-                location.href = "http://192.168.123.195/result";
+                //location.href = "http://192.168.123.195/result";
             }
                 // "현재 응원 이벤트 남은 시간 " + min + "분" + sec + "초";
         } else {

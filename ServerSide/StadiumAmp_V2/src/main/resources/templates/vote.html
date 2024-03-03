@@ -27,17 +27,24 @@
             </div>
 
             <div class="result_text">
-                <div class="home_text" id="home_text">[[${event.homeName}]] [[${runevent.homeCount}]]</div>
-                <div class="away_text" id="away_text">[[${event.awayName}]] [[${runevent.awayCount}]]</div>
+                <div class="home_text" th:styleAppend="|color: ${homeColor}|"
+                     id="home_text">[[${event.homeName}]] [[${runevent.homeCount}]]</div>
+                <div class="away_text" th:styleAppend="|color: ${awayColor}|"
+                     id="away_text">[[${event.awayName}]] [[${runevent.awayCount}]]</div>
             </div>
 
             <div class="result_graph">
-                <div class="home_graph" id="home_graph"></div>
-                <div class="away_graph" id="away_graph"></div>
+                <div class="home_graph" th:styleAppend="|background-color: ${homeColor}|"
+                     id="home_graph"></div>
+                <div class="away_graph" th:styleAppend="|background-color: ${awayColor}|"
+                     id="away_graph"></div>
             </div>
         </div>
 
-        <div class="event_bg" style="padding:20px;">
+        <div class="event_bg" th:styleAppend="'background-image: url('+${bgimg}+');'">
+        <div style="padding:20px;">
+
+<!--        <div class="event_bg" style="padding:20px;">-->
 
             <div class="wc_text_02">
                 응원할 음원을 투표해 주세요.
@@ -52,42 +59,75 @@
 
             <div class="bt-02">
                 <div th:if="${teamtype =='Home'}">
-                    <button th:onclick="|vote(${team}, ${runevent.id}, 1);|" class="marquee" style="background-color: #ec0f32;">
-                            <span>[[${runevent.home1Name}]]</span>
+<!--                    <button th:onclick="|vote(${team}, ${event.id}, 1);|" class="marquee" style="background-color: #ec0f32;">-->
+<!--                            <span>[[${runevent.home1Name}]]</span>-->
+<!--                    </button>-->
+<!--                    <button th:onclick="|vote(${team}, ${event.id}, 2);|" class="marquee" style="background-color: #ec0f32;">-->
+<!--                            <span>[[${runevent.home2Name}]]</span>-->
+<!--                    </button>-->
+<!--                    <button th:onclick="|vote(${team}, ${event.id}, 3);|" class="marquee" style="background-color: #ec0f32;">-->
+<!--                        <span>[[${runevent.home3Name}]]</span>-->
+<!--                    </button>-->
+<!--                    <button th:onclick="|vote(${team}, ${event.id}, 4);|" class="marquee" style="background-color: #ec0f32;">-->
+<!--                        <span>[[${runevent.home4Name}]]</span>-->
+<!--                    </button>-->
+<!--                    <button th:onclick="|vote(${team}, ${event.id}, 5);|" class="marquee" style="background-color: #ec0f32;">-->
+<!--                        <span>[[${runevent.home5Name}]]</span>-->
+<!--                    </button>-->
+
+                    <button th:onclick="|vote(${team}, ${event.id}, 1);|" class="marquee" th:styleAppend="|background-color: ${homeColor}|">
+                        <span>[[${runevent.home1Name}]]</span>
                     </button>
-                    <button th:onclick="|vote(${team}, ${runevent.id}, 2);|" class="marquee" style="background-color: #ec0f32;">
-                            <span>[[${runevent.home2Name}]]</span>
+                    <button th:onclick="|vote(${team}, ${event.id}, 2);|" class="marquee" th:styleAppend="|background-color: ${homeColor}|">
+                        <span>[[${runevent.home2Name}]]</span>
                     </button>
-                    <button th:onclick="|vote(${team}, ${runevent.id}, 3);|" class="marquee" style="background-color: #ec0f32;">
+                    <button th:onclick="|vote(${team}, ${event.id}, 3);|" class="marquee" th:styleAppend="|background-color: ${homeColor}|">
                         <span>[[${runevent.home3Name}]]</span>
                     </button>
-                    <button th:onclick="|vote(${team}, ${runevent.id}, 4);|" class="marquee" style="background-color: #ec0f32;">
+                    <button th:onclick="|vote(${team}, ${event.id}, 4);|" class="marquee" th:styleAppend="|background-color: ${homeColor}|">
                         <span>[[${runevent.home4Name}]]</span>
                     </button>
-                    <button th:onclick="|vote(${team}, ${runevent.id}, 5);|" class="marquee" style="background-color: #ec0f32;">
+                    <button th:onclick="|vote(${team}, ${event.id}, 5);|" class="marquee" th:styleAppend="|background-color: ${homeColor}|">
                         <span>[[${runevent.home5Name}]]</span>
                     </button>
 
                 </div>
                 <div th:if="${teamtype =='Away'}">
-                    <button th:onclick="|vote(${team}, ${runevent.id}, 1);|" class="marquee" style="background-color: #326295;">
+<!--                    <button th:onclick="|vote(${team}, ${event.id}, 1);|" class="marquee" style="background-color: #326295;">-->
+<!--                        <span>[[${runevent.away1Name}]]</span>-->
+<!--                    </button>-->
+<!--                    <button th:onclick="|vote(${team}, ${event.id}, 2);|" class="marquee" style="background-color: #326295;">-->
+<!--                        <span>[[${runevent.away2Name}]]</span>-->
+<!--                    </button>-->
+<!--                    <button th:onclick="|vote(${team}, ${event.id}, 3);|" class="marquee" style="background-color: #326295;">-->
+<!--                        <span>[[${runevent.away3Name}]]</span>-->
+<!--                    </button>-->
+<!--                    <button th:onclick="|vote(${team}, ${event.id}, 4);|" class="marquee" style="background-color: #326295;">-->
+<!--                        <span>[[${runevent.away4Name}]]</span>-->
+<!--                    </button>-->
+<!--                    <button th:onclick="|vote(${team}, ${event.id}, 5);|" class="marquee" style="background-color: #326295;">-->
+<!--                        <span>[[${runevent.away5Name}]]</span>-->
+<!--                    </button>-->
+
+                    <button th:onclick="|vote(${team}, ${event.id}, 1);|" class="marquee" th:styleAppend="|background-color: ${awayColor}|">
                         <span>[[${runevent.away1Name}]]</span>
                     </button>
-                    <button th:onclick="|vote(${team}, ${runevent.id}, 2);|" class="marquee" style="background-color: #326295;">
+                    <button th:onclick="|vote(${team}, ${event.id}, 2);|" class="marquee" th:styleAppend="|background-color: ${awayColor}|">
                         <span>[[${runevent.away2Name}]]</span>
                     </button>
-                    <button th:onclick="|vote(${team}, ${runevent.id}, 3);|" class="marquee" style="background-color: #326295;">
+                    <button th:onclick="|vote(${team}, ${event.id}, 3);|" class="marquee" th:styleAppend="|background-color: ${awayColor}|">
                         <span>[[${runevent.away3Name}]]</span>
                     </button>
-                    <button th:onclick="|vote(${team}, ${runevent.id}, 4);|" class="marquee" style="background-color: #326295;">
+                    <button th:onclick="|vote(${team}, ${event.id}, 4);|" class="marquee" th:styleAppend="|background-color: ${awayColor}|">
                         <span>[[${runevent.away4Name}]]</span>
                     </button>
-                    <button th:onclick="|vote(${team}, ${runevent.id}, 5);|" class="marquee" style="background-color: #326295;">
+                    <button th:onclick="|vote(${team}, ${event.id}, 5);|" class="marquee" th:styleAppend="|background-color: ${awayColor}|">
                         <span>[[${runevent.away5Name}]]</span>
                     </button>
 
                 </div>
             </div>
+        </div>
         </div>
 
         <p></p>
@@ -117,6 +157,17 @@
                 <!--                    <img class="profile" src="asset/floating_button.svg">-->
                 <div class="box" style="background: #BDBDBD;">
                     <img class="profile" src="asset/floating_button.svg">
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div id="open_chat" class="open_chat">
+        <a th:href="@{${event.openchatUrl}}" >
+            <div>
+                <!--                    <img class="profile" src="asset/floating_button.svg">-->
+                <div class="box" style="background: #BDBDBD;">
+                    <img class="profile" src="asset/openchat.png">
                 </div>
             </div>
         </a>
