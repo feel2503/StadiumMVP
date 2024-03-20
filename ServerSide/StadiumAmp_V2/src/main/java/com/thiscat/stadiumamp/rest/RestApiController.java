@@ -367,6 +367,36 @@ public class RestApiController extends BaseController{
         return getResponseEntity(voteResultDto, "success", HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Last Event")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @GetMapping(value = "/v1/event/last-event", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultWithValue> getLastEvent(@RequestParam Long serverId) throws Exception {
+        Event event = eventRepository.findById(serverId).orElseThrow(EntityNotFoundException::new);
+        RunEvent runEvent = runEventRepository.findFirstByEventOrderByIdDesc(event).orElseThrow(EntityNotFoundException::new);
+        RunEventDto runEventDto = RunEventDto.builder()
+                .id(runEvent.getId())
+                .eventId(runEvent.getEvent().getId())
+                .eventState(runEvent.getEventState())
+                .startDateTime(runEvent.getStartDateTime())
+                .triggerType(runEvent.getEvent().getTriggerType())
+                .triggerTime(runEvent.getEvent().getTriggerTime())
+                .triggerVote(runEvent.getEvent().getTriggerVote())
+                .homeCount(runEvent.getHomeCount())
+                .home1Count(runEvent.getHome1Count())
+                .home2Count(runEvent.getHome2Count())
+                .home3Count(runEvent.getHome3Count())
+                .home4Count(runEvent.getHome4Count())
+                .home5Count(runEvent.getHome5Count())
+                .awayCount(runEvent.getAwayCount())
+                .away1Count(runEvent.getAway1Count())
+                .away2Count(runEvent.getAway2Count())
+                .away3Count(runEvent.getAway3Count())
+                .away4Count(runEvent.getAway4Count())
+                .away5Count(runEvent.getAway5Count())
+                .build();
+        return getResponseEntity( runEventDto, "success", HttpStatus.OK);
+    }
+
     @ApiOperation(value = "Event List")
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @GetMapping(value = "/v1/vote/save", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -386,12 +416,14 @@ public class RestApiController extends BaseController{
             {
                 //VoteResultDto voteResultDto = new VoteResultDto("50%", "50%", 0, 0);
                 VoteResultDto voteResultDto = getVoteResult(runEvent);
+                voteResultDto.setEventState("STOP");
                 return getResponseEntity(voteResultDto, "success", HttpStatus.OK);
             }
             else
             {
                 RunEvent resultEvent = restService.updateVoteCount(runEvent, teamType, eventType);
                 VoteResultDto voteResultDto =getVoteResult(resultEvent);
+                voteResultDto.setEventState("START");
                 return getResponseEntity(voteResultDto, "success", HttpStatus.OK);
             }
         }
@@ -401,6 +433,7 @@ public class RestApiController extends BaseController{
             if(triVote >= runEvent.getHomeCount() || triVote >= runEvent.getAwayCount())
             {
                 VoteResultDto voteResultDto = getVoteResult(runEvent);
+                voteResultDto.setEventState("STOP");
                 return getResponseEntity(voteResultDto, "success", HttpStatus.OK);
             }
             else
@@ -411,6 +444,7 @@ public class RestApiController extends BaseController{
                     RunEventDto runEventDto = restService.stopEvent(resultEvent.getId());
                 }
                 VoteResultDto voteResultDto = getVoteResult(runEvent);
+                voteResultDto.setEventState("START");
                 return getResponseEntity(voteResultDto, "success", HttpStatus.OK);
             }
         }

@@ -165,7 +165,7 @@ div{
 .open_chat{
     position: fixed;
     bottom:0px;
-    width: 85%;
+    width: 83%;
 }
 .open_chat_img{
     width: 100%;
@@ -173,6 +173,11 @@ div{
 
 .result_graph{
     display: flex;
+    flex-direction: row;
+    margin-bottom: 30px;
+}
+.result_graph_hidden{
+    display: none;
     flex-direction: row;
     margin-bottom: 30px;
 }
@@ -195,6 +200,24 @@ div{
     color:#ffffff;
     font-weight: 600;
 }
+.home_graph_full{
+    background-color:#ec0f32;
+    flex-basis: 100%;
+    text-align: left;
+    border-radius: 10px 10px 10px 10px;
+    padding:25px 0px 25px 0px;
+    color:#ffffff;
+    font-weight: 600;
+}
+.home_graph_zero{
+    background-color:#ec0f32;
+    flex-basis: 0%;
+    text-align: left;
+    border-radius: 10px 10px 10px 10px;
+    padding:25px 0px 25px 0px;;
+    color:#ffffff;
+    font-weight: 600;
+}
 .away_text{
     text-align: center;
     color:#326295;
@@ -209,6 +232,41 @@ div{
     color:#ffffff;
     font-weight: 600;
 }
+.away_graph_full{
+    background-color:#326295;
+    flex-basis: 100%;
+    text-align: right;
+    border-radius: 10px 10px 10px 10px;
+    padding:25px 0px 25px 0px;
+    color:#ffffff;
+    font-weight: 600;
+}
+.away_graph_zero{
+    background-color:#326295;
+    flex-basis: 0%;
+    text-align: right;
+    border-radius: 10px 10px 10px 10px;
+    padding:25px 0px 25px 0px;
+    color:#ffffff;
+    font-weight: 600;
+}
+
+.gray_graph_full{
+    background-color:#8e8e8e;
+    flex-basis: 100%;
+    text-align: center;
+    border-radius: 10px 10px 10px 10px;
+    padding:0px 0px 0px 0px;;
+    color:#ffffff;
+    font-weight: 400;
+}
+.flex-center {
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
 .time_count{
     color:#ffffff;
     text-align: center;

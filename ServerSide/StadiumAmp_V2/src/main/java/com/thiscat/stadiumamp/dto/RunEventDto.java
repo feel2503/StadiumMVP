@@ -46,6 +46,7 @@ public class RunEventDto {
     String eventState;
 
     String webUrl;
+    String openchatUrl;
 
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;

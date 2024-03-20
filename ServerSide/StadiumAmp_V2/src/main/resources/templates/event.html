@@ -32,13 +32,15 @@
             <img src="asset/StadiumAMP-Logo.svg">
         </div>
 
-        <div class="event_bg">
+<!--        <div class="event_bg">-->
+        <div class="event_bg" th:styleAppend="'background-image: url('+${bgimg}+');'">
 
             <div class="wc_text">
                 <li>서버 <span th:text="${data.name}"/> 에 접속 하셨습니다.</li>
                 <li>응원 권한을 선택해주세요.</li>
             </div>
 
+<!--            <form method="get" action="vote" style="padding:20px;">-->
             <form method="get" action="vote" style="padding:20px;">
                 <input type="hidden" id="gameToken" name="event_id" th:value="${data.id}" >
                 <div style="padding:5px;">

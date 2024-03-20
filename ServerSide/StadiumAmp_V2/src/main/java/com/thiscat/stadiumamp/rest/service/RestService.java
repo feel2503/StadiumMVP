@@ -58,6 +58,7 @@ public class RestService {
                 .triggerTime(event.getTriggerTime())
                 .triggerVote(event.getTriggerVote())
                 .webUrl(event.getWebUrl())
+                .openchatUrl(event.getOpenchatUrl())
                 .continuityTime(event.getContinuityTime())
                 .continuityType(event.getContinuityType())
                 .eventMusicList(new ArrayList<>(eventMusicDtos))
@@ -146,6 +147,7 @@ public class RestService {
                 .continuityType(saveEvent.getContinuityType())
                 .continuityTime(saveEvent.getContinuityTime())
                 .webUrl(saveEvent.getWebUrl())
+                .openchatUrl(saveEvent.getOpenchatUrl())
                 .eventMusicList(new ArrayList<>(eventMusicDtos))
                 .eventImageList(new ArrayList<>(eventImageDtoList))
                 .build();

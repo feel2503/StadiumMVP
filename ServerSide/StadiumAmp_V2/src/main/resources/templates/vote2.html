@@ -15,7 +15,7 @@
           th:href="@{css/style.css}"/>
 
 </head>
-<body onload="startTimer()">
+<body onload="startTimer2()">
     <div class="remain_text_02" id="display">
         현재 응원 이벤트 남은 시간 0분 0초
     </div>
@@ -23,50 +23,40 @@
 
         <div style="padding:20px;">
             <div class="wc_text_02">
-                <b>[[${event.name}]]</b> 실시간 응원
+                이벤트 서버 <b>[[${event.name}]]</b> 실시간 응원 결과
             </div>
 
             <div class="result_text">
-                <div class="home_text" th:styleAppend="|color: ${homeColor}|"
-                     id="home_text">[[${event.homeName}]] [[${runevent.homeCount}]]</div>
-                <div class="away_text" th:styleAppend="|color: ${awayColor}|"
-                     id="away_text">[[${event.awayName}]] [[${runevent.awayCount}]]</div>
+                <div th:if="${teamtype =='Home'}">
+                    <div class="home_text" th:styleAppend="|color: ${homeColor}|"
+                         id="home_text">[[${event.homeName}]] [[${runevent.homeCount}]]</div>
+                </div>
+                <div th:if="${teamtype =='Away'}">
+                    <div class="home_text" th:styleAppend="|color: ${awayColor}|"
+                         id="away_text">[[${event.awayName}]] [[${runevent.awayCount}]]</div>
+                </div>
+
             </div>
 
-<!--            <div th:if="${state =='STOP'}">-->
-<!--                <div class="result_graph" id="event_stop_graph">-->
-<!--                    <div class="gray_graph_full" th:styleAppend="|background-color: ${homeColor}|"></div>-->
-<!--                    <div class="away_graph_zero" th:styleAppend="|background-color: ${awayColor}|"></div>-->
-<!--                </div>-->
-<!--            </div>-->
-
-<!--            <div th:if="${state !='STOP'}">-->
-<!--                <div class="result_graph" id="event_start_graph">-->
-<!--                    <div class="home_graph" th:styleAppend="|background-color: ${homeColor}|"-->
-<!--                         id="home_graph"></div>-->
-<!--                    <div class="away_graph" th:styleAppend="|background-color: ${awayColor}|"-->
-<!--                         id="away_graph"></div>-->
-<!--                </div>-->
-<!--            </div>-->
-
-
-                <div class="result_graph" id="event_stop_graph">
-                    <div class="gray_graph_full" >
-                        <div class="flex-center">다음 응원 이벤트를 기다려주세요</div>
-                    </div>
-                    <div class="away_graph_zero" ></div>
+            <div th:if="${teamtype =='Home'}">
+                <div class="result_graph">
+                    <div class="home_graph_full" th:styleAppend="|background-color: ${homeColor}|"></div>
+                    <div class="away_graph_zero" th:styleAppend="|background-color: ${awayColor}|"></div>
                 </div>
-
-
-
-                <div class="result_graph" id="event_start_graph">
-                    <div class="home_graph" th:styleAppend="|background-color: ${homeColor}|"
-                         id="home_graph"></div>
-                    <div class="away_graph" th:styleAppend="|background-color: ${awayColor}|"
-                         id="away_graph"></div>
+            </div>
+            <div th:if="${teamtype =='Away'}">
+                <div class="result_graph">
+                    <div class="home_graph_zero" th:styleAppend="|background-color: ${homeColor}|"></div>
+                    <div class="away_graph_full" th:styleAppend="|background-color: ${awayColor}|"></div>
                 </div>
+            </div>
 
-
+<!--            <div class="result_graph">-->
+<!--                <div class="home_graph" th:styleAppend="|background-color: ${homeColor}|"-->
+<!--                     id="home_graph"></div>-->
+<!--                <div class="away_graph" th:styleAppend="|background-color: ${awayColor}|"-->
+<!--                     id="away_graph"></div>-->
+<!--            </div>-->
         </div>
 
         <div class="event_bg" th:styleAppend="'background-image: url('+${bgimg}+');'">
@@ -87,22 +77,6 @@
 
             <div class="bt-02">
                 <div th:if="${teamtype =='Home'}">
-<!--                    <button th:onclick="|vote(${team}, ${event.id}, 1);|" class="marquee" style="background-color: #ec0f32;">-->
-<!--                            <span>[[${runevent.home1Name}]]</span>-->
-<!--                    </button>-->
-<!--                    <button th:onclick="|vote(${team}, ${event.id}, 2);|" class="marquee" style="background-color: #ec0f32;">-->
-<!--                            <span>[[${runevent.home2Name}]]</span>-->
-<!--                    </button>-->
-<!--                    <button th:onclick="|vote(${team}, ${event.id}, 3);|" class="marquee" style="background-color: #ec0f32;">-->
-<!--                        <span>[[${runevent.home3Name}]]</span>-->
-<!--                    </button>-->
-<!--                    <button th:onclick="|vote(${team}, ${event.id}, 4);|" class="marquee" style="background-color: #ec0f32;">-->
-<!--                        <span>[[${runevent.home4Name}]]</span>-->
-<!--                    </button>-->
-<!--                    <button th:onclick="|vote(${team}, ${event.id}, 5);|" class="marquee" style="background-color: #ec0f32;">-->
-<!--                        <span>[[${runevent.home5Name}]]</span>-->
-<!--                    </button>-->
-
                     <button th:onclick="|vote(${team}, ${event.id}, 1);|" class="marquee" th:styleAppend="|background-color: ${homeColor}|">
                         <span>[[${runevent.home1Name}]]</span>
                     </button>
@@ -121,22 +95,6 @@
 
                 </div>
                 <div th:if="${teamtype =='Away'}">
-<!--                    <button th:onclick="|vote(${team}, ${event.id}, 1);|" class="marquee" style="background-color: #326295;">-->
-<!--                        <span>[[${runevent.away1Name}]]</span>-->
-<!--                    </button>-->
-<!--                    <button th:onclick="|vote(${team}, ${event.id}, 2);|" class="marquee" style="background-color: #326295;">-->
-<!--                        <span>[[${runevent.away2Name}]]</span>-->
-<!--                    </button>-->
-<!--                    <button th:onclick="|vote(${team}, ${event.id}, 3);|" class="marquee" style="background-color: #326295;">-->
-<!--                        <span>[[${runevent.away3Name}]]</span>-->
-<!--                    </button>-->
-<!--                    <button th:onclick="|vote(${team}, ${event.id}, 4);|" class="marquee" style="background-color: #326295;">-->
-<!--                        <span>[[${runevent.away4Name}]]</span>-->
-<!--                    </button>-->
-<!--                    <button th:onclick="|vote(${team}, ${event.id}, 5);|" class="marquee" style="background-color: #326295;">-->
-<!--                        <span>[[${runevent.away5Name}]]</span>-->
-<!--                    </button>-->
-
                     <button th:onclick="|vote(${team}, ${event.id}, 1);|" class="marquee" th:styleAppend="|background-color: ${awayColor}|">
                         <span>[[${runevent.away1Name}]]</span>
                     </button>
@@ -163,7 +121,6 @@
         <input type="hidden" id="startMin" th:value="${min}" >
         <input type="hidden" id="startSec" th:value="${sec}" >
         <input type="hidden" id="startIdVal" th:value="${event.id}" >
-        <input type="hidden" id="eventState" th:value="${state}" >
 
 
 
@@ -206,22 +163,7 @@
     <script th:src="@{js/timer.js}"></script>
 
     <script>
-        estate = document.querySelector("#eventState").value;
-        const graph_stop =document.getElementById("event_stop_graph");
-        const graph_start =document.getElementById("event_start_graph");
-        if(estate === "STOP")
-        {
-            graph_stop.style.display = 'flex';
-            graph_start.style.display = 'none';
-        }
-        else
-        {
-            graph_stop.style.display = 'none';
-            graph_start.style.display = 'flex';
-        }
-    </script>
 
-    <script>
         /// vote
         function vote(teamType, eventId, eventType)
         {
@@ -254,19 +196,9 @@
                         awayGraph.style.borderBottomLeftRadius="0px";
                     }
 
-                    // var homeStr = document.querySelector("#home_text").value;
-                    // var awayStr = document.querySelector("#away_text").value;
-                    // if(res.data.eventState === "START")
-                    // {
-                    //     document.getElementById("home_text").innerText = homeStr+" "+res.data.homeCount;
-                    //     document.getElementById("away_text").innerText = ""+res.data.awayCount+" " + awayStr;
-                    // }
+                    document.getElementById("home_text").innerText = "Home "+res.data.homeCount;
+                    document.getElementById("away_text").innerText = ""+res.data.awayCount+" Away";
 
-                    if(res.data.eventState === "START")
-                    {
-                        document.getElementById("home_text").innerText = "Home "+res.data.homeCount;
-                        document.getElementById("away_text").innerText = ""+res.data.awayCount+" Away";
-                    }
                 } else {
 
                 }
