@@ -80,7 +80,7 @@ public class EventFragment extends Fragment {
     private LinearLayout mLinearEvent;
     private WebView mWebView;
     private FloatingActionButton mFab;
-
+    private String mLoadUrl;
 //    Timer timer;
     private static EventFragment mInstance;
 
@@ -236,9 +236,17 @@ public class EventFragment extends Fragment {
     }
 
     public void updateEventInfo(RunEvent eventDto) {
-        if(eventDto.getWebUrl() != null){
+//        if(eventDto.getWebUrl() != null){
+//            mFab.setVisibility(View.VISIBLE);
+//            mWebView.loadUrl(eventDto.getWebUrl());
+//
+//        } else{
+//            mFab.setVisibility(View.GONE);
+//        }
+        if(eventDto.getOpenchatUrl() != null){
             mFab.setVisibility(View.VISIBLE);
-            mWebView.loadUrl(eventDto.getWebUrl());
+            mLoadUrl = eventDto.getOpenchatUrl();
+
         } else{
             mFab.setVisibility(View.GONE);
         }
@@ -254,12 +262,19 @@ public class EventFragment extends Fragment {
 
     public void setEventInfo(EventDto eventDto) {
         Log.d("AAAA", "---- SettingFragment setEventInfo");
-        if(eventDto.getWebUrl() != null){
+//        if(eventDto.getWebUrl() != null){
+//            mFab.setVisibility(View.VISIBLE);
+//            mWebView.loadUrl(eventDto.getWebUrl());
+//        } else{
+//            mFab.setVisibility(View.GONE);
+//        }
+        if(eventDto.getOpenchatUrl() != null){
             mFab.setVisibility(View.VISIBLE);
-            mWebView.loadUrl(eventDto.getWebUrl());
+            mLoadUrl = eventDto.getOpenchatUrl();
         } else{
             mFab.setVisibility(View.GONE);
         }
+
         String defImage = mainActivity.getTypeImage(eventDto.getEventImageList(), "IMAGE_DEFAULT");
         if(defImage != null)
         {
@@ -288,15 +303,20 @@ public class EventFragment extends Fragment {
         @Override
         public void onClick(View v) {
             if(v.getId() == R.id.fab_web){
-                if(mainActivity.mWebViewState){
-                    mainActivity.mWebViewState = false;
-                    mWebView.setVisibility(View.GONE);
-                    mLinearEvent.setVisibility(View.VISIBLE);
-                }else{
-                    mainActivity.mWebViewState = true;
-                    mWebView.setVisibility(View.VISIBLE);
-                    mLinearEvent.setVisibility(View.GONE);
-                }
+//                if(mainActivity.mWebViewState){
+//                    mainActivity.mWebViewState = false;
+//                    mWebView.setVisibility(View.GONE);
+//                    mLinearEvent.setVisibility(View.VISIBLE);
+//                }else{
+//                    mainActivity.mWebViewState = true;
+//                    mWebView.setVisibility(View.VISIBLE);
+//                    mLinearEvent.setVisibility(View.GONE);
+//                }
+
+                String url = mLoadUrl;
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                startActivity(intent);
+
             }
             else if(v.getId() == R.id.screen_full_view){
                 //mainActivity.setFullView(true);

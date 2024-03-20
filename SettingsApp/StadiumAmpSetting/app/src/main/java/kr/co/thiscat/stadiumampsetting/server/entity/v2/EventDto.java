@@ -70,8 +70,8 @@ public class EventDto
     String awayFont;
 
     @Expose
-    @SerializedName("openchaUrl")
-    String openchaUrl;
+    @SerializedName("openchatUrl")
+    String openchatUrl;
 
     public int getEventId() {
         return eventId;
@@ -209,11 +209,11 @@ public class EventDto
         this.awayFont = awayFont;
     }
 
-    public String getOpenchaUrl() {
-        return openchaUrl;
+    public String getOpenchatUrl() {
+        return openchatUrl;
     }
 
-    public void setOpenchaUrl(String openchaUrl) {
-        this.openchaUrl = openchaUrl;
+    public void setOpenchatUrl(String openchaUrl) {
+        this.openchatUrl = openchaUrl;
     }
 }

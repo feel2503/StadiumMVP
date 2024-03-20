@@ -63,6 +63,10 @@ public class RunEvent
     String webUrl;
 
     @Expose
+    @SerializedName("openchatUrl")
+    String openchatUrl;
+
+    @Expose
     @SerializedName("continuityType")
     int continuityType;
     @Expose
@@ -309,5 +313,13 @@ public class RunEvent
 
     public void setContinuityTime(int continuityTime) {
         this.continuityTime = continuityTime;
+    }
+
+    public String getOpenchatUrl() {
+        return openchatUrl;
+    }
+
+    public void setOpenchatUrl(String openchatUrl) {
+        this.openchatUrl = openchatUrl;
     }
 }

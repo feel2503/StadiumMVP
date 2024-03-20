@@ -289,16 +289,27 @@
                     android:layout_marginTop="10dp"
                     android:text="Web Stat URL" />
 
-                <EditText
-                    android:id="@+id/edit_web_stat_url"
+                <TextView
+                    android:id="@+id/text_web_stat_url"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginTop="5dp"
                     android:background="@drawable/bg_round_white"
-                    android:hint="게임 정보가 있는 URL 을 입력하세요"
-                    android:padding="10dp"
-                    android:textAlignment="center"
+                    android:gravity="center"
+                    android:padding="15dp"
+                    android:text="게임 정보가 있는 URL 을 입력하세요"
                     android:textSize="15dp" />
+
+<!--                <EditText-->
+<!--                    android:id="@+id/edit_web_stat_url"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="5dp"-->
+<!--                    android:background="@drawable/bg_round_white"-->
+<!--                    android:hint="게임 정보가 있는 URL 을 입력하세요"-->
+<!--                    android:padding="10dp"-->
+<!--                    android:textAlignment="center"-->
+<!--                    android:textSize="15dp" />-->
 
                 <TextView
                     style="@style/black_14_font"
@@ -307,16 +318,27 @@
                     android:layout_marginTop="10dp"
                     android:text="Open Chat URL" />
 
-                <EditText
-                    android:id="@+id/edit_open_chat_url"
+                <TextView
+                    android:id="@+id/text_open_chat_url"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginTop="5dp"
                     android:background="@drawable/bg_round_white"
-                    android:hint="Open Chat URL 을 입력하세요"
-                    android:padding="10dp"
-                    android:textAlignment="center"
+                    android:gravity="center"
+                    android:padding="15dp"
+                    android:text="Open Chat URL 을 입력하세요"
                     android:textSize="15dp" />
+
+<!--                <EditText-->
+<!--                    android:id="@+id/edit_open_chat_url"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="5dp"-->
+<!--                    android:background="@drawable/bg_round_white"-->
+<!--                    android:hint="Open Chat URL 을 입력하세요"-->
+<!--                    android:padding="10dp"-->
+<!--                    android:textAlignment="center"-->
+<!--                    android:textSize="15dp" />-->
 
                 <TextView
                     style="@style/black_14_font"

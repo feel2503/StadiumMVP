@@ -12,6 +12,7 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -19,6 +20,7 @@ import android.os.StrictMode;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
@@ -62,6 +64,7 @@ import retrofit2.Response;
 
 
 public class MainActivity extends AppCompatActivity {
+    public static long CHECK_DELAY = 2000L;
     private HomeSettingFragment homeSettingFragment;
     private AwaySettingFragment awaySettingFragment;
     private EventFragment eventFragment;
@@ -114,6 +117,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
 
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
@@ -369,6 +375,10 @@ public class MainActivity extends AppCompatActivity {
 
                         }
                         return;
+                    }
+                    else if(mRunEvent.getEventState().equalsIgnoreCase("START"))
+                    {
+
                     }
                 }
                 mServer.getRunEventState(mEventStateCallBack, mRunEventId);
@@ -675,6 +685,9 @@ public class MainActivity extends AppCompatActivity {
 
                     if(mRunEvent.getEventState().equalsIgnoreCase("STOP")){
                         playMusic(mRunEvent);
+                        mRunEventId = -1;
+                        AsyncCheckState async = new AsyncCheckState();
+                        async.execute();
                     }
 //                    if(runEvent.getHomeCount() >= runEvent.getAwayCount())
 //                    {
@@ -741,6 +754,9 @@ public class MainActivity extends AppCompatActivity {
                     eventFragment.updateEventState(mRunEvent);
                     if(mRunEvent.getEventState().equalsIgnoreCase("START")){
                         startEventStateCheck(mRunEvent.getId());
+                    }else{
+                        AsyncCheckState async = new AsyncCheckState();
+                        async.execute();
                     }
                 }catch (Exception e)
                 {
@@ -968,4 +984,29 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private class AsyncCheckState extends AsyncTask<String, Void, Boolean>
+    {
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            try{
+                Thread.sleep(CHECK_DELAY);
+            }catch (Exception e){}
+
+            //mServer.getLastEvent(mFirstEventStateCallBack, mServerId);
+
+            if(mRunEventId < 0)
+            {
+                //mServer.getRunEventState(mFirstEventStateCallBack, mRunEventId);
+                mServer.getLastEvent(mFirstEventStateCallBack, mServerId);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+
+        }
+    }
 }

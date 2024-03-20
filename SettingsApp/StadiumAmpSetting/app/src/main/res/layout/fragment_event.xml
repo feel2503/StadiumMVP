@@ -187,7 +187,7 @@
                 android:layout_marginBottom="16dp"
                 android:contentDescription="Event"
                 app:fabSize="auto"
-                style="@style/floating1"
+                style="@style/floating2"
                  />
         </RelativeLayout>
 

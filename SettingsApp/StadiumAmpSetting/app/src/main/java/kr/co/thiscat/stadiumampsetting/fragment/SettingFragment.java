@@ -84,8 +84,8 @@ public class SettingFragment extends Fragment {
     private TextView mTextDefaultImage;
     private TextView mTextHomeImage;
     private TextView mTextAwayImage;
-    private EditText mEditWebUrl;
-    private EditText mEditOpenChat;
+    private TextView mEditWebUrl;
+    private TextView mEditOpenChat;
     private TextView mTextQrImage;
     private TextView mTextAdvImage;
 
@@ -192,8 +192,10 @@ public class SettingFragment extends Fragment {
         mTextAwayImage = view.findViewById(R.id.text_event_away_image);
         mTextAwayImage.setOnClickListener(mOnClickListener);
 
-        mEditWebUrl = view.findViewById(R.id.edit_web_stat_url);
-        mEditOpenChat = view.findViewById(R.id.edit_open_chat_url);
+        mEditWebUrl = view.findViewById(R.id.text_web_stat_url);
+        mEditWebUrl.setOnClickListener(mOnClickListener);
+        mEditOpenChat = view.findViewById(R.id.text_open_chat_url);
+        mEditOpenChat.setOnClickListener(mOnClickListener);
 
         mTextQrImage = view.findViewById(R.id.text_event_qr_image);
         mTextQrImage.setOnClickListener(mOnClickListener);
@@ -246,6 +248,7 @@ public class SettingFragment extends Fragment {
                 mTextAdvImage.setText(imageDto.getImageName());
         }
         mEditWebUrl.setText(eventDto.getWebUrl());
+        mEditOpenChat.setText(eventDto.getOpenchatUrl());
     }
 
     private void setEventBtnState(boolean isRunning)
@@ -283,23 +286,35 @@ public class SettingFragment extends Fragment {
         switch (resId){
             case R.id.text_event_default_image:
                 uri = mainActivity.getContentUri(mTextDefaultImage.getText().toString());
+                intent.setDataAndType(uri, "image/*");
                 break;
             case R.id.text_event_home_image:
                 uri = mainActivity.getContentUri(mTextHomeImage.getText().toString());
+                intent.setDataAndType(uri, "image/*");
                 break;
             case R.id.text_event_away_image:
                 uri = mainActivity.getContentUri(mTextAwayImage.getText().toString());
+                intent.setDataAndType(uri, "image/*");
                 break;
             case R.id.text_event_qr_image:
                 uri = mainActivity.getContentUri(mTextQrImage.getText().toString());
+                intent.setDataAndType(uri, "image/*");
                 break;
             case R.id.text_event_adv_image:
                 uri = mainActivity.getContentUri(mTextAdvImage.getText().toString());
+                intent.setDataAndType(uri, "image/*");
+                break;
+            case R.id.text_web_stat_url:
+                uri = Uri.parse(mEditWebUrl.getText().toString());
+                intent.setData(uri);
+                break;
+            case R.id.text_open_chat_url:
+                uri = Uri.parse(mEditOpenChat.getText().toString());
+                intent.setData(uri);
                 break;
         }
 
         if(uri != null){
-            intent.setDataAndType(uri, "image/*");
             startActivity(intent);
         }
 
@@ -371,53 +386,9 @@ public class SettingFragment extends Fragment {
                     }else{
                         setEventBtnState(false);
                     }
-
-
                 }
             });
         }
-
-//        if(runEvent.getVoteTime() == 3)
-//            mRadioVote.check(R.id.radio_vote_3m);
-//        else if(runEvent.getVoteTime() == 5)
-//            mRadioVote.check(R.id.radio_vote_5m);
-//
-//        if(runEvent.getResultTime() == 1)
-//            mRadioResult.check(R.id.radio_result_1m);
-//        else if(runEvent.getVoteTime() == 3)
-//            mRadioResult.check(R.id.radio_result_3m);
-//
-//        if(runEvent.getEventState().equalsIgnoreCase("START"))
-//        {
-////            mainActivity.startEventCount();
-//            setEventBtnState(true);
-//            try{
-//                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-//                Date start = sdf.parse(runEvent.getStartDateTime());
-//                Calendar cal = Calendar.getInstance();
-//                cal.setTime(start);
-//                cal.add(Calendar.MINUTE, runEvent.getVoteTime());
-//                cal.add(Calendar.SECOND, 1);
-//                Date endDate = cal.getTime();
-//
-//                Timer timer = new Timer();
-//                TimerTask timerTask = new TimerTask() {
-//                    @Override
-//                    public void run() {
-//                        mServer.getEventState(mEventStateCallBack, mainActivity.mEventId);
-//                    }
-//                };
-//                timer.schedule(timerTask, endDate);
-//
-//            }catch (Exception e)
-//            {
-//                e.printStackTrace();
-//            }
-//        }
-//        else
-//        {
-//            setEventBtnState(false);
-//        }
     }
 
     private void saveEventInfo(int eventId)

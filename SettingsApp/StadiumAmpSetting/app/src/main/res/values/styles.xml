@@ -15,6 +15,11 @@
         </item>
     </style>
 
+    <style name="floating2" parent="Widget.Design.FloatingActionButton">
+        <item name = "android:foreground">@drawable/openchat</item>
+        <item name="android:background">@color/white</item>
+    </style>
+
     <dimen name="design_fab_size_normal" tools:override="true">58dp</dimen>
     <dimen name="design_fab_image_size" tools:override="true">58dp</dimen>
 </resources>

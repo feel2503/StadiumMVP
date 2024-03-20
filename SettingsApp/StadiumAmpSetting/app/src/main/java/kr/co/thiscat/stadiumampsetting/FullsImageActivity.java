@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -97,6 +99,8 @@ public class FullsImageActivity extends AppCompatActivity {
 
         binding = ActivityFullsImageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         mControlsView = binding.fullscreenContentControls;
         hide();
@@ -701,7 +705,11 @@ public class FullsImageActivity extends AppCompatActivity {
                     }
                     else if(mRunEvent.getEventState().equalsIgnoreCase("STOP"))
                     {
+                        mRunEventId = -1;
                         playMusic(mRunEvent);
+
+                        AsyncCheckState async = new AsyncCheckState();
+                        async.execute();
                     }
                     //setImageView01();
 
@@ -765,4 +773,62 @@ public class FullsImageActivity extends AppCompatActivity {
             //showProgress(FullsImageActivity.this, false);
         }
     };
+
+    private SECallBack<RunEventResult> mRunEventStateCallBack = new SECallBack<RunEventResult>()
+    {
+        @Override
+        public void onResponseResult(Response<RunEventResult> response)
+        {
+            if (response.isSuccessful())
+            {
+                try{
+                    mRunEvent = response.body().getData();
+                    if(mRunEvent.getEventState().equalsIgnoreCase("START"))
+                    {
+                        startEventStateCheck(mRunEvent.getId());
+                    }
+                    else if(mRunEvent.getEventState().equalsIgnoreCase("STOP"))
+                    {
+                        AsyncCheckState async = new AsyncCheckState();
+                        async.execute();
+                    }
+
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
+            }
+            else
+            {
+                // no event
+            }
+
+            //showProgress(FullsImageActivity.this, false);
+        }
+    };
+
+    private class AsyncCheckState extends AsyncTask<String, Void, Boolean>
+    {
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            try{
+                Thread.sleep(MainActivity.CHECK_DELAY);
+            }catch (Exception e){}
+
+            if(mRunEventId < 0)
+            {
+                //mServer.getRunEventState(mFirstEventStateCallBack, mRunEventId);
+                mServer.getLastEvent(mRunEventStateCallBack, mServerId);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+
+        }
+    }
 }
