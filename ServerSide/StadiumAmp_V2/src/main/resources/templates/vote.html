@@ -14,16 +14,18 @@
     <link rel="stylesheet"
           th:href="@{css/style.css}"/>
 
+
 </head>
-<body onload="startTimer()">
+<body class="sample"  onload="startTimer()" >
     <div class="remain_text_02" id="display">
         현재 응원 이벤트 남은 시간 0분 0초
     </div>
     <div  >
 
-        <div style="padding:20px;">
-            <div class="wc_text_02">
-                <b>[[${event.name}]]</b> 실시간 응원
+        <div style="padding:20px;" onclick="location.href='https://sites.google.com/view/introduce-stadiumamp/';">
+            <div class="wc_text_01">
+<!--                <b>[[${event.name}]]</b> 실시간 응원 (설문하기)-->
+                <b>[[${event.name}]]</b>
             </div>
 
             <div class="result_text">
@@ -70,6 +72,7 @@
         </div>
 
         <div class="event_bg" th:styleAppend="'background-image: url('+${bgimg}+');'">
+<!--        <div class="event_bg" >-->
         <div style="padding:20px;">
 
 <!--        <div class="event_bg" style="padding:20px;">-->
@@ -179,6 +182,9 @@
 <!--    <div id="bottom_banner">-->
 <!--        <img src="asset/bg_ad.png">-->
 <!--    </div>-->
+
+
+
 
     <div id="bottom_banner" class="bottom_banner">
         <a th:href="@{${event.webUrl}}" >

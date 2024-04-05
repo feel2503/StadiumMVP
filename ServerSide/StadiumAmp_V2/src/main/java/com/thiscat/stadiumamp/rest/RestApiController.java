@@ -1,10 +1,7 @@
 package com.thiscat.stadiumamp.rest;
 
 import com.thiscat.stadiumamp.dto.*;
-import com.thiscat.stadiumamp.dto.request.ReqAddEvent;
-import com.thiscat.stadiumamp.dto.request.ReqEventImages;
-import com.thiscat.stadiumamp.dto.request.ReqEventMusics;
-import com.thiscat.stadiumamp.dto.request.ReqEventStart;
+import com.thiscat.stadiumamp.dto.request.*;
 import com.thiscat.stadiumamp.entity.*;
 import com.thiscat.stadiumamp.entity.repository.*;
 import com.thiscat.stadiumamp.rest.service.RestService;
@@ -49,6 +46,7 @@ public class RestApiController extends BaseController{
 
 
     Logger logger = LoggerFactory.getLogger(RestApiController.class);
+
     @ApiOperation(value = "Add Event Server")
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @PostMapping(value = "/v1/server/add", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -63,6 +61,19 @@ public class RestApiController extends BaseController{
     }
 
     @ApiOperation(value = "Add Event Server")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PostMapping(value = "/v1/server/modify", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultResponse> modifyEvent(@RequestBody ReqModifyEvent event) throws Exception {
+        Event findEvent = eventRepository.findById(event.getEventId()).orElseThrow(() -> new Exception("event-not-fount"));
+        findEvent.setHomeName(event.getHomeName());
+        findEvent.setAwayName(event.getAwayName());
+        findEvent.setName(event.getEventName());
+
+        eventRepository.save(findEvent);
+        return getResponseEntity( "success", HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Modify Event Server")
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @PostMapping(value = "/v1/server/update", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResultResponse> updateEvent(@RequestBody UpdateEventDto eventDto) throws Exception {
@@ -362,6 +373,8 @@ public class RestApiController extends BaseController{
 
         }
 
+        voteResultDto.setHomeName(event.getHomeName());
+        voteResultDto.setAwayName(event.getAwayName());
 
         //VoteResultDto voteResultDto = new VoteResultDto("95%", "5%");
         return getResponseEntity(voteResultDto, "success", HttpStatus.OK);

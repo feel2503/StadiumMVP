@@ -23,6 +23,9 @@ public class VoteResultDto {
     String eventState;
     boolean playVideo;
 
+    private String homeName;
+    private String awayName;
+
     public VoteResultDto(String home, String away, int homeCount, int awayCount)
     {
         this.home = home;

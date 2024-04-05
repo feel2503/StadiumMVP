@@ -77,8 +77,12 @@ function countTimer() {
                 graph_stop.style.display = 'flex';
                 graph_start.style.display = 'none';
 
-                document.getElementById("home_text").innerText = "Home";
-                document.getElementById("away_text").innerText = "Away";
+                // document.getElementById("home_text").innerText = "Home";
+                // document.getElementById("away_text").innerText = "Away";
+
+                document.getElementById("home_text").innerText = res.data.homeName;
+                document.getElementById("away_text").innerText = res.data.awayName;
+
                 // document.getElementById("event_stop_graph").style.display ='flex';
                 // document.getElementById("event_start_graph").style.display ='none';
             }

@@ -46,6 +46,14 @@ div{
     font-weight:bold;
     padding: 20px;
 }
+.wc_text_01{
+    text-align: left;
+    line-height: 20px;
+    font-size:14px;
+    font-weight:bold;
+    margin-bottom: 10px;
+}
+
 .wc_text_02{
     text-align: left;
     line-height: 36px;
@@ -157,6 +165,7 @@ div{
     position: fixed;
     bottom:0px;
     width: 100%;
+    max-width: 800px;
 }
 .bottom_banner_img{
     width: 100%;
@@ -166,6 +175,7 @@ div{
     position: fixed;
     bottom:0px;
     width: 83%;
+    max-width: 700px;
 }
 .open_chat_img{
     width: 100%;
@@ -282,6 +292,7 @@ div{
 .bt-02{
     border-radius: 5px;
     margin-top: 10px;
+    opacity: .7;
 }
 .setting_box{
     padding:5px;
@@ -422,6 +433,7 @@ div{
     margin-bottom: 15px;
     margin-right: 15px;
     float: right;
+
 }
 .profile {
     width: 100%;
@@ -472,9 +484,29 @@ div{
 
 .event_bg {
     margin: 0;
-    width: 100vw;
-    height: 100vh;
+    /*width: 100vw;*/
+    /*max-width: 800px;*/
+    /*height: 100vh;*/
+    /*max-height: 1000px;*/
     background-image: url('./../asset/WEB-default-square3-50.jpg');
-    background-size: 100% 100%;
+    background-size: cover;
+    background-repeat: repeat;
 }
 
+.sample {
+    width: 100vw;
+    max-width: 800px;
+    height: 100vh;
+    /*max-height: 900px;*/
+    margin: auto;
+}
+
+
+
+#wrap{
+    background: pink;
+}
+footer{
+    position:absolute;
+    bottom:0px;
+}
