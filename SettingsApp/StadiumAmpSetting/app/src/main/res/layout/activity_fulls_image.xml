@@ -64,14 +64,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/white"
-                            android:text="홈팀" />
+                            android:text="" />
                         <TextView
                             android:id="@+id/text_result_away_count"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentRight="true"
                             android:textColor="@color/white"
-                            android:text="원정팀" />
+                            android:text="" />
                     </RelativeLayout>
 
                     <LinearLayout

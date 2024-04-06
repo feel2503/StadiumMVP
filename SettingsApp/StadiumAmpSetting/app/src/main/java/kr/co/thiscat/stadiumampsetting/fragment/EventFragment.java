@@ -203,6 +203,7 @@ public class EventFragment extends Fragment {
         }
     }
 
+
     @Override
     public void onPause() {
         super.onPause();
@@ -210,7 +211,7 @@ public class EventFragment extends Fragment {
     }
 
     public void updateEventState(RunEvent runEvent) {
-        if(isVisible() && getActivity() != null) {
+        if( getActivity() != null) {
             Log.d("AAAA", "----- eventFragment is visible");
             //updateTimeStr(runEvent);
             updateScore(runEvent);
@@ -476,7 +477,7 @@ public class EventFragment extends Fragment {
 //        }
 //    }
 
-    private void updateScoreValue(String name, final int home, final int away)
+    private void updateScoreValue(RunEvent runEvent, final int home, final int away)
     {
         if(getActivity() != null)
         {
@@ -491,7 +492,11 @@ public class EventFragment extends Fragment {
                     {
                         homwVal = awayVal = 1;
                     }
-                    mTextCurrent.setText("이벤트 서버 "+name+" 실시간 응원 결과");
+                    //mTextCurrent.setText("이벤트 서버 "+name+" 실시간 응원 결과");
+                    mTextCurrent.setText(runEvent.getServerName());
+                    mTextHomeCount.setText(runEvent.getHomeName());
+                    mTextAwayCount.setText(runEvent.getAwayName());
+
                     ViewGroup.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, homwVal);
                     mTextHome.setLayoutParams(params);
 
@@ -552,7 +557,7 @@ public class EventFragment extends Fragment {
 //                home = away = 1;
 //            }
             Log.d("AAAA", "home : " + home);
-            updateScoreValue(runEvent.getServerName(), home, away);
+            updateScoreValue(runEvent, home, away);
 
 //            updateResultImageView(runEvent.getHomeCount(), runEvent.getAwayCount());
 //            Timer timer = new Timer();

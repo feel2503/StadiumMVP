@@ -19,6 +19,9 @@ public class RunEvent
     private long eventId;
 
     private String serverName;
+    private String homeName;
+    private String awayName;
+
 
     @Expose
     @SerializedName("resultTime")
@@ -321,5 +324,21 @@ public class RunEvent
 
     public void setOpenchatUrl(String openchatUrl) {
         this.openchatUrl = openchatUrl;
+    }
+
+    public String getHomeName() {
+        return homeName;
+    }
+
+    public void setHomeName(String homeName) {
+        this.homeName = homeName;
+    }
+
+    public String getAwayName() {
+        return awayName;
+    }
+
+    public void setAwayName(String awayName) {
+        this.awayName = awayName;
     }
 }

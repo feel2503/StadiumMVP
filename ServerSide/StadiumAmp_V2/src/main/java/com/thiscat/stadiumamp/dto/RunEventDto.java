@@ -29,6 +29,10 @@ public class RunEventDto {
 
     private long eventId;
 
+    private String serverName;
+    private String homeName;
+    private String awayName;
+
     Integer homeCount;
     Integer home1Count;
     Integer home2Count;

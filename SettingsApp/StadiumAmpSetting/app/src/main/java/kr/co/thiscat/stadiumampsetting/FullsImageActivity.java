@@ -70,6 +70,8 @@ public class FullsImageActivity extends AppCompatActivity {
     private TextView mTextResult3;
 
     private TextView mTextCurrent;
+    private TextView mTextHomeName;
+    private TextView mTextAwayName;
     private TextView mTextHome;
     private TextView mTextAway;
 
@@ -126,6 +128,8 @@ public class FullsImageActivity extends AppCompatActivity {
         mTextResult3 = findViewById(R.id.text_result_03);
 
         mTextCurrent = findViewById(R.id.text_current_server);
+        mTextHomeName = findViewById(R.id.text_result_home_count);
+        mTextAwayName = findViewById(R.id.text_result_away_count);
         mTextHome = findViewById(R.id.text_result_home);
         mTextAway = findViewById(R.id.text_result_away);
 
@@ -386,7 +390,7 @@ public class FullsImageActivity extends AppCompatActivity {
         try{
             int home = runEvent.getHomeCount();
             int away = runEvent.getAwayCount();
-            updateScoreValue(runEvent.getServerName(), home, away);
+            updateScoreValue(runEvent, home, away);
             updateMusicRanking(runEvent);
         }catch (Exception e)
         {
@@ -469,7 +473,7 @@ public class FullsImageActivity extends AppCompatActivity {
         return result;
     }
 
-    private void updateScoreValue(String name, final int home, final int away)
+    private void updateScoreValue(RunEvent runEvent, final int home, final int away)
     {
         runOnUiThread(new Runnable()
         {
@@ -482,7 +486,11 @@ public class FullsImageActivity extends AppCompatActivity {
                 if (homwVal == awayVal && homwVal == 0) {
                     homwVal = awayVal = 1;
                 }
-                mTextCurrent.setText("이벤트 서버 " + name + " 실시간 응원 결과");
+                //mTextCurrent.setText("이벤트 서버 " + name + " 실시간 응원 결과");
+                mTextCurrent.setText(runEvent.getServerName());
+                mTextHomeName.setText(runEvent.getHomeName());
+                mTextAwayName.setText(runEvent.getAwayName());
+
                 ViewGroup.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, homwVal);
                 mTextHome.setLayoutParams(params);
 
@@ -627,6 +635,20 @@ public class FullsImageActivity extends AppCompatActivity {
         }
     }
 
+    public void setEventColor(String colorHome, String colorAway){
+
+        try{
+            int iColorHome = 0xff000000 | Integer.parseUnsignedInt(colorHome, 16);
+            mTextHome.setBackgroundColor(iColorHome);
+
+            int iColorAway = 0xff000000 | Integer.parseUnsignedInt(colorAway, 16);
+            mTextAway.setBackgroundColor(iColorAway);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     public void showProgress(final Activity act, final boolean bShow)
     {
         if(act == null)
@@ -671,6 +693,7 @@ public class FullsImageActivity extends AppCompatActivity {
                 mEventDto = response.body().getData();
                 Log.d("AAAA", "1 EventState : " + mEventDto.getEventState());
                 setEventInfo(mEventDto.getEventMusicList());
+                setEventColor(mEventDto.getHomeColor(), mEventDto.getAwayColor());
                 if(mEventDto.getEventState().equalsIgnoreCase("START"))
                 {
                     startEventStateCheck(mEventDto.getRunEvent());
