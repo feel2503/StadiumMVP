@@ -682,6 +682,79 @@ public class FullsImageActivity extends AppCompatActivity {
         });
     }
 
+    private class AsyncRestartCheck extends AsyncTask<String, Void, Boolean>
+    {
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            try{
+                Thread.sleep(MainActivity.CHECK_DELAY);
+            }catch (Exception e){}
+
+            if(isRunning)
+                mServer.getLastEvent(mRestartEventStateCallBack, mServerId);
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+
+        }
+    }
+
+    private SECallBack<RunEventResult> mRestartEventStateCallBack = new SECallBack<RunEventResult>()
+    {
+        @Override
+        public void onResponseResult(Response<RunEventResult> response)
+        {
+            if (response.isSuccessful())
+            {
+                try{
+                    mRunEvent = response.body().getData();
+                    Log.d("BBBB", "mRestartEventStateCallBack : " + mRunEvent.getEventState());
+                    if(mRunEvent.getEventState().equalsIgnoreCase("START"))
+                    {
+                        mRunEventId = (int)mRunEvent.getEventId();
+                    }
+                    else if(mRunEvent.getEventState().equalsIgnoreCase("STOP"))
+                    {
+                        if(mRunEventId > 0)
+                        {
+                            mRunEventId = -1;
+                            updateScore(mRunEvent);
+
+                            int home = mRunEvent.getHomeCount();
+                            int away = mRunEvent.getAwayCount();
+                            if (home == away) {
+                                viewImageType = "IMAGE_DEFAULT";
+                            } else if (home > away) {
+                                viewImageType = "IMAGE_HOME";
+                            } else if (home < away) {
+                                viewImageType = "IMAGE_AWAY";
+                            }
+                            setImageView01();
+                        }
+                    }
+                    AsyncRestartCheck async = new AsyncRestartCheck();
+                    async.execute();
+
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
+            }
+            else
+            {
+                // no event
+            }
+
+            //showProgress(FullsImageActivity.this, false);
+        }
+    };
+
+
 
     private SECallBack<EventResult> mEventCallBack = new SECallBack<EventResult>()
     {
@@ -775,6 +848,9 @@ public class FullsImageActivity extends AppCompatActivity {
                             viewImageType = "IMAGE_AWAY";
                         }
                         setImageView01();
+
+                        AsyncRestartCheck async = new AsyncRestartCheck();
+                        async.execute();
                     }
                     else
                     {
