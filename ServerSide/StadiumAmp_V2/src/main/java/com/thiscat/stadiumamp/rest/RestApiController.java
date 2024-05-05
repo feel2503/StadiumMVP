@@ -436,6 +436,8 @@ public class RestApiController extends BaseController{
                 //VoteResultDto voteResultDto = new VoteResultDto("50%", "50%", 0, 0);
                 VoteResultDto voteResultDto = getVoteResult(runEvent);
                 voteResultDto.setEventState("STOP");
+//                voteResultDto.setHomeName(runEvent.getEvent().getHomeName());
+//                voteResultDto.setAwayName(runEvent.getEvent().getAwayName());
                 return getResponseEntity(voteResultDto, "success", HttpStatus.OK);
             }
             else
@@ -443,6 +445,8 @@ public class RestApiController extends BaseController{
                 RunEvent resultEvent = restService.updateVoteCount(runEvent, teamType, eventType);
                 VoteResultDto voteResultDto =getVoteResult(resultEvent);
                 voteResultDto.setEventState("START");
+//                voteResultDto.setHomeName(resultEvent.getEvent().getHomeName());
+//                voteResultDto.setAwayName(resultEvent.getEvent().getAwayName());
                 return getResponseEntity(voteResultDto, "success", HttpStatus.OK);
             }
         }
@@ -453,6 +457,8 @@ public class RestApiController extends BaseController{
             {
                 VoteResultDto voteResultDto = getVoteResult(runEvent);
                 voteResultDto.setEventState("STOP");
+//                voteResultDto.setHomeName(runEvent.getEvent().getHomeName());
+//                voteResultDto.setAwayName(runEvent.getEvent().getAwayName());
                 return getResponseEntity(voteResultDto, "success", HttpStatus.OK);
             }
             else
@@ -463,6 +469,8 @@ public class RestApiController extends BaseController{
                     RunEventDto runEventDto = restService.stopEvent(resultEvent.getId());
                 }
                 VoteResultDto voteResultDto = getVoteResult(runEvent);
+//                voteResultDto.setHomeName(resultEvent.getEvent().getHomeName());
+//                voteResultDto.setAwayName(resultEvent.getEvent().getAwayName());
                 voteResultDto.setEventState("START");
                 return getResponseEntity(voteResultDto, "success", HttpStatus.OK);
             }
@@ -537,7 +545,10 @@ public class RestApiController extends BaseController{
 
         int home = (homeCount*100)/ total;
         int away = (awayCount*100) / total;
-        return new VoteResultDto(home+"%", away+"%", homeCount, awayCount);
+        VoteResultDto voteResultDto = new VoteResultDto(home+"%", away+"%", homeCount, awayCount);
+        voteResultDto.setHomeName(runevent.getEvent().getHomeName());
+        voteResultDto.setAwayName(runevent.getEvent().getAwayName());
+        return voteResultDto;
     }
     /////////// timer task
 
