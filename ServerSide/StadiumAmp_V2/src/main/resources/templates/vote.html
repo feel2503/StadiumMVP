@@ -20,7 +20,7 @@
     <div class="remain_text_02" id="display">
         현재 응원 이벤트 남은 시간 0분 0초
     </div>
-    <div  >
+    <div  class="sample" >
 
         <div style="padding:20px;" onclick="location.href='https://sites.google.com/view/introduce-stadiumamp/';">
             <div class="wc_text_01">
@@ -270,8 +270,23 @@
 
                     if(res.data.eventState === "START")
                     {
-                        document.getElementById("home_text").innerText = "Home "+res.data.homeCount;
-                        document.getElementById("away_text").innerText = ""+res.data.awayCount+" Away";
+
+                        //document.getElementById("home_text").innerText = res.data.homeName + " " +res.data.homeCount;
+                        console.log(res.data.homeName, res.data.homeName.trim().length,  res.data.homeName.length, res.data.awayName, res.data.awayName.length);
+                        if(res.data.homeName.trim().length > 0 && res.data.awayName.trim().length > 0)
+                        {
+                            document.getElementById("home_text").innerText = ""+res.data.homeName + " " + res.data.homeCount;
+                            document.getElementById("away_text").innerText = ""+res.data.awayCount + " " + res.data.awayName;
+                        }
+                        else if(res.data.homeName.trim().length > 0)
+                        {
+                            document.getElementById("home_text").innerText = ""+res.data.homeName + " " + res.data.homeCount;
+                        }
+                        else if(res.data.awayName.trim().length > 0)
+                        {
+                            document.getElementById("away_text").innerText = ""+res.data.awayCount + " " + res.data.awayName;
+                        }
+
                     }
                 } else {
 

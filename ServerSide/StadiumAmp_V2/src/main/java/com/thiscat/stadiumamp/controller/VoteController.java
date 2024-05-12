@@ -104,7 +104,7 @@ public class VoteController {
 
         }
 
-
+        //bgImage = "https://lh3.googleusercontent.com/drive-viewer/AKGpihYYrUREeok3BOYgpR_kdlLX4MhYkeEVIjVM6UlDkhWlY86tCtknoo_2bgBWHnQ5DiyBGAnnuYdJN9uZ7LLCRw0rw06fsPWdwg=s2560";
         model.addAttribute("event", event);
         model.addAttribute("runevent", runEventDto);
         model.addAttribute("teamtype", strTeam);
@@ -417,19 +417,19 @@ public class VoteController {
                 switch (music.getSequence())
                 {
                     case 0 :
-                        runEventDto.setHome1Name(music.getMusicName());
+                        runEventDto.setHome1Name(removeExtension(music.getMusicName()));
                         break;
                     case 1 :
-                        runEventDto.setHome2Name(music.getMusicName());
+                        runEventDto.setHome2Name(removeExtension(music.getMusicName()));
                         break;
                     case 2 :
-                        runEventDto.setHome3Name(music.getMusicName());
+                        runEventDto.setHome3Name(removeExtension(music.getMusicName()));
                         break;
                     case 3 :
-                        runEventDto.setHome4Name(music.getMusicName());
+                        runEventDto.setHome4Name(removeExtension(music.getMusicName()));
                         break;
                     case 4 :
-                        runEventDto.setHome5Name(music.getMusicName());
+                        runEventDto.setHome5Name(removeExtension(music.getMusicName()));
                         break;
                 }
             }
@@ -438,23 +438,32 @@ public class VoteController {
                 switch (music.getSequence())
                 {
                     case 0 :
-                        runEventDto.setAway1Name(music.getMusicName());
+                        runEventDto.setAway1Name(removeExtension(music.getMusicName()));
                         break;
                     case 1 :
-                        runEventDto.setAway2Name(music.getMusicName());
+                        runEventDto.setAway2Name(removeExtension(music.getMusicName()));
                         break;
                     case 2 :
-                        runEventDto.setAway3Name(music.getMusicName());
+                        runEventDto.setAway3Name(removeExtension(music.getMusicName()));
                         break;
                     case 3 :
-                        runEventDto.setAway4Name(music.getMusicName());
+                        runEventDto.setAway4Name(removeExtension(music.getMusicName()));
                         break;
                     case 4 :
-                        runEventDto.setAway5Name(music.getMusicName());
+                        runEventDto.setAway5Name(removeExtension(music.getMusicName()));
                         break;
                 }
             }
         }
         return runEventDto;
+    }
+
+
+    private String removeExtension(String fileName) {
+        int lastIndex = fileName.lastIndexOf('.');
+        if (lastIndex != -1) {
+            fileName = fileName.substring(0, lastIndex);
+        }
+        return fileName;
     }
 }
