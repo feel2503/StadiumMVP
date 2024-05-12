@@ -90,7 +90,7 @@ public class SettingFragment extends Fragment {
     private TextView mTextAdvImage;
 
     private CheckBox mCheckContinuous;
-    private EditText mEditEventDelay;
+    //private EditText mEditEventDelay;
 
     private TextView mTextEventStart;
     private TextView mTextEventStop;
@@ -204,7 +204,7 @@ public class SettingFragment extends Fragment {
         mTextAdvImage.setOnClickListener(mOnClickListener);
 
         mCheckContinuous = view.findViewById(R.id.check_event_continuous);
-        mEditEventDelay = view.findViewById(R.id.edit_delay_sec);
+        //mEditEventDelay = view.findViewById(R.id.edit_delay_sec);
 
         mTextEventStart = view.findViewById(R.id.text_event_start);
         mTextEventStart.setOnClickListener(mOnClicklistener);
@@ -232,7 +232,8 @@ public class SettingFragment extends Fragment {
             mCheckContinuous.setChecked(false);
         else
             mCheckContinuous.setChecked(true);
-        mEditEventDelay.setText(""+eventDto.getContinuityTime());
+//        mEditEventDelay.setText(""+eventDto.getContinuityTime());
+
         // image
         ArrayList<EventImageDto> imgList = eventDto.getEventImageList();
         for(EventImageDto imageDto : imgList){
@@ -357,7 +358,7 @@ public class SettingFragment extends Fragment {
             mCheckContinuous.setChecked(false);
         else
             mCheckContinuous.setChecked(true);
-        mEditEventDelay.setText(""+runEvent.getContinuityTime());
+//        mEditEventDelay.setText(""+runEvent.getContinuityTime());
         // image
         ArrayList<EventImageDto> imgList = runEvent.getEventImageList();
         for(EventImageDto imageDto : imgList){
@@ -496,7 +497,8 @@ public class SettingFragment extends Fragment {
                     int triggerTime = Integer.parseInt(mEditTriggerTime.getText().toString());
                     int triggerVote = Integer.parseInt(mEditTriggerVote.getText().toString());;
                     int continuityType = mCheckContinuous.isChecked() ? 1 : 0;
-                    int continuityTime = Integer.parseInt(mEditEventDelay.getText().toString());
+                    //int continuityTime = Integer.parseInt(mEditEventDelay.getText().toString());
+                    int continuityTime = -1;
                     EventStartReqDto reqDto = new EventStartReqDto(eventId, triggerType, triggerTime,
                             triggerVote, continuityType, continuityTime);
 
@@ -620,7 +622,7 @@ public class SettingFragment extends Fragment {
 //                if(activity != null)
 //                    activity.startEventCount();
 
-                Toast.makeText(getContext(), "이벤트 를 시작 하였습니다.", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), "이벤트 를 시작 하였습니다.", Toast.LENGTH_SHORT).show();
             }
 
             showProgress(getActivity(), false);
@@ -645,7 +647,7 @@ public class SettingFragment extends Fragment {
 //                if(activity != null)
 //                    activity.startEventCount();
 
-                Toast.makeText(getContext(), "이벤트 를 종료 하였습니다.", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), "이벤트 를 종료 하였습니다.", Toast.LENGTH_SHORT).show();
             }
 
             showProgress(getActivity(), false);

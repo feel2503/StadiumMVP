@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -20,14 +21,24 @@ import kr.co.thiscat.stadiumampsetting.server.entity.RunEvent;
 public class MusicPlayService extends Service {
     public final static String ACTION_PLAY_START = "android.intent.action.PLAY_START";
     public final static String ACTION_PLAY_STOP = "android.intent.action.PLAY_STOP";
+    public final static String ACTION_PLAY_MOVE_POS = "android.intent.action.PLAY_MOVE_POS";
     public static final String EXTRA_FILE_URL = "android.intent.EXTRA_FILE_URL";
     public static final String EXTRA_IS_NEW = "android.intent.EXTRA_IS_NEW";
+    public static final String EXTRA_UPDATE_POSITION = "android.intent.EXTRA_UPDATE_POSITION";
+
+    public final static String ACTION_PLAY_START_RESULT = "android.intent.action.PLAY_START_RESULT";
+    public final static String ACTION_UPDATE_CURRENT_POSITION = "android.intent.action.ACTION_UPDATE_CURRENT_POSITION";
+    public static final String EXTRA_CURRENT_DURATION = "android.intent.EXTRA_CURRENT_DURATION";
+    public static final String EXTRA_TOTAL_DURATION = "android.intent.EXTRA_TOTAL_DURATION";
+    public static final String EXTRA_MUSIC_TITLE = "android.intent.EXTRA_MUSIC_TITLE";
 
     private MediaPlayer mMediaPlayer;
     private MediaPlayer mDefaultMediaPlayer;
     private int psusePos = 0;
 
+    private Handler handler = new Handler();
 
+    private String mMusicTitle;
     public MusicPlayService() {
     }
 
@@ -44,6 +55,7 @@ public class MusicPlayService extends Service {
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_PLAY_START);
         filter.addAction(ACTION_PLAY_STOP);
+        filter.addAction(ACTION_PLAY_MOVE_POS);
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver, filter);
         //getApplicationContext().registerReceiver(mMessageReceiver, filter);
     }
@@ -105,8 +117,16 @@ public class MusicPlayService extends Service {
                         mMediaPlayer.release();
                         mMediaPlayer = null;
                         //startDefaultMediaPlayer();
+
+                        handler.removeCallbacks(updater);
                     }
                 });
+
+                Intent intent = new Intent(MusicPlayService.ACTION_PLAY_START_RESULT);
+                intent.putExtra(MusicPlayService.EXTRA_TOTAL_DURATION, mMediaPlayer.getDuration());
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+
+                updateSeekBar();
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -142,6 +162,25 @@ public class MusicPlayService extends Service {
             return null;
     }
 
+    private Runnable updater = new Runnable() {
+        @Override
+        public void run() {
+            updateSeekBar();
+        }
+    };
+
+    private void updateSeekBar() {
+        if (mMediaPlayer.isPlaying()) {
+            Intent intent = new Intent(MusicPlayService.ACTION_UPDATE_CURRENT_POSITION);
+            intent.putExtra(MusicPlayService.EXTRA_TOTAL_DURATION, mMediaPlayer.getDuration());
+            intent.putExtra(MusicPlayService.EXTRA_CURRENT_DURATION, mMediaPlayer.getCurrentPosition());
+            intent.putExtra(MusicPlayService.EXTRA_MUSIC_TITLE, mMusicTitle);
+            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+
+            handler.postDelayed(updater, 1000);
+        }
+    }
+
 
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -153,11 +192,19 @@ public class MusicPlayService extends Service {
             {
                 String url = intent.getStringExtra(EXTRA_FILE_URL);
                 boolean isNew = intent.getBooleanExtra(EXTRA_IS_NEW, false);
+                mMusicTitle = url;
                 playMusic(url, isNew);
             }
             else if(action.equalsIgnoreCase(ACTION_PLAY_STOP))
             {
                 stopMusic();
+            }
+            else if(action.equalsIgnoreCase(ACTION_PLAY_MOVE_POS))
+            {
+                int pos = intent.getIntExtra(EXTRA_UPDATE_POSITION, 0);
+                int playPosition = (mMediaPlayer.getDuration() / 100) * pos;
+                mMediaPlayer.seekTo(playPosition);
+                updateSeekBar();
             }
 
             Log.d("AAAA", "Got message: " + action);

@@ -2,7 +2,10 @@ package kr.co.thiscat.stadiumampsetting;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -18,6 +21,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -56,6 +60,7 @@ public class FullsImageActivity extends AppCompatActivity {
     private ServerManager mServer;
     public int mRunEventId = -1;
     public int mServerId;
+    public boolean mEventRepeat;
     protected ProgressDialog mProgress = null;
 
     private ImageView mImageFull;
@@ -110,8 +115,14 @@ public class FullsImageActivity extends AppCompatActivity {
         mProgress = new ProgressDialog(getApplicationContext());
 
         mServerId = getIntent().getIntExtra("RunServerID", -1);
+        getIntent().getBooleanExtra("EventRepeat", false);
         mServer = ServerManager.getInstance(FullsImageActivity.this);
         initUi();
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(MusicPlayService.ACTION_PLAY_START_RESULT);
+        filter.addAction(MusicPlayService.ACTION_UPDATE_CURRENT_POSITION);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, filter);
     }
 
     private void initUi()
@@ -152,7 +163,6 @@ public class FullsImageActivity extends AppCompatActivity {
         super.onResume();
         isRunning = true;
 //        showProgress(FullsImageActivity.this, true);
-//        mServer.getRunEventState(mEventStateCallBack, mRunEventId);
         mServer.getEvent(mEventCallBack, mServerId);
     }
 
@@ -160,6 +170,12 @@ public class FullsImageActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         isRunning = false;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
     }
 
     private void updateViewState(int state)
@@ -359,26 +375,21 @@ public class FullsImageActivity extends AppCompatActivity {
                                 mTimer.cancel();
                                 mTimer = null;
 
-//                                if(mEventDto.getContinuityType() == 1 )
-//                                {
-//                                    long delayTime = mEventDto.getContinuityTime() * 1000;
-//                                    Log.d("AAAA", "delayTime : " + delayTime);
-//                                    new Handler().postDelayed(new Runnable() {// 1 초 후에 실행
-//                                        @Override
-//                                        public void run() {
-//                                            //startEventStateCheck(mEventDto.getRunEvent());
-//                                            mServer.getEvent(mEventCallBack, mServerId);
-//                                        }
-//                                    }, delayTime);
-//                                }
-
                                 setImageView01();
                             }
                         });
                         return;
                     }
+                    else if(mRunEvent.getEventState().equalsIgnoreCase("START"))
+                    {
+
+                    }
                 }
-                mServer.getRunEventState(mEventStateCallBack, mRunEventId);
+                if( isRunning)
+                {
+                    Log.d("AAAA", "--- 111mRunEventId : " + mRunEventId);
+                    mServer.getRunEventState(mEventStateCallBack, mRunEventId);
+                }
             }
         };
         mTimer.schedule(timerTask, 0, 1000);
@@ -712,10 +723,10 @@ public class FullsImageActivity extends AppCompatActivity {
             {
                 try{
                     mRunEvent = response.body().getData();
-                    Log.d("BBBB", "mRestartEventStateCallBack : " + mRunEvent.getEventState());
+                    Log.d("AAAA", "mRestartEventStateCallBack : " + mRunEvent.getEventState());
                     if(mRunEvent.getEventState().equalsIgnoreCase("START"))
                     {
-                        mRunEventId = (int)mRunEvent.getEventId();
+                        mRunEventId = (int)mRunEvent.getId();
                     }
                     else if(mRunEvent.getEventState().equalsIgnoreCase("STOP"))
                     {
@@ -735,10 +746,9 @@ public class FullsImageActivity extends AppCompatActivity {
                             }
                             setImageView01();
                         }
+                        AsyncRestartCheck async = new AsyncRestartCheck();
+                        async.execute();
                     }
-                    AsyncRestartCheck async = new AsyncRestartCheck();
-                    async.execute();
-
                 }catch (Exception e)
                 {
                     e.printStackTrace();
@@ -799,13 +809,15 @@ public class FullsImageActivity extends AppCompatActivity {
                     {
                         updateScore(mRunEvent);
                     }
-                    else if(mRunEvent.getEventState().equalsIgnoreCase("STOP"))
+                    else if(mRunEvent.getEventState().equalsIgnoreCase("STOP") && mRunEventId != -1)
                     {
                         mRunEventId = -1;
                         playMusic(mRunEvent);
 
-                        AsyncCheckState async = new AsyncCheckState();
-                        async.execute();
+                        mServer.getRunEventState(mEndEventStateCallBack, mEventDto.getRunEvent());
+
+//                        AsyncCheckState async = new AsyncCheckState();
+//                        async.execute();
                     }
                     //setImageView01();
 
@@ -930,4 +942,61 @@ public class FullsImageActivity extends AppCompatActivity {
 
         }
     }
+
+
+    private SECallBack<RunEventResult> mEventStartCallBack = new SECallBack<RunEventResult>()
+    {
+        @Override
+        public void onResponseResult(Response<RunEventResult> response)
+        {
+            if (response.isSuccessful())
+            {
+                mRunEvent = response.body().getData();
+
+                mRunEventId = (int)mRunEvent.getId();
+
+                Log.d("AAAA", "--- 222mRunEventId : " + mRunEventId);
+            }
+        }
+    };
+
+    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if(action.equalsIgnoreCase(MusicPlayService.ACTION_PLAY_START_RESULT))
+            {
+
+            }
+            else if(action.equalsIgnoreCase(MusicPlayService.ACTION_UPDATE_CURRENT_POSITION))
+            {
+                String title = intent.getStringExtra(MusicPlayService.EXTRA_MUSIC_TITLE);
+                int total = intent.getIntExtra(MusicPlayService.EXTRA_TOTAL_DURATION, 0);
+                int current = intent.getIntExtra(MusicPlayService.EXTRA_CURRENT_DURATION, 0);
+                if(mEventDto.getContinuityType() == 1 )
+                {
+                    int diff = (total - current) / 1000;
+                    Log.d("AAAA", "full total: "+total+" current: "+current+ " diff: " + diff);
+                    Log.d("AAAA", "full getTriggerTime: "+mRunEvent.getTriggerTime());
+                    if(diff < mRunEvent.getTriggerTime() && mRunEvent.getEventState().equalsIgnoreCase("STOP"))
+                    {
+                        Log.d("AAAA", "-------------- full getTriggerTime: "+mRunEvent.getTriggerTime());
+
+                        EventStartReqDto reqDto = new EventStartReqDto(mServerId, -1, -1, -1, -1, -1);
+                        mServer.eventStart(mEventStartCallBack, reqDto);
+                        mRunEvent.setEventState("RESTART");
+
+                        updateViewState(1);
+                    }
+                }
+            }
+            else if(action.equalsIgnoreCase(MusicPlayService.ACTION_PLAY_MOVE_POS))
+            {
+                int pos = intent.getIntExtra(MusicPlayService.EXTRA_UPDATE_POSITION, 0);
+                if(pos > 0){
+
+                }
+            }
+        }
+    };
 }

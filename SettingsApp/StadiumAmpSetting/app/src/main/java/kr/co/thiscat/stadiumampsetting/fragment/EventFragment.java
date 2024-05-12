@@ -10,9 +10,11 @@ import android.os.Bundle;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
@@ -20,6 +22,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -34,6 +37,7 @@ import java.util.TimerTask;
 
 import kr.co.thiscat.stadiumampsetting.FullsImageActivity;
 import kr.co.thiscat.stadiumampsetting.MainActivity;
+import kr.co.thiscat.stadiumampsetting.MusicPlayService;
 import kr.co.thiscat.stadiumampsetting.PreferenceUtil;
 import kr.co.thiscat.stadiumampsetting.R;
 import kr.co.thiscat.stadiumampsetting.server.SECallBack;
@@ -81,6 +85,12 @@ public class EventFragment extends Fragment {
     private WebView mWebView;
     private FloatingActionButton mFab;
     private String mLoadUrl;
+
+    private TextView songTitle;
+    private TextView textCurrentTime;
+    private TextView textTotalDuration;
+    private SeekBar mSeekBarTime;
+
 //    Timer timer;
     private static EventFragment mInstance;
 
@@ -149,6 +159,35 @@ public class EventFragment extends Fragment {
 
         mFab = view.findViewById(R.id.fab_web);
         mFab.setOnClickListener(mOnClickListener);
+
+        songTitle = view.findViewById(R.id.songTitle);
+        textCurrentTime = view.findViewById(R.id.textCurrentTime);
+        textTotalDuration = view.findViewById(R.id.textTotalDuration);
+
+        mSeekBarTime = view.findViewById(R.id.seekBar);
+        mSeekBarTime.setMax(100);
+        mSeekBarTime.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                //Log.d("AAAA", "onProgressChanged: "+progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                int pos = seekBar.getProgress();
+                //Log.d("AAAA", "onStartTrackingTouch: "+pos);
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                int pos = seekBar.getProgress();
+                //Log.d("AAAA", "onStopTrackingTouch: "+pos);
+                //mainActivity.updatePlayPos(pos);
+            }
+        });
+        //mSeekBarTime.setOnTouchListener(mOntouchListener);
+
+        //mSeekBarTime.setEnabled(false);
 
         view.findViewById(R.id.screen_full_view).setOnClickListener(mOnClickListener);
 //        if(mainActivity.mEventDto.getWebUrl() != null){
@@ -235,6 +274,7 @@ public class EventFragment extends Fragment {
             Log.d("AAAA", "----- eventFragment is invisible");
         }
     }
+
 
     public void updateEventInfo(RunEvent eventDto) {
 //        if(eventDto.getWebUrl() != null){
@@ -323,8 +363,23 @@ public class EventFragment extends Fragment {
                 //mainActivity.setFullView(true);
                 Intent intent = new Intent(mainActivity, FullsImageActivity.class);
                 intent.putExtra("RunServerID", mainActivity.mServerId);
+                intent.putExtra("EventRepeat", mainActivity.mEventRepeat);
                 startActivity(intent);
             }
+        }
+    };
+
+    private View.OnTouchListener mOntouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            SeekBar seekBar = (SeekBar) view;
+            int pos = seekBar.getProgress();
+            mainActivity.updatePlayPos(pos);
+
+//                int playPosition = (mediaPlayer.getDuration() / 100) * seekBar.getProgress();
+//                mediaPlayer.seekTo(playPosition);
+//                textCurrentTime.setText(milliSecondsToTimer(mediaPlayer.getCurrentPosition()));
+            return false;
         }
     };
 
@@ -579,6 +634,47 @@ public class EventFragment extends Fragment {
             e.printStackTrace();
         }
 
+    }
+
+    private String milliSecondsToTimer(long milliSeconds) {
+
+        String timerString = "";
+        String secondsString;
+
+        int hours = (int) (milliSeconds / (1000 * 60 * 60));
+        int minutes = (int) (milliSeconds % (1000 * 60 * 60)) / (1000 * 60);
+        int seconds = (int) ((milliSeconds % (1000 * 60 * 60)) % (1000 * 60) / 1000);
+
+        if (hours > 0) {
+            timerString = hours + ":";
+        }
+        if (seconds < 10) {
+            secondsString = "0" + seconds;
+        } else {
+            secondsString = "" + seconds;
+        }
+
+        timerString = timerString + minutes + ":" + secondsString;
+        return timerString;
+    }
+
+    public void updatePlayState(String title, int total, int current) {
+        if( getActivity() != null) {
+            //Log.d("AAAA", "----- updatePlayState is visible");
+            //updateTimeStr(runEvent);
+
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    songTitle.setText(title);
+                    textCurrentTime.setText(milliSecondsToTimer(current));
+                    textTotalDuration.setText(milliSecondsToTimer(total));
+                    mSeekBarTime.setProgress((int) (((float) current / total) * 100));
+                }
+            });
+        }else{
+            Log.d("AAAA", "----- eventFragment is invisible");
+        }
     }
 
     public void showProgress(final Activity act, final boolean bShow)

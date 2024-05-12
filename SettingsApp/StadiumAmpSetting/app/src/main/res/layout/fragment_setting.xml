@@ -401,6 +401,7 @@
                     android:layout_height="wrap_content"
                     android:text="이벤트 연속 진행" />
 
+                <!--
                 <TextView
                     style="@style/black_14_font"
                     android:layout_width="match_parent"
@@ -433,6 +434,7 @@
                         android:layout_centerVertical="true"
                         android:text="초"/>
                 </RelativeLayout>
+                -->
 
             </LinearLayout>
 

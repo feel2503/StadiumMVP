@@ -168,6 +168,8 @@ public class MainActivity extends AppCompatActivity {
 
         Intent servIntent = new Intent(getApplicationContext(), MusicPlayService.class);
         getApplicationContext().startService(servIntent);
+
+
     }
 
     public String getSSAID()
@@ -184,10 +186,12 @@ public class MainActivity extends AppCompatActivity {
         if(mRunEventId > 0)
         {
             //mTimer.schedule(timerTask, 0, 1000);
-            //startEventStateCheck(mRunEventId);
             mServer.getRunEventState(mFirstEventStateCallBack, mRunEventId);
-            //mServer.getEvent(mResumeEventCallBack, mRunEventId);
         }
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(MusicPlayService.ACTION_PLAY_START_RESULT);
+        filter.addAction(MusicPlayService.ACTION_UPDATE_CURRENT_POSITION);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, filter);
     }
 
     @Override
@@ -198,12 +202,16 @@ public class MainActivity extends AppCompatActivity {
             mTimer.cancel();
             mTimer = null;
         }
+
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(downloadCompleteReceiver);
+
+
 
         if(mTimer != null)
         {
@@ -225,6 +233,8 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = new Intent(MusicPlayService.ACTION_PLAY_STOP);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
     }
 
     @Override
@@ -336,58 +346,41 @@ public class MainActivity extends AppCompatActivity {
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
-                if(mRunEvent != null && mRunEvent.getId() == mRunEventId)
-                {
-                    if(mRunEvent.getEventState().equalsIgnoreCase("STOP"))
-                    {
-                        mTimer.cancel();
-                        mTimer = null;
-
-                        Log.d("AAAA", "contype : " + mEventDto.getContinuityType());
-                        if(mEventDto.getContinuityType() == 1 && mEventRepeat)
-                        {
-                            long delayTime = mEventDto.getContinuityTime() * 1000;
-                            Log.d("AAAA", "delayTime : " + delayTime);
-                            runOnUiThread(() -> {
-                                new Handler().postDelayed(new Runnable() {// 1 초 후에 실행
-                                    @Override
-                                    public void run() {
-                                        //mHandler.sendEmptyMessage(0);	// 실행이 끝난후 알림
-                                        EventStartReqDto reqDto = new EventStartReqDto(mServerId, -1, -1, -1, -1, -1);
-                                        mServer.eventStart(mEventStartCallBack, reqDto);
-                                    }
-                                }, delayTime);
-                            });
-//                            new Handler().postDelayed(new Runnable() {// 1 초 후에 실행
-//                                @Override
-//                                public void run() {
-//                                    //mHandler.sendEmptyMessage(0);	// 실행이 끝난후 알림
-//                                    EventStartReqDto reqDto = new EventStartReqDto(mServerId, -1, -1, -1, -1, -1);
-//                                    mServer.eventStart(mEventStartCallBack, reqDto);
-//                                }
-//                            }, delayTime);
-
-//                            Thread.sleep();
+//                if(mRunEvent != null && mRunEvent.getId() == mRunEventId)
+//                {
+//                    if(mRunEvent.getEventState().equalsIgnoreCase("STOP"))
+//                    {
+//                        mTimer.cancel();
+//                        mTimer = null;
 //
-//                            mTimerTask = new EventTimerTask();
+//                        Log.d("AAAA", "contype : " + mEventDto.getContinuityType());
+//                        if(mEventDto.getContinuityType() == 1 && mEventRepeat)
+//                        {
 //                            long delayTime = mEventDto.getContinuityTime() * 1000;
-//                            mTimer.schedule(mTimerTask, delayTime, 1000);
-
-                        }
-                        return;
-                    }
-                    else if(mRunEvent.getEventState().equalsIgnoreCase("START"))
-                    {
-
-                    }
-                }
+//                            Log.d("AAAA", "delayTime : " + delayTime);
+//                            runOnUiThread(() -> {
+//                                new Handler().postDelayed(new Runnable() {// 1 초 후에 실행
+//                                    @Override
+//                                    public void run() {
+//                                        //mHandler.sendEmptyMessage(0);	// 실행이 끝난후 알림
+//                                        EventStartReqDto reqDto = new EventStartReqDto(mServerId, -1, -1, -1, -1, -1);
+//                                        mServer.eventStart(mEventStartCallBack, reqDto);
+//                                    }
+//                                }, delayTime);
+//                            });
+//                        }
+//                        return;
+//                    }
+//                    else if(mRunEvent.getEventState().equalsIgnoreCase("START"))
+//                    {
+//
+//                    }
+//                }
                 mServer.getRunEventState(mEventStateCallBack, mRunEventId);
             }
         };
         mTimer.schedule(timerTask, 0, 1000);
 
-//        mTimerTask = new EventTimerTask();
-//        mTimer.schedule(mTimerTask, 0, 1000);
     }
 
     private void SettingListener() {
@@ -637,6 +630,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void updatePlayPos(int pos)
+    {
+        Intent intent = new Intent(MusicPlayService.ACTION_PLAY_MOVE_POS);
+        intent.putExtra(MusicPlayService.EXTRA_UPDATE_POSITION, pos);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+
+    }
+
     public void showProgress(final Activity act, final boolean bShow)
     {
         if(act == null)
@@ -761,33 +762,6 @@ public class MainActivity extends AppCompatActivity {
                 }catch (Exception e)
                 {
                     e.printStackTrace();
-                }
-
-            }
-            else
-            {
-                // no event
-            }
-        }
-    };
-
-    private SECallBack<EventResult> mResumeEventCallBack = new SECallBack<EventResult>()
-    {
-        @Override
-        public void onResponseResult(Response<EventResult> response)
-        {
-            if (response.isSuccessful())
-            {
-                mEventDto = response.body().getData();
-
-                if(mEventDto.getEventState().equalsIgnoreCase("START"))
-                {
-                    startEventStateCheck(mRunEventId);
-                }
-                else
-                {
-                    //setImageView01();
-
                 }
 
             }
@@ -951,7 +925,6 @@ public class MainActivity extends AppCompatActivity {
                     startDownload(0);
                 }
                 setEventInfo(mEventDto);
-                //startEventStateCheck(mEventDto.getRunEvent());
                 mServer.getRunEventState(mFirstEventStateCallBack, mEventDto.getRunEvent());
             }
             else
@@ -976,7 +949,7 @@ public class MainActivity extends AppCompatActivity {
                 updateEventInfo(mRunEvent);
 
                 startEventStateCheck(mRunEvent.getId());
-                Toast.makeText(getApplicationContext(), "이벤트 를 시작 하였습니다.", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "이벤트 를 시작 하였습니다.", Toast.LENGTH_SHORT).show();
             }
             else{
                 Log.d("AAAA", "----- Start Event fail : " );
@@ -1009,4 +982,49 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
+
+    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if(action.equalsIgnoreCase(MusicPlayService.ACTION_PLAY_START_RESULT))
+            {
+
+            }
+            else if(action.equalsIgnoreCase(MusicPlayService.ACTION_UPDATE_CURRENT_POSITION))
+            {
+                String title = intent.getStringExtra(MusicPlayService.EXTRA_MUSIC_TITLE);
+                int total = intent.getIntExtra(MusicPlayService.EXTRA_TOTAL_DURATION, 0);
+                int current = intent.getIntExtra(MusicPlayService.EXTRA_CURRENT_DURATION, 0);
+//                long total = intent.getLongExtra(MusicPlayService.EXTRA_TOTAL_DURATION, 0L);
+//                long current = intent.getLongExtra(MusicPlayService.EXTRA_CURRENT_DURATION, 0L);
+                eventFragment.updatePlayState(title, total, current);
+
+
+                if(mEventDto.getContinuityType() == 1 )
+                {
+                    int diff = (total - current) / 1000;
+                    Log.d("AAAA", "total: "+total+" current: "+current+ " diff: " + diff);
+                    Log.d("AAAA", "getTriggerTime: "+mRunEvent.getTriggerTime());
+
+                    if(diff < mRunEvent.getTriggerTime() && mRunEvent.getEventState().equalsIgnoreCase("STOP"))
+                    {
+                        Log.d("AAAA", "getTriggerTime:--- start event ");
+                        EventStartReqDto reqDto = new EventStartReqDto(mServerId, -1, -1, -1, -1, -1);
+                        mServer.eventStart(mEventStartCallBack, reqDto);
+                        mRunEvent.setEventState("RESTART");
+                    }
+                }
+            }
+            else if(action.equalsIgnoreCase(MusicPlayService.ACTION_PLAY_MOVE_POS))
+            {
+                int pos = intent.getIntExtra(MusicPlayService.EXTRA_UPDATE_POSITION, 0);
+                if(pos > 0){
+
+                }
+            }
+        }
+    };
+
+
 }
