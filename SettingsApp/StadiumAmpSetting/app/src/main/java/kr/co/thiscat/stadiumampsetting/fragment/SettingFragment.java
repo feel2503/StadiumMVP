@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -48,6 +49,7 @@ import kr.co.thiscat.stadiumampsetting.server.entity.result.EventResult;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventDto;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventImageDto;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventStartReqDto;
+import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventcontinuityTypeDto;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -204,6 +206,14 @@ public class SettingFragment extends Fragment {
         mTextAdvImage.setOnClickListener(mOnClickListener);
 
         mCheckContinuous = view.findViewById(R.id.check_event_continuous);
+        mCheckContinuous.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                int type = isChecked ? 1 : 0;
+                EventcontinuityTypeDto eventcontinuityTypeDto = new EventcontinuityTypeDto(mainActivity.mServerId, type);
+                mServer.setContinuityType(mContinuityTypeCallBack, eventcontinuityTypeDto);
+            }
+        });
         //mEditEventDelay = view.findViewById(R.id.edit_delay_sec);
 
         mTextEventStart = view.findViewById(R.id.text_event_start);
@@ -675,5 +685,13 @@ public class SettingFragment extends Fragment {
         }
     };
 
+    private SECallBack<EventResult> mContinuityTypeCallBack = new SECallBack<EventResult>()
+    {
+        @Override
+        public void onResponseResult(Response<EventResult> response)
+        {
+
+        }
+    };
 
 }

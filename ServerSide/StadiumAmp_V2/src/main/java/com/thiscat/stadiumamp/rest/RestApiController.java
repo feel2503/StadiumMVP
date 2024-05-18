@@ -529,6 +529,17 @@ public class RestApiController extends BaseController{
         return getResponseEntity( "success", HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Add Event Server")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PostMapping(value = "/v1/server/continuityType", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultResponse> setcontinuityType(@RequestBody ReqContinuityType reqContinuityType) throws Exception {
+        Event event = eventRepository.findById(reqContinuityType.getEventId()).orElseThrow(() -> new Exception("event-not-found"));
+        event.setContinuityType(reqContinuityType.getContinuityType());
+        eventRepository.save(event);
+
+        return getResponseEntity( "success", HttpStatus.OK);
+    }
+
     private VoteResultDto getVoteResult(RunEvent runevent)
     {
         int homeCount = 0;

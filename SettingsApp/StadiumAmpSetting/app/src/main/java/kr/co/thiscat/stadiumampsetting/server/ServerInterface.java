@@ -13,6 +13,7 @@ import kr.co.thiscat.stadiumampsetting.server.entity.RunEventResult;
 import kr.co.thiscat.stadiumampsetting.server.entity.StadiumServerResult;
 import kr.co.thiscat.stadiumampsetting.server.entity.StartEvent;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventStartReqDto;
+import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventcontinuityTypeDto;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -63,4 +64,7 @@ public interface ServerInterface {
 
     @GET("v1/event/runstate")
     Call<RunEventResult> getRunEventState(@Query("runEventId")long eventId);
+
+    @POST("v1/server/continuityType")
+    Call<EventResult> setContinuityType(@Body EventcontinuityTypeDto eventcontinuityTypeDto);
 }

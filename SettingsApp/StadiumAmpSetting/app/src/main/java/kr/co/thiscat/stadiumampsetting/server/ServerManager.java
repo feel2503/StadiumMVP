@@ -16,6 +16,7 @@ import kr.co.thiscat.stadiumampsetting.server.entity.result.EventResult;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventDto;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventRequestDto;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventStartReqDto;
+import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventcontinuityTypeDto;
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Retrofit;
@@ -151,6 +152,12 @@ public class ServerManager {
     public void getRunEventState(SECallBack<RunEventResult> callBack, long eventId)
     {
         Call<RunEventResult> call = mServerInterface.getRunEventState(eventId);
+        call.enqueue(callBack);
+    }
+
+    public void setContinuityType(SECallBack<EventResult> callBack, EventcontinuityTypeDto eventcontinuityTypeDto)
+    {
+        Call<EventResult> call = mServerInterface.setContinuityType(eventcontinuityTypeDto);
         call.enqueue(callBack);
     }
 }
