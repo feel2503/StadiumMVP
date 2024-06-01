@@ -57,7 +57,8 @@ function startTimer2() {
 }
 
 function countTimer() {
-    console.log("countTimer : ")
+    //console.log("countTimer : ")
+    updateGraph();
     $.ajax({
         url:  '/v1/event/eventdto',
         method: 'get',
@@ -67,7 +68,7 @@ function countTimer() {
     }).done(function(res) {
         if (res)
         {
-            console.log("res", res);
+            //console.log("res", res);
             document.querySelector("#display").innerText = res.data.eventState;
 
             const graph_stop =document.getElementById("event_stop_graph");
@@ -92,6 +93,9 @@ function countTimer() {
                 graph_start.style.display = 'flex';
                 // document.getElementById("event_stop_graph").style.display ='none';
                 // document.getElementById("event_start_graph").style.display ='flex';
+
+                document.getElementById("home_text").innerText = res.data.homeName + " " + res.data.homeCount;
+                document.getElementById("away_text").innerText = res.data.awayName + " " + res.data.awayCount;
             }
         }
         else

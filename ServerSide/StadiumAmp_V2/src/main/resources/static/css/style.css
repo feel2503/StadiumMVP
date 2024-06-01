@@ -200,6 +200,7 @@ div{
     text-align: center;
     color:#ec0f32;
     margin-left: 10px;
+    font-weight: bold;
 }
 .home_graph{
     background-color:#ec0f32;
@@ -232,6 +233,7 @@ div{
     text-align: center;
     color:#326295;
     margin-right: 10px;
+    font-weight: bold;
 }
 .away_graph{
     background-color:#326295;

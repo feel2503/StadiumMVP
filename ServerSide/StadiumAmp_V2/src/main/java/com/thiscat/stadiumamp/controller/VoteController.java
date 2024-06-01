@@ -110,7 +110,9 @@ public class VoteController {
         model.addAttribute("teamtype", strTeam);
         model.addAttribute("team", team);
         model.addAttribute("homeColor", "#"+event.getHomeColor());
+        model.addAttribute("homeFont", "#"+event.getHomeFont());
         model.addAttribute("awayColor", "#"+event.getAwayColor());
+        model.addAttribute("awayFont", "#"+event.getAwayFont());
         model.addAttribute("bgimg", bgImage);
 
 
