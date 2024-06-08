@@ -294,35 +294,27 @@ public class SettingFragment extends Fragment {
     {
         Intent intent = new Intent(Intent.ACTION_VIEW);;
         Uri uri = null;
-        switch (resId){
-            case R.id.text_event_default_image:
-                uri = mainActivity.getContentUri(mTextDefaultImage.getText().toString());
-                intent.setDataAndType(uri, "image/*");
-                break;
-            case R.id.text_event_home_image:
-                uri = mainActivity.getContentUri(mTextHomeImage.getText().toString());
-                intent.setDataAndType(uri, "image/*");
-                break;
-            case R.id.text_event_away_image:
-                uri = mainActivity.getContentUri(mTextAwayImage.getText().toString());
-                intent.setDataAndType(uri, "image/*");
-                break;
-            case R.id.text_event_qr_image:
-                uri = mainActivity.getContentUri(mTextQrImage.getText().toString());
-                intent.setDataAndType(uri, "image/*");
-                break;
-            case R.id.text_event_adv_image:
-                uri = mainActivity.getContentUri(mTextAdvImage.getText().toString());
-                intent.setDataAndType(uri, "image/*");
-                break;
-            case R.id.text_web_stat_url:
-                uri = Uri.parse(mEditWebUrl.getText().toString());
-                intent.setData(uri);
-                break;
-            case R.id.text_open_chat_url:
-                uri = Uri.parse(mEditOpenChat.getText().toString());
-                intent.setData(uri);
-                break;
+        if (resId == R.id.text_event_default_image) {
+            uri = mainActivity.getContentUri(mTextDefaultImage.getText().toString());
+            intent.setDataAndType(uri, "image/*");
+        } else if (resId == R.id.text_event_home_image) {
+            uri = mainActivity.getContentUri(mTextHomeImage.getText().toString());
+            intent.setDataAndType(uri, "image/*");
+        } else if (resId == R.id.text_event_away_image) {
+            uri = mainActivity.getContentUri(mTextAwayImage.getText().toString());
+            intent.setDataAndType(uri, "image/*");
+        } else if (resId == R.id.text_event_qr_image) {
+            uri = mainActivity.getContentUri(mTextQrImage.getText().toString());
+            intent.setDataAndType(uri, "image/*");
+        } else if (resId == R.id.text_event_adv_image) {
+            uri = mainActivity.getContentUri(mTextAdvImage.getText().toString());
+            intent.setDataAndType(uri, "image/*");
+        } else if (resId == R.id.text_web_stat_url) {
+            uri = Uri.parse(mEditWebUrl.getText().toString());
+            intent.setData(uri);
+        } else if (resId == R.id.text_open_chat_url) {
+            uri = Uri.parse(mEditOpenChat.getText().toString());
+            intent.setData(uri);
         }
 
         if(uri != null){

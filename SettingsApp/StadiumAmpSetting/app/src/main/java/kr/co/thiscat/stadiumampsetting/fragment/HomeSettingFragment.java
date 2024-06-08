@@ -236,37 +236,26 @@ public class HomeSettingFragment extends Fragment {
     {
         Intent intent = new Intent(Intent.ACTION_VIEW);;
         Uri uri = null;
-        switch (resId){
-            case R.id.text_home_1:
-                uri = mainActivity.getContentUri(mTextHome1.getText().toString());
-                break;
-            case R.id.text_home_2:
-                uri = mainActivity.getContentUri(mTextHome2.getText().toString());
-                break;
-            case R.id.text_home_3:
-                uri = mainActivity.getContentUri(mTextHome3.getText().toString());
-                break;
-            case R.id.text_home_4:
-                uri = mainActivity.getContentUri(mTextHome4.getText().toString());
-                break;
-            case R.id.text_home_5:
-                uri = mainActivity.getContentUri(mTextHome5.getText().toString());
-                break;
-            case R.id.text_home_6:
-                uri = mainActivity.getContentUri(mTextHome6.getText().toString());
-                break;
-            case R.id.text_home_7:
-                uri = mainActivity.getContentUri(mTextHome7.getText().toString());
-                break;
-            case R.id.text_home_8:
-                uri = mainActivity.getContentUri(mTextHome8.getText().toString());
-                break;
-            case R.id.text_home_9:
-                uri = mainActivity.getContentUri(mTextHome9.getText().toString());
-                break;
-            case R.id.text_home_10:
-                uri = mainActivity.getContentUri(mTextHome10.getText().toString());
-                break;
+        if (resId == R.id.text_home_1) {
+            uri = mainActivity.getContentUri(mTextHome1.getText().toString());
+        } else if (resId == R.id.text_home_2) {
+            uri = mainActivity.getContentUri(mTextHome2.getText().toString());
+        } else if (resId == R.id.text_home_3) {
+            uri = mainActivity.getContentUri(mTextHome3.getText().toString());
+        } else if (resId == R.id.text_home_4) {
+            uri = mainActivity.getContentUri(mTextHome4.getText().toString());
+        } else if (resId == R.id.text_home_5) {
+            uri = mainActivity.getContentUri(mTextHome5.getText().toString());
+        } else if (resId == R.id.text_home_6) {
+            uri = mainActivity.getContentUri(mTextHome6.getText().toString());
+        } else if (resId == R.id.text_home_7) {
+            uri = mainActivity.getContentUri(mTextHome7.getText().toString());
+        } else if (resId == R.id.text_home_8) {
+            uri = mainActivity.getContentUri(mTextHome8.getText().toString());
+        } else if (resId == R.id.text_home_9) {
+            uri = mainActivity.getContentUri(mTextHome9.getText().toString());
+        } else if (resId == R.id.text_home_10) {
+            uri = mainActivity.getContentUri(mTextHome10.getText().toString());
         }
 
         if(uri != null){

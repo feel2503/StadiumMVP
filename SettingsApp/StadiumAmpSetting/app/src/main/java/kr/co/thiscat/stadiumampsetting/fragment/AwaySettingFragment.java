@@ -220,37 +220,26 @@ public class AwaySettingFragment extends Fragment {
     {
         Intent intent = new Intent(Intent.ACTION_VIEW);;
         Uri uri = null;
-        switch (resId){
-            case R.id.text_away_1:
-                uri = mainActivity.getContentUri(mTextAway1.getText().toString());
-                break;
-            case R.id.text_away_2:
-                uri = mainActivity.getContentUri(mTextAway2.getText().toString());
-                break;
-            case R.id.text_away_3:
-                uri = mainActivity.getContentUri(mTextAway3.getText().toString());
-                break;
-            case R.id.text_away_4:
-                uri = mainActivity.getContentUri(mTextAway4.getText().toString());
-                break;
-            case R.id.text_away_5:
-                uri = mainActivity.getContentUri(mTextAway5.getText().toString());
-                break;
-            case R.id.text_away_6:
-                uri = mainActivity.getContentUri(mTextAway6.getText().toString());
-                break;
-            case R.id.text_away_7:
-                uri = mainActivity.getContentUri(mTextAway7.getText().toString());
-                break;
-            case R.id.text_away_8:
-                uri = mainActivity.getContentUri(mTextAway8.getText().toString());
-                break;
-            case R.id.text_away_9:
-                uri = mainActivity.getContentUri(mTextAway9.getText().toString());
-                break;
-            case R.id.text_away_10:
-                uri = mainActivity.getContentUri(mTextAway10.getText().toString());
-                break;
+        if (resId == R.id.text_away_1) {
+            uri = mainActivity.getContentUri(mTextAway1.getText().toString());
+        } else if (resId == R.id.text_away_2) {
+            uri = mainActivity.getContentUri(mTextAway2.getText().toString());
+        } else if (resId == R.id.text_away_3) {
+            uri = mainActivity.getContentUri(mTextAway3.getText().toString());
+        } else if (resId == R.id.text_away_4) {
+            uri = mainActivity.getContentUri(mTextAway4.getText().toString());
+        } else if (resId == R.id.text_away_5) {
+            uri = mainActivity.getContentUri(mTextAway5.getText().toString());
+        } else if (resId == R.id.text_away_6) {
+            uri = mainActivity.getContentUri(mTextAway6.getText().toString());
+        } else if (resId == R.id.text_away_7) {
+            uri = mainActivity.getContentUri(mTextAway7.getText().toString());
+        } else if (resId == R.id.text_away_8) {
+            uri = mainActivity.getContentUri(mTextAway8.getText().toString());
+        } else if (resId == R.id.text_away_9) {
+            uri = mainActivity.getContentUri(mTextAway9.getText().toString());
+        } else if (resId == R.id.text_away_10) {
+            uri = mainActivity.getContentUri(mTextAway10.getText().toString());
         }
 
         if(uri != null){

@@ -391,27 +391,23 @@ public class MainActivity extends AppCompatActivity {
     class TabSelectedListener implements BottomNavigationView.OnNavigationItemSelectedListener{
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-            switch (menuItem.getItemId()) {
-                case R.id.tab_home_setting: {
-                    fm.beginTransaction().hide(active).show(homeSettingFragment).commit();
-                    active = homeSettingFragment;
-                    return true;
-                }
-                case R.id.tab_away_setting: {
-                    fm.beginTransaction().hide(active).show(awaySettingFragment).commit();
-                    active = awaySettingFragment;
-                    return true;
-                }
-                case R.id.tab_setting: {
-                    fm.beginTransaction().hide(active).show(settingFragment).commit();
-                    active = settingFragment;
-                    return true;
-                }
-                case R.id.tab_event: {
-                    fm.beginTransaction().hide(active).show(eventFragment).commit();
-                    active = eventFragment;
-                    return true;
-                }
+            int itemId = menuItem.getItemId();
+            if (itemId == R.id.tab_home_setting) {
+                fm.beginTransaction().hide(active).show(homeSettingFragment).commit();
+                active = homeSettingFragment;
+                return true;
+            } else if (itemId == R.id.tab_away_setting) {
+                fm.beginTransaction().hide(active).show(awaySettingFragment).commit();
+                active = awaySettingFragment;
+                return true;
+            } else if (itemId == R.id.tab_setting) {
+                fm.beginTransaction().hide(active).show(settingFragment).commit();
+                active = settingFragment;
+                return true;
+            } else if (itemId == R.id.tab_event) {
+                fm.beginTransaction().hide(active).show(eventFragment).commit();
+                active = eventFragment;
+                return true;
             }
             return false;
         }

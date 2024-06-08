@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "266173743010",
+    "project_id": "stadiumamp",
+    "storage_bucket": "stadiumamp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:266173743010:android:44561af182f75b58c8fcfb",
+        "android_client_info": {
+          "package_name": "kr.co.thiscat.stadiumampsetting"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDaNOzLtkpFpKUPzURIQolje9e4aF3Y8MI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
