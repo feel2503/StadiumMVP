@@ -170,7 +170,7 @@ public class MusicPlayService extends Service {
     };
 
     private void updateSeekBar() {
-        if (mMediaPlayer.isPlaying()) {
+        if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
             Intent intent = new Intent(MusicPlayService.ACTION_UPDATE_CURRENT_POSITION);
             intent.putExtra(MusicPlayService.EXTRA_TOTAL_DURATION, mMediaPlayer.getDuration());
             intent.putExtra(MusicPlayService.EXTRA_CURRENT_DURATION, mMediaPlayer.getCurrentPosition());

@@ -1,6 +1,7 @@
 package kr.co.thiscat.stadiumampsetting;
 
 import android.app.Activity;
+import android.app.PictureInPictureParams;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -14,6 +15,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
+import android.util.Rational;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
@@ -123,6 +126,21 @@ public class FullsImageActivity extends AppCompatActivity {
         filter.addAction(MusicPlayService.ACTION_PLAY_START_RESULT);
         filter.addAction(MusicPlayService.ACTION_UPDATE_CURRENT_POSITION);
         LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, filter);
+
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            PictureInPictureParams.Builder pipBuilder = new PictureInPictureParams.Builder();
+//            enterPictureInPictureMode(pipBuilder.build());
+//        }
+
+    }
+
+    @Override
+    public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode) {
+        if (isInPictureInPictureMode) {
+            Toast.makeText(this, "PIP Mode", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "not PIP Mode", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void initUi()
@@ -148,9 +166,11 @@ public class FullsImageActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 finish();
+
             }
         });
     }
+
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -164,6 +184,18 @@ public class FullsImageActivity extends AppCompatActivity {
         isRunning = true;
 //        showProgress(FullsImageActivity.this, true);
         mServer.getEvent(mEventCallBack, mServerId);
+    }
+
+    @Override
+    protected void onUserLeaveHint() {
+        super.onUserLeaveHint();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            PictureInPictureParams.Builder pipBuilder = new PictureInPictureParams.Builder();
+//            Rational aspectRatio = new Rational(16, 9);
+//            pipBuilder.setAspectRatio(aspectRatio).build();
+            enterPictureInPictureMode(pipBuilder.build());
+        }
     }
 
     @Override
@@ -973,7 +1005,7 @@ public class FullsImageActivity extends AppCompatActivity {
                 String title = intent.getStringExtra(MusicPlayService.EXTRA_MUSIC_TITLE);
                 int total = intent.getIntExtra(MusicPlayService.EXTRA_TOTAL_DURATION, 0);
                 int current = intent.getIntExtra(MusicPlayService.EXTRA_CURRENT_DURATION, 0);
-                if(mEventDto.getContinuityType() == 1 )
+                if(mEventDto != null && mEventDto.getContinuityType() == 1 )
                 {
                     int diff = (total - current) / 1000;
                     Log.d("AAAA", "full total: "+total+" current: "+current+ " diff: " + diff);
