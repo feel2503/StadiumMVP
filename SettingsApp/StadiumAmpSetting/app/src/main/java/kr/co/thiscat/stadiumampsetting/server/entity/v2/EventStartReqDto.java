@@ -28,13 +28,18 @@ public class EventStartReqDto
     @SerializedName("continuityTime")
     int continuityTime;
 
-    public EventStartReqDto(int eventId, int triggerType, int triggerTime, int triggerVote, int continuityType, int continuityTime) {
+    @Expose
+    @SerializedName("valumeValue")
+    int valumeValue;
+
+    public EventStartReqDto(int eventId, int triggerType, int triggerTime, int triggerVote, int continuityType, int continuityTime, int valumeValue) {
         this.eventId = eventId;
         this.triggerType = triggerType;
         this.triggerTime = triggerTime;
         this.triggerVote = triggerVote;
         this.continuityType = continuityType;
         this.continuityTime = continuityTime;
+        this.valumeValue = valumeValue;
     }
 
     public int getEventId() {
@@ -85,5 +90,11 @@ public class EventStartReqDto
         this.continuityTime = continuityTime;
     }
 
+    public int getValumeValue() {
+        return valumeValue;
+    }
 
+    public void setValumeValue(int valumeValue) {
+        this.valumeValue = valumeValue;
+    }
 }

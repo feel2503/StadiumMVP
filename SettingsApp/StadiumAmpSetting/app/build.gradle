@@ -7,12 +7,12 @@ plugins {
     id 'com.google.firebase.crashlytics'
 }
 ext {
-    AppVersionCode = 10160
-    AppVersionName = "0.1.6"
+    AppVersionCode = 10220
+    AppVersionName = "0.2.2"
 }
 
 android {
-    compileSdk 32
+    compileSdk 34
 
     signingConfigs {
         thiscat_config {
@@ -29,7 +29,7 @@ android {
         namespace("kr.co.thiscat.stadiumampsetting")
 
         minSdk 28
-        targetSdk 31
+        targetSdk 34
         versionCode AppVersionCode
         versionName AppVersionName
 
@@ -62,6 +62,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.8.0'
 
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.activity:activity:1.8.0'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.4'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
@@ -89,7 +90,21 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
 
 
+    // ExoPlayer
+    implementation 'com.google.android.exoplayer:exoplayer:2.18.0'
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.18.0'
+    implementation 'com.google.android.exoplayer:exoplayer-dash:2.18.0'
+    implementation 'com.google.android.exoplayer:exoplayer-ui:2.18.0'
 
+
+    modules {
+        module("org.jetbrains.kotlin:kotlin-stdlib-jdk7") {
+            replacedBy("org.jetbrains.kotlin:kotlin-stdlib", "kotlin-stdlib-jdk7 is now part of kotlin-stdlib")
+        }
+        module("org.jetbrains.kotlin:kotlin-stdlib-jdk8") {
+            replacedBy("org.jetbrains.kotlin:kotlin-stdlib", "kotlin-stdlib-jdk8 is now part of kotlin-stdlib")
+        }
+    }
 
 }
 

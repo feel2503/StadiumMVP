@@ -67,8 +67,8 @@ public class MainActivity extends AppCompatActivity {
     public static long CHECK_DELAY = 2000L;
     private HomeSettingFragment homeSettingFragment;
     private AwaySettingFragment awaySettingFragment;
-    private EventFragment eventFragment;
-    private SettingFragment settingFragment;
+    public EventFragment eventFragment;
+    public SettingFragment settingFragment;
     private FragmentManager fm;
     Fragment active;
 
@@ -84,9 +84,9 @@ public class MainActivity extends AppCompatActivity {
     private int psusePos = 0;
 
     private PermissionUtil mPermUtil;
-    public static String[] REQUIRED_PERMISSIONS = {
-            Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE
-    };
+//    public static String[] REQUIRED_PERMISSIONS = {
+//            Manifest.permission.WRITE_EXTERNAL_STORAGE
+//    };
 
     public String mStrDefault;
     public String mStrHome1;
@@ -110,9 +110,12 @@ public class MainActivity extends AppCompatActivity {
     public RunEvent mRunEvent = null;
     public boolean mEventRepeat = false;
 
+    private boolean isFinish = false;
+
     public static String contentDirPath = Environment.getExternalStoragePublicDirectory(
             Environment.DIRECTORY_DOWNLOADS) + "/StadiumAmp/";
 
+    public int volumeValue;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -156,15 +159,23 @@ public class MainActivity extends AppCompatActivity {
         //mMediaPlayer = new MediaPlayer();
         //mDefaultMediaPlayer = new MediaPlayer();
 
+        String[] REQUIRED_PERMISSIONS;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            REQUIRED_PERMISSIONS = new String[] { Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.READ_MEDIA_AUDIO};
+        }else{
+            REQUIRED_PERMISSIONS = new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+        }
+
         mPermUtil = new PermissionUtil(MainActivity.this, REQUIRED_PERMISSIONS);
         mPermUtil.onSetPermission();
 
         mProgress = new ProgressDialog(this);
         //mTimer = new Timer();
-        initEventInfo();
+        //initEventInfo();
 
         IntentFilter completeFilter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
-        registerReceiver(downloadCompleteReceiver, completeFilter);
+        registerReceiver(downloadCompleteReceiver, completeFilter, RECEIVER_EXPORTED );
 
         Intent servIntent = new Intent(getApplicationContext(), MusicPlayService.class);
         getApplicationContext().startService(servIntent);
@@ -181,8 +192,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-
         super.onResume();
+        initEventInfo();
+        isFinish = false;
+
         if(mRunEventId > 0)
         {
             //mTimer.schedule(timerTask, 0, 1000);
@@ -197,6 +210,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        isFinish = true;
+
         if(mTimer != null)
         {
             mTimer.cancel();
@@ -210,7 +225,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(downloadCompleteReceiver);
-
 
 
         if(mTimer != null)
@@ -560,7 +574,7 @@ public class MainActivity extends AppCompatActivity {
         return name;
     }
 
-    public void playMusic(RunEvent runEvent){
+    public void playVideo(RunEvent runEvent){
         try{
             String strUri = null;
             if(runEvent.getHomeCount() >= runEvent.getAwayCount())
@@ -572,37 +586,32 @@ public class MainActivity extends AppCompatActivity {
                 strUri = getAwayMusic(runEvent);
             }
 
+            eventFragment.playVideo(strUri);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    public void playMusic(RunEvent runEvent){
+        try{
+            String strUri = null;
+
+//            if(runEvent.getHomeCount() >= runEvent.getAwayCount())
+//            {
+//                strUri = getHomeMusic(runEvent);
+//            }
+//            else
+//            {
+//                strUri = getAwayMusic(runEvent);
+//            }
+//
+//            eventFragment.playVideo(strUri);
+
             Intent intent = new Intent(MusicPlayService.ACTION_PLAY_START);
             intent.putExtra(MusicPlayService.EXTRA_FILE_URL, strUri);
             intent.putExtra(MusicPlayService.EXTRA_IS_NEW, true);
             LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
 
-
-//            if(strUri != null && strUri.length() > 0)
-//            {
-//                if(mDefaultMediaPlayer != null && mDefaultMediaPlayer.isPlaying()){
-//                    psusePos = mDefaultMediaPlayer.getCurrentPosition();
-//                    mDefaultMediaPlayer.pause();
-//                }
-//
-//                if(mMediaPlayer == null)
-//                    mMediaPlayer = new MediaPlayer();
-//
-//                //strUri = "도시인.mp3";
-//                Uri uri = getContentUri(strUri);
-//                mMediaPlayer.setDataSource(getApplicationContext(), uri);
-//
-//                mMediaPlayer.prepare();
-//                mMediaPlayer.start();
-//                mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-//                    @Override
-//                    public void onCompletion(MediaPlayer mp) {
-//                        mMediaPlayer.release();
-//                        mMediaPlayer = null;
-//                        startDefaultMediaPlayer();
-//                    }
-//                });
-//            }
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -681,7 +690,8 @@ public class MainActivity extends AppCompatActivity {
                     eventFragment.updateEventState(mRunEvent);
 
                     if(mRunEvent.getEventState().equalsIgnoreCase("STOP")){
-                        playMusic(mRunEvent);
+                        //playMusic(mRunEvent);
+                        playVideo(mRunEvent);
                         mRunEventId = -1;
                         AsyncCheckState async = new AsyncCheckState();
                         async.execute();
@@ -784,7 +794,6 @@ public class MainActivity extends AppCompatActivity {
                 downloadRequest(uri, item.getName());
                 mDownloadPos = position;
             }
-
         }
     }
 
@@ -966,7 +975,9 @@ public class MainActivity extends AppCompatActivity {
             if(mRunEventId < 0)
             {
                 //mServer.getRunEventState(mFirstEventStateCallBack, mRunEventId);
-                mServer.getLastEvent(mFirstEventStateCallBack, mServerId);
+
+                if(!isFinish)
+                    mServer.getLastEvent(mFirstEventStateCallBack, mServerId);
             }
 
             return null;
@@ -1006,7 +1017,7 @@ public class MainActivity extends AppCompatActivity {
                     if(diff < mRunEvent.getTriggerTime() && mRunEvent.getEventState().equalsIgnoreCase("STOP"))
                     {
                         Log.d("AAAA", "getTriggerTime:--- start event ");
-                        EventStartReqDto reqDto = new EventStartReqDto(mServerId, -1, -1, -1, -1, -1);
+                        EventStartReqDto reqDto = new EventStartReqDto(mServerId, -1, -1, -1, -1, -1, volumeValue);
                         mServer.eventStart(mEventStartCallBack, reqDto);
                         mRunEvent.setEventState("RESTART");
                     }

@@ -232,6 +232,10 @@ public class HomeSettingFragment extends Fragment {
         }
     }
 
+    public String getExtension(String fileStr) {
+        return fileStr.substring(fileStr.lastIndexOf(".") + 1, fileStr.length());
+    }
+
     public void startMediaActivity(int resId)
     {
         Intent intent = new Intent(Intent.ACTION_VIEW);;
@@ -259,7 +263,12 @@ public class HomeSettingFragment extends Fragment {
         }
 
         if(uri != null){
-            intent.setDataAndType(uri, "audio/mp3");
+//            String fileExtend = getExtension(uri.toString());
+//            if (fileExtend.equalsIgnoreCase("mp3")) {
+//                intent.setDataAndType(uri, "audio/*");
+//            } else if (fileExtend.equalsIgnoreCase("mp4")) {
+//                intent.setDataAndType(uri, "vidio/*");
+            intent.setDataAndType(uri, "video/*");
             startActivity(intent);
         }
 

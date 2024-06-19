@@ -67,4 +67,7 @@ public interface ServerInterface {
 
     @POST("v1/server/continuityType")
     Call<EventResult> setContinuityType(@Body EventcontinuityTypeDto eventcontinuityTypeDto);
+
+    @GET("v1/event/set-volume")
+    Call<EventResult> setEventVolume(@Query("eventId")long eventId, @Query("volume")int volume);
 }

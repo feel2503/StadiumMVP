@@ -5,9 +5,17 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <!-- Devices running Android 13 (API level 33) or higher -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+
+    <!-- To handle the reselection within the app on Android 14 (API level 34) -->
+    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
 
     <application
         android:allowBackup="false"
@@ -20,21 +28,23 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.StadiumAmpSetting"
         android:usesCleartextTraffic="true"
-        tools:targetApi="31">
-        <service
-            android:name=".MusicPlayService"
-            android:enabled="true"
-            android:exported="true"></service>
+        tools:targetApi="32">
+
+        <activity
+            android:name=".FullVideoActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="false"
+            android:label="FullVideoActivity"
+            android:supportsPictureInPicture="true"
+            android:theme="@style/FullScreenTheme"/>
 
         <activity
             android:name=".FullsImageActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false"
             android:label="@string/title_activity_fulls_image"
-            android:theme="@style/FullScreenTheme"
-            android:supportsPictureInPicture="true" >
-        </activity>
-
+            android:supportsPictureInPicture="true"
+            android:theme="@style/FullScreenTheme"/>
         <activity
             android:name=".DialogServerSelect"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -50,6 +60,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".MusicPlayService"
+            android:enabled="true"
+            android:exported="true" />
     </application>
 
 </manifest>

@@ -15,14 +15,13 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
-import android.util.Rational;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,13 +30,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.bumptech.glide.Glide;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.ui.StyledPlayerView;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import kr.co.thiscat.stadiumampsetting.databinding.ActivityFullsImageBinding;
+import kr.co.thiscat.stadiumampsetting.databinding.ActivityFullVideoBinding;
 import kr.co.thiscat.stadiumampsetting.server.SECallBack;
 import kr.co.thiscat.stadiumampsetting.server.ServerManager;
 import kr.co.thiscat.stadiumampsetting.server.entity.RunEvent;
@@ -53,25 +56,26 @@ import retrofit2.Response;
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class FullsImageActivity extends AppCompatActivity {
+public class FullVideoActivity extends AppCompatActivity {
     private View mControlsView;
 
     public String contentDirPath = Environment.getExternalStoragePublicDirectory(
             Environment.DIRECTORY_DOWNLOADS) + "/StadiumAmp/";
 
-    private ActivityFullsImageBinding binding;
+    private ActivityFullVideoBinding binding;
     private ServerManager mServer;
     public int mRunEventId = -1;
     public int mServerId;
-    public boolean mEventRepeat;
-    protected ProgressDialog mProgress = null;
 
-    private ImageView mImageFull;
-    private LinearLayout mLinearHalf;
-
+    private StyledPlayerView playerView;
+    private ExoPlayer exoPlayer;
     private ImageView mImgHalf;
-    private LinearLayout mLinearHalfResult;
-    private LinearLayout mLinearHalfJoin;
+
+    private LinearLayout mRightView;
+
+    private LinearLayout mLinearVote;
+    private RelativeLayout mRelativeAd;
+    private RelativeLayout mRelativeJoin;
 
     private TextView mTextResult1;
     private TextView mTextResult2;
@@ -82,6 +86,10 @@ public class FullsImageActivity extends AppCompatActivity {
     private TextView mTextAwayName;
     private TextView mTextHome;
     private TextView mTextAway;
+
+    private ImageView mImageAdImg;
+    private ImageView mImageQr;
+
 
     public EventDto mEventDto = null;
     private RunEvent mRunEvent;
@@ -102,12 +110,14 @@ public class FullsImageActivity extends AppCompatActivity {
     public String mTextAway4;
     public String mTextAway5;
 
+    private int mVolume;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
-        binding = ActivityFullsImageBinding.inflate(getLayoutInflater());
+        binding = ActivityFullVideoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -115,17 +125,19 @@ public class FullsImageActivity extends AppCompatActivity {
         mControlsView = binding.fullscreenContentControls;
         hide();
 
-        mProgress = new ProgressDialog(getApplicationContext());
 
         mServerId = getIntent().getIntExtra("RunServerID", -1);
         getIntent().getBooleanExtra("EventRepeat", false);
-        mServer = ServerManager.getInstance(FullsImageActivity.this);
+        mVolume = getIntent().getIntExtra("VideoVolume", 0);
+
+        mServer = ServerManager.getInstance(FullVideoActivity.this);
+
         initUi();
 
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(MusicPlayService.ACTION_PLAY_START_RESULT);
-        filter.addAction(MusicPlayService.ACTION_UPDATE_CURRENT_POSITION);
-        LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, filter);
+//        IntentFilter filter = new IntentFilter();
+//        filter.addAction(MusicPlayService.ACTION_PLAY_START_RESULT);
+//        filter.addAction(MusicPlayService.ACTION_UPDATE_CURRENT_POSITION);
+//        LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, filter);
 
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 //            PictureInPictureParams.Builder pipBuilder = new PictureInPictureParams.Builder();
@@ -145,16 +157,17 @@ public class FullsImageActivity extends AppCompatActivity {
 
     private void initUi()
     {
-        mImageFull = (ImageView) findViewById(R.id.image_full_view);
-        mLinearHalf = findViewById(R.id.linear_half_content);
+        playerView = findViewById(R.id.video_view);
+        exoPlayer = new ExoPlayer.Builder(FullVideoActivity.this).build();
+        exoPlayer.addListener(mPlayerListener);
+        playerView.setPlayer(exoPlayer);
 
         mImgHalf = findViewById(R.id.image_half_view);
-        mLinearHalfResult = findViewById(R.id.linear_result);
-        mLinearHalfJoin = findViewById(R.id.linear_join);
 
-        mTextResult1 = findViewById(R.id.text_result_01);
-        mTextResult2 = findViewById(R.id.text_result_02);
-        mTextResult3 = findViewById(R.id.text_result_03);
+        mRightView = findViewById(R.id.linear_right_view);
+        mLinearVote = findViewById(R.id.linear_vote);
+        mRelativeAd = findViewById(R.id.relative_ad_img);
+        mRelativeJoin = findViewById(R.id.relative_join);
 
         mTextCurrent = findViewById(R.id.text_current_server);
         mTextHomeName = findViewById(R.id.text_result_home_count);
@@ -162,13 +175,12 @@ public class FullsImageActivity extends AppCompatActivity {
         mTextHome = findViewById(R.id.text_result_home);
         mTextAway = findViewById(R.id.text_result_away);
 
-        findViewById(R.id.screen_full_close).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
+        mTextResult1 = findViewById(R.id.text_result_01);
+        mTextResult2 = findViewById(R.id.text_result_02);
+        mTextResult3 = findViewById(R.id.text_result_03);
 
-            }
-        });
+        mImageAdImg = findViewById(R.id.image_ad);
+        mImageQr = findViewById(R.id.image_qr);
     }
 
     @Override
@@ -182,7 +194,6 @@ public class FullsImageActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         isRunning = true;
-//        showProgress(FullsImageActivity.this, true);
         mServer.getEvent(mEventCallBack, mServerId);
     }
 
@@ -207,39 +218,73 @@ public class FullsImageActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
+//        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
     }
+
+    Player.Listener mPlayerListener = new Player.Listener() {
+        @Override
+        public void onEvents(Player player, Player.Events events) {
+            Player.Listener.super.onEvents(player, events);
+            Log.d("BBBB", "onEvents: " + events);
+        }
+
+        @Override
+        public void onIsPlayingChanged(boolean isPlaying) {
+            Player.Listener.super.onIsPlayingChanged(isPlaying);
+            Log.d("BBBB", "onIsPlayingChanged: " + isPlaying);
+            if(isPlaying)
+            {
+
+            }
+            else
+            {
+                updateViewState(0);
+                mServer.getRunEventState(mEndEventStateCallBack, mEventDto.getRunEvent());
+            }
+        }
+
+    };
 
     private void updateViewState(int state)
     {
-        if(state == 1 || state == 2)
-        {
-            mLinearHalf.setVisibility(View.VISIBLE);
-            mImageFull.setVisibility(View.GONE);
+        if(state == 0){
+            mRightView.setVisibility(View.VISIBLE);
+            mLinearVote.setVisibility(View.VISIBLE);
+            mRelativeAd.setVisibility(View.GONE);
+            mRelativeJoin.setVisibility(View.GONE);
+
             mImgHalf.setVisibility(View.VISIBLE);
-            if(state == 1)
-            {
-                mLinearHalfResult.setVisibility(View.VISIBLE);
-                mLinearHalfJoin.setVisibility(View.GONE);
-            }
-            else if(state == 2)
-            {
-                mLinearHalfResult.setVisibility(View.GONE);
-                mLinearHalfJoin.setVisibility(View.VISIBLE);
-            }
+            playerView.setVisibility(View.GONE);
         }
-        else if(state == 3 || state == 4)
-        {
-            mLinearHalf.setVisibility(View.GONE);
-            mImageFull.setVisibility(View.VISIBLE);
+        else if(state == 1){
+            mRightView.setVisibility(View.VISIBLE);
+            mLinearVote.setVisibility(View.VISIBLE);
+            mRelativeAd.setVisibility(View.GONE);
+            mRelativeJoin.setVisibility(View.GONE);
+
+            mImgHalf.setVisibility(View.GONE);
+            playerView.setVisibility(View.VISIBLE);
+        }
+        else if(state == 2){
+            mRightView.setVisibility(View.VISIBLE);
+            mLinearVote.setVisibility(View.GONE);
+            mRelativeAd.setVisibility(View.VISIBLE);
+            mRelativeJoin.setVisibility(View.GONE);
+        }
+        else if(state == 3){
+            mRightView.setVisibility(View.VISIBLE);
+            mLinearVote.setVisibility(View.GONE);
+            mRelativeAd.setVisibility(View.GONE);
+            mRelativeJoin.setVisibility(View.VISIBLE);
+        }
+        else if(state == 4){
+            mRightView.setVisibility(View.GONE);
         }
     }
 
-
-    private void setImageView01()
+    private void setImageView00()
     {
-
-        updateViewState(1);
+        updateViewState(0);
 
         String defImage = getTypeImage(mEventDto.getEventImageList(), viewImageType);
         if(defImage != null && isRunning)
@@ -249,6 +294,20 @@ public class FullsImageActivity extends AppCompatActivity {
             mImgHalf.setImageURI(uri);
             Glide.with(this).load(uri).into(mImgHalf);
         }
+    }
+
+    private void setImageView01()
+    {
+        updateViewState(1);
+
+//        String defImage = getTypeImage(mEventDto.getEventImageList(), viewImageType);
+//        if(defImage != null && isRunning)
+//        {
+//            //Uri uri = Uri.parse(mainActivity.getContentUri(defImage));
+//            Uri uri = getContentUri(defImage);
+//            mImgHalf.setImageURI(uri);
+//            Glide.with(this).load(uri).into(mImgHalf);
+//        }
         if(isRunning){
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -263,13 +322,14 @@ public class FullsImageActivity extends AppCompatActivity {
     {
         Log.d("AAAA", "setImageView02 : ");
         updateViewState(2);
-        String defImage = getTypeImage(mEventDto.getEventImageList(), "IMAGE_QR");
+
+        String defImage = getTypeImage(mEventDto.getEventImageList(), "IMAGE_ADV");
         if(defImage != null && isRunning)
         {
             //Uri uri = Uri.parse(mainActivity.getContentUri(defImage));
             Uri uri = getContentUri(defImage);
-            mImgHalf.setImageURI(uri);
-            Glide.with(this).load(uri).into(mImgHalf);
+            mImageAdImg.setImageURI(uri);
+            Glide.with(this).load(uri).into(mImageAdImg);
         }
         if(isRunning){
             new Handler().postDelayed(new Runnable() {
@@ -285,15 +345,13 @@ public class FullsImageActivity extends AppCompatActivity {
     {
         Log.d("AAAA", "setImageView03 : ");
         updateViewState(3);
-        mImageFull.setScaleType(ImageView.ScaleType.FIT_CENTER);
-
-        String defImage = getTypeImage(mEventDto.getEventImageList(), viewImageType);
+        String defImage = getTypeImage(mEventDto.getEventImageList(), "IMAGE_QR");
         if(defImage != null && isRunning)
         {
             //Uri uri = Uri.parse(mainActivity.getContentUri(defImage));
             Uri uri = getContentUri(defImage);
-            mImageFull.setImageURI(uri);
-            Glide.with(this).load(uri).into(mImageFull);
+            mImageQr.setImageURI(uri);
+            Glide.with(this).load(uri).into(mImageQr);
         }
         if(isRunning){
             new Handler().postDelayed(new Runnable() {
@@ -301,39 +359,41 @@ public class FullsImageActivity extends AppCompatActivity {
                 public void run() {
                     setImageView04();
                 }
-            }, 15000);
+            }, 5000);
         }
     }
+
     private void setImageView04()
     {
         Log.d("AAAA", "setImageView04 : ");
         updateViewState(4);
-        mImageFull.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        String defImage = getTypeImage(mEventDto.getEventImageList(), "IMAGE_ADV");
-        if(defImage != null && isRunning)
-        {
-            //Uri uri = Uri.parse(mainActivity.getContentUri(defImage));
-            Uri uri = getContentUri(defImage);
-            mImageFull.setImageURI(uri);
-            Glide.with(this).load(uri).into(mImageFull);
-        }
 
-        if(isRunning){
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mImageFull.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                    String defImage = getTypeImage(mEventDto.getEventImageList(), viewImageType);
-                    if(defImage != null && isRunning)
-                    {
-                        //Uri uri = Uri.parse(mainActivity.getContentUri(defImage));
-                        Uri uri = getContentUri(defImage);
-                        mImageFull.setImageURI(uri);
-                        Glide.with(FullsImageActivity.this).load(uri).into(mImageFull);
-                    }
-                }
-            }, 5000);
-        }
+//        mImageFull.setScaleType(ImageView.ScaleType.FIT_CENTER);
+//        String defImage = getTypeImage(mEventDto.getEventImageList(), "IMAGE_ADV");
+//        if(defImage != null && isRunning)
+//        {
+//            //Uri uri = Uri.parse(mainActivity.getContentUri(defImage));
+//            Uri uri = getContentUri(defImage);
+//            mImageFull.setImageURI(uri);
+//            Glide.with(this).load(uri).into(mImageFull);
+//        }
+//
+//        if(isRunning){
+//            new Handler().postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    mImageFull.setScaleType(ImageView.ScaleType.FIT_CENTER);
+//                    String defImage = getTypeImage(mEventDto.getEventImageList(), viewImageType);
+//                    if(defImage != null && isRunning)
+//                    {
+//                        //Uri uri = Uri.parse(mainActivity.getContentUri(defImage));
+//                        Uri uri = getContentUri(defImage);
+//                        mImageFull.setImageURI(uri);
+//                        Glide.with(FullVideoActivity.this).load(uri).into(mImageFull);
+//                    }
+//                }
+//            }, 5000);
+//        }
     }
 
     private void hide() {
@@ -386,7 +446,7 @@ public class FullsImageActivity extends AppCompatActivity {
 
     public void startEventStateCheck(long eventId)
     {
-        updateViewState(1);
+        updateViewState(0);
         mRunEventId = (int)eventId;
         if(mTimer != null)
         {
@@ -407,7 +467,7 @@ public class FullsImageActivity extends AppCompatActivity {
                                 mTimer.cancel();
                                 mTimer = null;
 
-                                setImageView01();
+                                //setImageView01();
                             }
                         });
                         return;
@@ -419,7 +479,7 @@ public class FullsImageActivity extends AppCompatActivity {
                 }
                 if( isRunning)
                 {
-                    Log.d("AAAA", "--- 111mRunEventId : " + mRunEventId);
+                    Log.d("AAAA", "--- startEventStateCheck : " + mRunEventId);
                     mServer.getRunEventState(mEventStateCallBack, mRunEventId);
                 }
             }
@@ -556,10 +616,41 @@ public class FullsImageActivity extends AppCompatActivity {
                     //Uri uri = Uri.parse(mainActivity.getContentUri(defImage));
                     Uri uri = getContentUri(viewImage);
                     mImgHalf.setImageURI(uri);
-                    Glide.with(FullsImageActivity.this).load(uri).into(mImgHalf);
+                    Glide.with(FullVideoActivity.this).load(uri).into(mImgHalf);
                 }
             }
         });
+    }
+
+    public void playVideo(RunEvent runEvent){
+        try{
+            if(exoPlayer.isPlaying()){
+                exoPlayer.stop();
+            }
+
+            String strUri = null;
+            if(runEvent.getHomeCount() >= runEvent.getAwayCount())
+            {
+                strUri = getHomeMusic(runEvent);
+            }
+            else
+            {
+                strUri = getAwayMusic(runEvent);
+            }
+            //test
+            //strUri = "test.mp4";
+            Uri videoUri = getContentUri(strUri);
+            MediaItem mediaItem = MediaItem.fromUri(videoUri);
+            exoPlayer.setMediaItem(mediaItem);
+            //exoPlayer.setVolume((runEvent.getVolumeValue()*0.1f));
+            exoPlayer.setVolume(mVolume * 0.1f);
+            exoPlayer.prepare();
+            exoPlayer.play(); //자동으로 로딩완료까지 기다렸다가 재생함
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     public void playMusic(RunEvent runEvent){
@@ -692,39 +783,6 @@ public class FullsImageActivity extends AppCompatActivity {
         }
     }
 
-    public void showProgress(final Activity act, final boolean bShow)
-    {
-        if(act == null)
-            return;
-        act.runOnUiThread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                mProgress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                mProgress.setMessage("Waitting...");
-                mProgress.setCancelable(false);
-
-                try
-                {
-                    if (bShow)
-                    {
-                        mProgress.show();
-                    }
-                    else
-                    {
-                        mProgress.dismiss();
-                    }
-                }
-                catch (Exception e)
-                {
-                    // TODO: handle exception
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
     private class AsyncRestartCheck extends AsyncTask<String, Void, Boolean>
     {
         @Override
@@ -759,24 +817,28 @@ public class FullsImageActivity extends AppCompatActivity {
                     if(mRunEvent.getEventState().equalsIgnoreCase("START"))
                     {
                         mRunEventId = (int)mRunEvent.getId();
+                        startEventStateCheck(mRunEventId);
                     }
                     else if(mRunEvent.getEventState().equalsIgnoreCase("STOP"))
                     {
                         if(mRunEventId > 0)
                         {
                             mRunEventId = -1;
-                            updateScore(mRunEvent);
 
-                            int home = mRunEvent.getHomeCount();
-                            int away = mRunEvent.getAwayCount();
-                            if (home == away) {
-                                viewImageType = "IMAGE_DEFAULT";
-                            } else if (home > away) {
-                                viewImageType = "IMAGE_HOME";
-                            } else if (home < away) {
-                                viewImageType = "IMAGE_AWAY";
+                            if(!exoPlayer.isPlaying()){
+                                updateScore(mRunEvent);
+
+                                int home = mRunEvent.getHomeCount();
+                                int away = mRunEvent.getAwayCount();
+                                if (home == away) {
+                                    viewImageType = "IMAGE_DEFAULT";
+                                } else if (home > away) {
+                                    viewImageType = "IMAGE_HOME";
+                                } else if (home < away) {
+                                    viewImageType = "IMAGE_AWAY";
+                                }
                             }
-                            setImageView01();
+                            //setImageView01();
                         }
                         AsyncRestartCheck async = new AsyncRestartCheck();
                         async.execute();
@@ -815,10 +877,9 @@ public class FullsImageActivity extends AppCompatActivity {
                 }
                 else
                 {
-                    //setImageView01();
+                    setImageView00();
                     mServer.getRunEventState(mEndEventStateCallBack, mEventDto.getRunEvent());
                 }
-
             }
             else
             {
@@ -836,20 +897,69 @@ public class FullsImageActivity extends AppCompatActivity {
             {
                 try{
                     mRunEvent = response.body().getData();
-                    Log.d("AAAA", "2 EventState : " + mRunEvent.getEventState());
+                    Log.d("AAAA", "mEventStateCallBack : " + mRunEvent.getEventState());
                     if(mRunEvent.getEventState().equalsIgnoreCase("START"))
                     {
-                        updateScore(mRunEvent);
+                        if(!exoPlayer.isPlaying())
+                            updateScore(mRunEvent);
                     }
                     else if(mRunEvent.getEventState().equalsIgnoreCase("STOP") && mRunEventId != -1)
                     {
                         mRunEventId = -1;
-                        playMusic(mRunEvent);
+                        setImageView01();
+                        playVideo(mRunEvent);
+                        //playMusic(mRunEvent);
 
-                        mServer.getRunEventState(mEndEventStateCallBack, mEventDto.getRunEvent());
+
+                        //mServer.getRunEventState(mEndEventStateCallBack, mEventDto.getRunEvent());
 
 //                        AsyncCheckState async = new AsyncCheckState();
 //                        async.execute();
+                    }
+                    //setImageView01();
+
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
+            }
+            else
+            {
+                // no event
+            }
+
+            //showProgress(FullsImageActivity.this, false);
+        }
+    };
+
+    private SECallBack<RunEventResult> mFirstEventStateCallBack = new SECallBack<RunEventResult>()
+    {
+        @Override
+        public void onResponseResult(Response<RunEventResult> response)
+        {
+            if (response.isSuccessful())
+            {
+                try{
+                    mRunEvent = response.body().getData();
+                    Log.d("AAAA", "mFirstEventStateCallBack : " + mRunEvent.getEventState());
+                    if(mRunEvent.getEventState().equalsIgnoreCase("STOP"))
+                    {
+                        updateScore(mRunEvent);
+
+                        int home = mRunEvent.getHomeCount();
+                        int away = mRunEvent.getAwayCount();
+                        if (home == away) {
+                            viewImageType = "IMAGE_DEFAULT";
+                        } else if (home > away) {
+                            viewImageType = "IMAGE_HOME";
+                        } else if (home < away) {
+                            viewImageType = "IMAGE_AWAY";
+                        }
+//                        setImageView00();
+//
+                        AsyncRestartCheck async = new AsyncRestartCheck();
+                        async.execute();
                     }
                     //setImageView01();
 
@@ -877,7 +987,7 @@ public class FullsImageActivity extends AppCompatActivity {
             {
                 try{
                     mRunEvent = response.body().getData();
-                    Log.d("AAAA", "3 EventState : " + mRunEvent.getEventState());
+                    Log.d("AAAA", "mEndEventStateCallBack : " + mRunEvent.getEventState());
                     if(mRunEvent.getEventState().equalsIgnoreCase("STOP"))
                     {
                         updateScore(mRunEvent);
@@ -891,29 +1001,20 @@ public class FullsImageActivity extends AppCompatActivity {
                         } else if (home < away) {
                             viewImageType = "IMAGE_AWAY";
                         }
-                        setImageView01();
+                        //setImageView01();
 
                         AsyncRestartCheck async = new AsyncRestartCheck();
                         async.execute();
                     }
-                    else
-                    {
-
-                    }
-                    //setImageView01();
-
                 }catch (Exception e)
                 {
                     e.printStackTrace();
                 }
-
             }
             else
             {
                 // no event
             }
-
-            //showProgress(FullsImageActivity.this, false);
         }
     };
 

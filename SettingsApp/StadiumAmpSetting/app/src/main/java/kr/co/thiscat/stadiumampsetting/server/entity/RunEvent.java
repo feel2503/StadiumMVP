@@ -84,6 +84,10 @@ public class RunEvent
     @SerializedName("eventMusicList")
     ArrayList<EventMusicDto> eventMusicList;
 
+    @Expose
+    @SerializedName("volumeValue")
+    int volumeValue;
+
     public long getId() {
         return id;
     }
@@ -340,5 +344,13 @@ public class RunEvent
 
     public void setAwayName(String awayName) {
         this.awayName = awayName;
+    }
+
+    public int getVolumeValue() {
+        return volumeValue;
+    }
+
+    public void setVolumeValue(int volumeValue) {
+        this.volumeValue = volumeValue;
     }
 }

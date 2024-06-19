@@ -243,7 +243,7 @@ public class AwaySettingFragment extends Fragment {
         }
 
         if(uri != null){
-            intent.setDataAndType(uri, "audio/mp3");
+            intent.setDataAndType(uri, "video/*");
             startActivity(intent);
         }
 

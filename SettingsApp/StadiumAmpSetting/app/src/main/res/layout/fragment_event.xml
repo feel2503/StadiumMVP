@@ -36,6 +36,13 @@
                         android:layout_height="match_parent"
                         android:scaleType="center" />
 
+                    <com.google.android.exoplayer2.ui.StyledPlayerView
+                        android:id="@+id/video_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:use_controller="false"
+                        android:visibility="gone" />
+
                     <ImageView
                         android:id="@+id/screen_full_view"
                         android:layout_width="30dp"
@@ -187,7 +194,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:layout_marginBottom="20dp"
+                    android:layout_marginBottom="10dp"
                     android:gravity="center_horizontal"
                     android:orientation="vertical">
 
@@ -202,7 +209,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
                         android:layout_marginRight="10dp"
-                        android:layout_marginBottom="20dp"
+                        android:layout_marginBottom="10dp"
                         android:layout_marginTop="5dp"
                         >
                         <TextView
@@ -223,6 +230,41 @@
 
                 </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="50dp"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginTop="5dp"
+                        >
+                        <TextView
+                            style="@style/black_14_font"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Volume" />
+
+                        <TextView
+                            android:id="@+id/text_volume"
+                            style="@style/black_12_font"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:text="0" />
+                    </RelativeLayout>
+                    <SeekBar
+                        android:id="@+id/seekBar_volume"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp" />
+
+                </LinearLayout>
             </LinearLayout>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton

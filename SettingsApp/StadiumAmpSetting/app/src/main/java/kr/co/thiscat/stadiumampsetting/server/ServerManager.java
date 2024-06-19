@@ -160,4 +160,10 @@ public class ServerManager {
         Call<EventResult> call = mServerInterface.setContinuityType(eventcontinuityTypeDto);
         call.enqueue(callBack);
     }
+
+    public void setEventVolume(SECallBack<EventResult> callBack, long serverId, int volume)
+    {
+        Call<EventResult> call = mServerInterface.setEventVolume(serverId, volume);
+        call.enqueue(callBack);
+    }
 }

@@ -501,8 +501,9 @@ public class SettingFragment extends Fragment {
                     int continuityType = mCheckContinuous.isChecked() ? 1 : 0;
                     //int continuityTime = Integer.parseInt(mEditEventDelay.getText().toString());
                     int continuityTime = -1;
+                    int volumeValeu = mainActivity.volumeValue;
                     EventStartReqDto reqDto = new EventStartReqDto(eventId, triggerType, triggerTime,
-                            triggerVote, continuityType, continuityTime);
+                            triggerVote, continuityType, continuityTime, volumeValeu);
 
                     mServer.eventStart(mEventStartCallBack, reqDto);
                 }catch (Exception e)

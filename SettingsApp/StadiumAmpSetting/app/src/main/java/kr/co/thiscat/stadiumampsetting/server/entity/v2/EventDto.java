@@ -73,6 +73,10 @@ public class EventDto
     @SerializedName("openchatUrl")
     String openchatUrl;
 
+    @Expose
+    @SerializedName("volumeValue")
+    int volumeValue;
+
     public int getEventId() {
         return eventId;
     }
@@ -215,5 +219,13 @@ public class EventDto
 
     public void setOpenchatUrl(String openchaUrl) {
         this.openchatUrl = openchaUrl;
+    }
+
+    public int getVolumeValue() {
+        return volumeValue;
+    }
+
+    public void setVolumeValue(int volumeValue) {
+        this.volumeValue = volumeValue;
     }
 }

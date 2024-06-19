@@ -2,16 +2,13 @@ package kr.co.thiscat.stadiumampsetting.fragment;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -26,26 +23,29 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.ui.StyledPlayerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
 
+import kr.co.thiscat.stadiumampsetting.FullVideoActivity;
 import kr.co.thiscat.stadiumampsetting.FullsImageActivity;
 import kr.co.thiscat.stadiumampsetting.MainActivity;
-import kr.co.thiscat.stadiumampsetting.MusicPlayService;
 import kr.co.thiscat.stadiumampsetting.PreferenceUtil;
 import kr.co.thiscat.stadiumampsetting.R;
 import kr.co.thiscat.stadiumampsetting.server.SECallBack;
 import kr.co.thiscat.stadiumampsetting.server.ServerManager;
 import kr.co.thiscat.stadiumampsetting.server.entity.RunEvent;
 import kr.co.thiscat.stadiumampsetting.server.entity.RunEventResult;
+import kr.co.thiscat.stadiumampsetting.server.entity.result.EventResult;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventDto;
-import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventImageDto;
+import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventStartReqDto;
 import retrofit2.Response;
 
 /**
@@ -95,7 +95,14 @@ public class EventFragment extends Fragment {
     private static EventFragment mInstance;
 
     private MainActivity mainActivity;
-    private OnBackPressedCallback mOnBackPressedCallback;
+
+    private StyledPlayerView playerView;
+    private ExoPlayer exoPlayer;
+    private String mMusicTitle;
+
+    private SeekBar mSeekVolume;
+    private TextView mTextVolume;
+
     public EventFragment() {
         // Required empty public constructor
     }
@@ -189,6 +196,28 @@ public class EventFragment extends Fragment {
 
         //mSeekBarTime.setEnabled(false);
 
+        mSeekVolume = view.findViewById(R.id.seekBar_volume);
+        mSeekVolume.setMax(10);
+        mSeekVolume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                updateVolumeValue(progress);
+                mainActivity.volumeValue = progress;
+                mServer.setEventVolume(mSetVolumeCallBack, mainActivity.mServerId, progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        mTextVolume = view.findViewById(R.id.text_volume);
+
         view.findViewById(R.id.screen_full_view).setOnClickListener(mOnClickListener);
 //        if(mainActivity.mEventDto.getWebUrl() != null){
 //            mFab.setVisibility(View.VISIBLE);
@@ -205,6 +234,13 @@ public class EventFragment extends Fragment {
 //            mWebView.setVisibility(View.GONE);
 //            mLinearEvent.setVisibility(View.VISIBLE);
 //        }
+
+        playerView = view.findViewById(R.id.video_view);
+        exoPlayer = new ExoPlayer.Builder(getContext()).build();
+        exoPlayer.addListener(mPlayerListener);
+        playerView.setPlayer(exoPlayer);
+
+
 
         return view;
     }
@@ -248,6 +284,49 @@ public class EventFragment extends Fragment {
         super.onPause();
 //        timer.cancel();
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        exoPlayer.release();
+        exoPlayer = null;
+    }
+
+    public void playVideo(String url){
+        mMusicTitle = url;
+
+        playerView.setVisibility(View.VISIBLE);
+        mImgEvent.setVisibility(View.GONE);
+
+        Uri videoUri = getContentUri(url);
+        MediaItem mediaItem = MediaItem.fromUri(videoUri);
+        exoPlayer.setMediaItem(mediaItem);
+        exoPlayer.setVolume(mainActivity.volumeValue);
+        
+        exoPlayer.prepare();
+        exoPlayer.play(); //자동으로 로딩완료까지 기다렸다가 재생함
+    }
+
+    public Uri getContentUri(String name){
+        File outputFile = new File(MainActivity.contentDirPath+name);
+//        if (!outputFile.getParentFile().exists()) {
+//            outputFile.getParentFile().mkdirs();
+//        }
+        if(outputFile.exists())
+            return Uri.fromFile(outputFile);
+        else
+            return null;
+    }
+    public void updateVolumeValue(int volume) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mTextVolume.setText(""+volume);
+            }
+        });
+    }
+
 
     public void updateEventState(RunEvent runEvent) {
         if( getActivity() != null) {
@@ -299,6 +378,7 @@ public class EventFragment extends Fragment {
             mImgEvent.setImageURI(uri);
             Glide.with(this).load(uri).into(mImgEvent);
         }
+        mSeekVolume.setProgress(eventDto.getVolumeValue());
     }
 
     public void setEventInfo(EventDto eventDto) {
@@ -324,6 +404,8 @@ public class EventFragment extends Fragment {
             mImgEvent.setImageURI(uri);
             Glide.with(this).load(uri).into(mImgEvent);
         }
+
+        mSeekVolume.setProgress(eventDto.getVolumeValue());
     }
 
     public void setEventColor(String colorHome, String colorAway){
@@ -361,9 +443,10 @@ public class EventFragment extends Fragment {
             }
             else if(v.getId() == R.id.screen_full_view){
                 //mainActivity.setFullView(true);
-                Intent intent = new Intent(mainActivity, FullsImageActivity.class);
+                Intent intent = new Intent(mainActivity, FullVideoActivity.class);
                 intent.putExtra("RunServerID", mainActivity.mServerId);
                 intent.putExtra("EventRepeat", mainActivity.mEventRepeat);
+                intent.putExtra("VideoVolume", mSeekVolume.getProgress());
                 startActivity(intent);
             }
         }
@@ -539,6 +622,8 @@ public class EventFragment extends Fragment {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    mSeekVolume.setProgress(runEvent.getVolumeValue());
+
                     mTextHome.setText(""+home);
                     mTextAway.setText(""+away);
                     int homwVal = home;
@@ -658,7 +743,7 @@ public class EventFragment extends Fragment {
         return timerString;
     }
 
-    public void updatePlayState(String title, int total, int current) {
+    public void updatePlayState(String title, long total, long current) {
         if( getActivity() != null) {
             //Log.d("AAAA", "----- updatePlayState is visible");
             //updateTimeStr(runEvent);
@@ -745,6 +830,111 @@ public class EventFragment extends Fragment {
             {
                 // no event
             }
+        }
+    };
+
+    Player.Listener mPlayerListener = new Player.Listener() {
+        @Override
+        public void onEvents(Player player, Player.Events events) {
+            Player.Listener.super.onEvents(player, events);
+            Log.d("BBBB", "onEvents: " + events);
+        }
+
+        @Override
+        public void onSeekProcessed() {
+            Player.Listener.super.onSeekProcessed();
+            Log.d("BBBB", "onSeekProcessed : " + "");
+        }
+
+        @Override
+        public void onPlaybackStateChanged(int playbackState) {
+            Player.Listener.super.onPlaybackStateChanged(playbackState);
+            Log.d("BBBB", "onPlaybackStateChanged: " + playbackState);
+        }
+
+        @Override
+        public void onIsPlayingChanged(boolean isPlaying) {
+            Player.Listener.super.onIsPlayingChanged(isPlaying);
+            Log.d("BBBB", "onIsPlayingChanged: " + isPlaying);
+            if(isPlaying) {
+                updateSeekBar();
+            }
+            else{
+                handler.removeCallbacks(updater);
+            }
+        }
+
+    };
+
+
+
+    /// seekbar update
+    private Handler handler = new Handler();
+    private Runnable updater = new Runnable() {
+        @Override
+        public void run() {
+            updateSeekBar();
+        }
+    };
+
+    private void updateSeekBar() {
+        if (exoPlayer != null && exoPlayer.isPlaying()) {
+//            String title = intent.getStringExtra(MusicPlayService.EXTRA_MUSIC_TITLE);
+//            int total = intent.getIntExtra(MusicPlayService.EXTRA_TOTAL_DURATION, 0);
+//            int current = intent.getIntExtra(MusicPlayService.EXTRA_CURRENT_DURATION, 0);
+            long total = exoPlayer.getDuration();
+            long current = exoPlayer.getCurrentPosition();
+
+            updatePlayState(mMusicTitle, total, current);
+            handler.postDelayed(updater, 1000);
+
+            if(mainActivity.mEventDto.getContinuityType() == 1 )
+            {
+                long diff = (total - current) / 1000;
+                Log.d("AAAA", "total: "+total+" current: "+current+ " diff: " + diff);
+                Log.d("AAAA", "getTriggerTime: "+ mainActivity.mRunEvent.getTriggerTime());
+
+                if(diff < (mainActivity.mRunEvent.getTriggerTime() -1)
+                        && mainActivity.mRunEvent.getEventState().equalsIgnoreCase("STOP"))
+                {
+                    Log.d("AAAA", "getTriggerTime:--- start event ");
+                    EventStartReqDto reqDto = new EventStartReqDto(mainActivity.mServerId, -1, -1, -1, -1, -1, mainActivity.volumeValue);
+                    mServer.eventStart(mEventStartCallBack, reqDto);
+                    mainActivity.mRunEvent.setEventState("RESTART");
+                }
+            }
+        }
+    }
+
+    private SECallBack<RunEventResult> mEventStartCallBack = new SECallBack<RunEventResult>()
+    {
+        @Override
+        public void onResponseResult(Response<RunEventResult> response)
+        {
+            if (response.isSuccessful()) {
+                RunEvent runEvent = response.body().getData();;
+                mainActivity.mRunEvent = runEvent;
+
+                mainActivity.settingFragment.updateEventState(runEvent);
+                mainActivity.eventFragment.updateEventState(runEvent);
+
+                mainActivity.updateEventInfo(runEvent);
+
+                mainActivity.startEventStateCheck(runEvent.getId());
+                //Toast.makeText(getApplicationContext(), "이벤트 를 시작 하였습니다.", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                Log.d("AAAA", "----- Start Event fail : " );
+            }
+        }
+    };
+
+    private SECallBack<EventResult> mSetVolumeCallBack = new SECallBack<EventResult>()
+    {
+        @Override
+        public void onResponseResult(Response<EventResult> response)
+        {
+
         }
     };
 }
