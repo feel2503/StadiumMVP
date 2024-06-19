@@ -310,6 +310,7 @@ public class RestApiController extends BaseController{
                 .away3Count(runEvent.getAway3Count())
                 .away4Count(runEvent.getAway4Count())
                 .away5Count(runEvent.getAway5Count())
+                .volumeValue(runEvent.getEvent().getVolumeValue())
                 .build();
         return getResponseEntity( runEventDto, "success", HttpStatus.OK);
     }
@@ -412,6 +413,7 @@ public class RestApiController extends BaseController{
                 .away3Count(runEvent.getAway3Count())
                 .away4Count(runEvent.getAway4Count())
                 .away5Count(runEvent.getAway5Count())
+                .volumeValue(event.getVolumeValue())
                 .build();
         return getResponseEntity( runEventDto, "success", HttpStatus.OK);
     }
@@ -539,6 +541,23 @@ public class RestApiController extends BaseController{
 
         return getResponseEntity( "success", HttpStatus.OK);
     }
+
+    @ApiOperation(value = "Volume Update")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @GetMapping(value = "/v1/event/set-volume", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultResponse> voteSave( @RequestParam Long eventId, @RequestParam Integer volume) throws Exception
+    {
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new Exception("event-not-found"));
+        event.setVolumeValue(volume);
+        eventRepository.save(event);
+        return getResponseEntity( "success", HttpStatus.OK);
+    }
+
+
+
+
+
+
 
     private VoteResultDto getVoteResult(RunEvent runevent)
     {

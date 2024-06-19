@@ -66,4 +66,6 @@ public class RunEventDto {
     int continuityTime;
 
     String result;
+
+    int volumeValue = 5;
 }

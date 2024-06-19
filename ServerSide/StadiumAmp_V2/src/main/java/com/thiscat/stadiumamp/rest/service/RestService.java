@@ -99,6 +99,9 @@ public class RestService {
         if(eventDto.getContinuityTime() > 0)
             event.setContinuityTime(eventDto.getContinuityTime());
 
+        if(eventDto.getVolumeValue() > -1)
+            event.setVolumeValue(event.getVolumeValue());
+
         Event saveEvent = eventRepository.save(event);
 
         LocalDateTime startDateTime = LocalDateTime.now();

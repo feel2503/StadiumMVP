@@ -51,4 +51,6 @@ public class Event extends BaseEntity {
 
     @Column(columnDefinition = "TEXT")
     String openchatUrl;
+
+    Integer volumeValue;
 }
