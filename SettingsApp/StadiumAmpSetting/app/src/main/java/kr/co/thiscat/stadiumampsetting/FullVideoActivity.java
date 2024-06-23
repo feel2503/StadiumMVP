@@ -239,7 +239,7 @@ public class FullVideoActivity extends AppCompatActivity {
             else
             {
                 updateViewState(0);
-                mServer.getRunEventState(mEndEventStateCallBack, mEventDto.getRunEvent());
+                //mServer.getRunEventState(mEndEventStateCallBack, mEventDto.getRunEvent());
             }
         }
 
@@ -913,8 +913,8 @@ public class FullVideoActivity extends AppCompatActivity {
 
                         //mServer.getRunEventState(mEndEventStateCallBack, mEventDto.getRunEvent());
 
-//                        AsyncCheckState async = new AsyncCheckState();
-//                        async.execute();
+                        AsyncCheckState async = new AsyncCheckState();
+                        async.execute();
                     }
                     //setImageView01();
 
