@@ -774,9 +774,10 @@ public class FullVideoActivity extends AppCompatActivity {
         try{
             int iColorHome = 0xff000000 | Integer.parseUnsignedInt(colorHome, 16);
             mTextHome.setBackgroundColor(iColorHome);
-
+            //mTextHomeName.setTextColor(iColorHome);
             int iColorAway = 0xff000000 | Integer.parseUnsignedInt(colorAway, 16);
             mTextAway.setBackgroundColor(iColorAway);
+            //mTextAwayName.setTextColor(iColorAway);
         }catch (Exception e)
         {
             e.printStackTrace();

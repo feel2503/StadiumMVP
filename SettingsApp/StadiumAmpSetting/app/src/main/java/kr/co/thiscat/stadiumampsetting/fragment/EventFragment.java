@@ -203,7 +203,7 @@ public class EventFragment extends Fragment {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 updateVolumeValue(progress);
                 mainActivity.volumeValue = progress;
-                mServer.setEventVolume(mSetVolumeCallBack, mainActivity.mServerId, progress);
+                //mServer.setEventVolume(mSetVolumeCallBack, mainActivity.mServerId, progress);
             }
 
             @Override
@@ -378,7 +378,7 @@ public class EventFragment extends Fragment {
             mImgEvent.setImageURI(uri);
             Glide.with(this).load(uri).into(mImgEvent);
         }
-        mSeekVolume.setProgress(eventDto.getVolumeValue());
+        //mSeekVolume.setProgress(eventDto.getVolumeValue());
     }
 
     public void setEventInfo(EventDto eventDto) {
@@ -405,7 +405,7 @@ public class EventFragment extends Fragment {
             Glide.with(this).load(uri).into(mImgEvent);
         }
 
-        mSeekVolume.setProgress(eventDto.getVolumeValue());
+        //mSeekVolume.setProgress(eventDto.getVolumeValue());
     }
 
     public void setEventColor(String colorHome, String colorAway){
@@ -413,9 +413,11 @@ public class EventFragment extends Fragment {
         try{
             int iColorHome = 0xff000000 | Integer.parseUnsignedInt(colorHome, 16);
             mTextHome.setBackgroundColor(iColorHome);
+            mTextHomeCount.setTextColor(iColorHome);
 
             int iColorAway = 0xff000000 | Integer.parseUnsignedInt(colorAway, 16);
             mTextAway.setBackgroundColor(iColorAway);
+            mTextAwayCount.setTextColor(iColorAway);
         }catch (Exception e)
         {
             e.printStackTrace();
@@ -622,7 +624,7 @@ public class EventFragment extends Fragment {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mSeekVolume.setProgress(runEvent.getVolumeValue());
+                    //mSeekVolume.setProgress(runEvent.getVolumeValue());
 
                     mTextHome.setText(""+home);
                     mTextAway.setText(""+away);
@@ -861,6 +863,17 @@ public class EventFragment extends Fragment {
             }
             else{
                 handler.removeCallbacks(updater);
+
+//                if(mainActivity.mRunEvent.getTriggerType() == 1 && mainActivity.mRunEvent.getContinuityType() == 1)
+//                {
+//                    try{
+//                        EventStartReqDto reqDto = new EventStartReqDto(mainActivity.mServerId, -1, -1, -1, -1, -1, mainActivity.volumeValue);
+//                        mServer.eventStart(mEventStartCallBack, reqDto);
+//                    }catch (Exception e)
+//                    {
+//                        e.printStackTrace();
+//                    }
+//                }
             }
         }
 
