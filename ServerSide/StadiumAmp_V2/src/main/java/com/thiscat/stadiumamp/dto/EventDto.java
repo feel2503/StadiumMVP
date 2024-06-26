@@ -49,4 +49,6 @@ public class EventDto {
     String openchatUrl;
 
     int volumeValue = 5;
+
+    String eventBkcolor;
 }

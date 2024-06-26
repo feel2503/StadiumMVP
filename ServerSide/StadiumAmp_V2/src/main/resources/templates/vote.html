@@ -17,6 +17,8 @@
 
 </head>
 <body class="sample"  onload="startTimer()" >
+<div th:styleAppend="|background-color: ${bgcolor}|">
+
     <div class="remain_text_02" id="display">
         현재 응원 이벤트 남은 시간 0분 0초
     </div>
@@ -73,12 +75,20 @@
 
         <div class="event_bg" th:styleAppend="'background-image: url('+${bgimg}+');'">
 <!--        <div class="event_bg" >-->
-        <div style="padding:20px;">
+        <div style="padding:0px 0px 0px 20px;">
 
 <!--        <div class="event_bg" style="padding:20px;">-->
 
-            <div class="wc_text_02">
-                응원할 음원을 투표해 주세요.
+            <div th:if="${teamtype =='Home'}">
+                <div class="wc_text_02" th:styleAppend="|color:${homeColor}|">
+                    응원할 음원을 투표해 주세요.
+                </div>
+            </div>
+
+            <div th:if="${teamtype =='Away'}">
+                <div class="wc_text_02" th:styleAppend="|color:${awayColor}|">
+                    응원할 음원을 투표해 주세요.
+                </div>
             </div>
 
            <!-- <div class="video_container">
@@ -234,6 +244,8 @@
         {
             graph_stop.style.display = 'none';
             graph_start.style.display = 'flex';
+
+            window.navigator.vibrate([500]);
         }
     </script>
 
@@ -307,6 +319,6 @@
 
     </script>
 
-
+</div>
 </body>
 </html>

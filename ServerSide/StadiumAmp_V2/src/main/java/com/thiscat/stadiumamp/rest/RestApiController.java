@@ -545,7 +545,7 @@ public class RestApiController extends BaseController{
     @ApiOperation(value = "Volume Update")
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @GetMapping(value = "/v1/event/set-volume", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ApiResultResponse> voteSave( @RequestParam Long eventId, @RequestParam Integer volume) throws Exception
+    public ResponseEntity<ApiResultResponse> volumeSave( @RequestParam Long eventId, @RequestParam Integer volume) throws Exception
     {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new Exception("event-not-found"));
         event.setVolumeValue(volume);
@@ -553,6 +553,16 @@ public class RestApiController extends BaseController{
         return getResponseEntity( "success", HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Volume Update")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @GetMapping(value = "/v1/event/set-bgcolor", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultResponse> setBgColor( @RequestParam Long eventId, @RequestParam String color) throws Exception
+    {
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new Exception("event-not-found"));
+        event.setEventBkcolor(color);
+        eventRepository.save(event);
+        return getResponseEntity( "success", HttpStatus.OK);
+    }
 
 
 

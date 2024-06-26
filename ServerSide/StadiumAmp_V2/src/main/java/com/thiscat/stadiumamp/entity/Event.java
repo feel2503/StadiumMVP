@@ -53,4 +53,6 @@ public class Event extends BaseEntity {
     String openchatUrl;
 
     Integer volumeValue;
+
+    String eventBkcolor;
 }

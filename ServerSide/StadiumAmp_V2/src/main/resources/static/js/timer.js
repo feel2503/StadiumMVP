@@ -68,7 +68,7 @@ function countTimer() {
     }).done(function(res) {
         if (res)
         {
-            //console.log("res", res);
+            console.log("event-state ", res);
             document.querySelector("#display").innerText = res.data.eventState;
 
             const graph_stop =document.getElementById("event_stop_graph");
@@ -96,6 +96,8 @@ function countTimer() {
 
                 document.getElementById("home_text").innerText = res.data.homeName + " " + res.data.homeCount;
                 document.getElementById("away_text").innerText = res.data.awayName + " " + res.data.awayCount;
+                window.navigator.vibrate(200);
+
             }
         }
         else
