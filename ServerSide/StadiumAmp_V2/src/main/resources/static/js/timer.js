@@ -73,6 +73,7 @@ function countTimer() {
 
             const graph_stop =document.getElementById("event_stop_graph");
             const graph_start =document.getElementById("event_start_graph");
+
             if(res.data.eventState == "이벤트 종료")
             {
                 graph_stop.style.display = 'flex';
@@ -96,7 +97,10 @@ function countTimer() {
 
                 document.getElementById("home_text").innerText = res.data.homeName + " " + res.data.homeCount;
                 document.getElementById("away_text").innerText = res.data.awayName + " " + res.data.awayCount;
-                window.navigator.vibrate(200);
+                //window.navigator.vibrate(200);
+                console.log("res.data.isStart ", res.data.isStart);
+                if(res.data.isStart)
+                    window.navigator.vibrate(500);
 
             }
         }

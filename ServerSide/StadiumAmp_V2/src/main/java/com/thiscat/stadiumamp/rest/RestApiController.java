@@ -374,6 +374,13 @@ public class RestApiController extends BaseController{
             long minV = sec / 60;
             long secV = sec % 60;
             voteResultDto.setEventState("현재 응원 이벤트 남은 시간 " + minV + "분" + secV + "초");
+            System.out.println("--------Sec : " +sec + " con : " + vTime);
+            System.out.println("--------Sec : " +sec + " con : " + vTime);
+            System.out.println("--------Sec : " +sec + " con : " + vTime);
+            if(sec > vTime-1)
+                voteResultDto.setStart(true);
+            else
+                voteResultDto.setStart(false);
 
         }
 

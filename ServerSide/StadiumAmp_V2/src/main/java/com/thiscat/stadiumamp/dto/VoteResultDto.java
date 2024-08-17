@@ -23,6 +23,8 @@ public class VoteResultDto {
     String eventState;
     boolean playVideo;
 
+    boolean isStart;
+
     private String homeName;
     private String awayName;
 
