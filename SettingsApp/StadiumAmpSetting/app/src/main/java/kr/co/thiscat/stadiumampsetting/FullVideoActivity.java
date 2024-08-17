@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -25,6 +26,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -95,6 +97,7 @@ public class FullVideoActivity extends AppCompatActivity {
     private RunEvent mRunEvent;
 
     private boolean isRunning = false;
+    private boolean isPIPMode = false;
     private Timer mTimer;
 
     private String viewImageType = "IMAGE_DEFAULT";
@@ -147,11 +150,12 @@ public class FullVideoActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode) {
+    public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, @NonNull Configuration newConfig) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
         if (isInPictureInPictureMode) {
-            Toast.makeText(this, "PIP Mode", Toast.LENGTH_SHORT).show();
+            isPIPMode = true;
         } else {
-            Toast.makeText(this, "not PIP Mode", Toast.LENGTH_SHORT).show();
+            isPIPMode = false;
         }
     }
 
@@ -183,6 +187,11 @@ public class FullVideoActivity extends AppCompatActivity {
         mImageQr = findViewById(R.id.image_qr);
     }
 
+    private boolean isRunningState()
+    {
+        return isRunning | isPIPMode;
+    }
+
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -194,6 +203,12 @@ public class FullVideoActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         isRunning = true;
+        if(isPIPMode){
+            //Toast.makeText(this, "isPIP", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            //Toast.makeText(this, "false", Toast.LENGTH_SHORT).show();
+        }
         mServer.getEvent(mEventCallBack, mServerId);
     }
 
@@ -219,6 +234,10 @@ public class FullVideoActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 //        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
+
+        if(exoPlayer.isPlaying()){
+            exoPlayer.stop();
+        }
     }
 
     Player.Listener mPlayerListener = new Player.Listener() {
@@ -287,7 +306,7 @@ public class FullVideoActivity extends AppCompatActivity {
         updateViewState(0);
 
         String defImage = getTypeImage(mEventDto.getEventImageList(), viewImageType);
-        if(defImage != null && isRunning)
+        if(defImage != null && isRunningState())
         {
             //Uri uri = Uri.parse(mainActivity.getContentUri(defImage));
             Uri uri = getContentUri(defImage);
@@ -308,11 +327,11 @@ public class FullVideoActivity extends AppCompatActivity {
 //            mImgHalf.setImageURI(uri);
 //            Glide.with(this).load(uri).into(mImgHalf);
 //        }
-        if(isRunning){
+        if(isRunningState()){
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    if(isRunning)
+                    if(isRunningState())
                         setImageView02();
                 }
             }, 5000);
@@ -324,18 +343,18 @@ public class FullVideoActivity extends AppCompatActivity {
         updateViewState(2);
 
         String defImage = getTypeImage(mEventDto.getEventImageList(), "IMAGE_ADV");
-        if(defImage != null && isRunning)
+        if(defImage != null && isRunningState())
         {
             //Uri uri = Uri.parse(mainActivity.getContentUri(defImage));
             Uri uri = getContentUri(defImage);
             mImageAdImg.setImageURI(uri);
             Glide.with(this).load(uri).into(mImageAdImg);
         }
-        if(isRunning){
+        if(isRunningState()){
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    if(isRunning)
+                    if(isRunningState())
                         setImageView03();
                 }
             }, 5000);
@@ -346,14 +365,14 @@ public class FullVideoActivity extends AppCompatActivity {
         Log.d("AAAA", "setImageView03 : ");
         updateViewState(3);
         String defImage = getTypeImage(mEventDto.getEventImageList(), "IMAGE_QR");
-        if(defImage != null && isRunning)
+        if(defImage != null && isRunningState())
         {
             //Uri uri = Uri.parse(mainActivity.getContentUri(defImage));
             Uri uri = getContentUri(defImage);
             mImageQr.setImageURI(uri);
             Glide.with(this).load(uri).into(mImageQr);
         }
-        if(isRunning){
+        if(isRunningState()){
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -477,7 +496,7 @@ public class FullVideoActivity extends AppCompatActivity {
 
                     }
                 }
-                if( isRunning)
+                if( isRunningState())
                 {
                     Log.d("AAAA", "--- startEventStateCheck : " + mRunEventId);
                     mServer.getRunEventState(mEventStateCallBack, mRunEventId);
@@ -792,7 +811,7 @@ public class FullVideoActivity extends AppCompatActivity {
                 Thread.sleep(MainActivity.CHECK_DELAY);
             }catch (Exception e){}
 
-            if(isRunning)
+            if(isRunningState())
                 mServer.getLastEvent(mRestartEventStateCallBack, mServerId);
 
             return null;

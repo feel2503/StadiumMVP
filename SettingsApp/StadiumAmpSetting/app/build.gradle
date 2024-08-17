@@ -7,8 +7,8 @@ plugins {
     id 'com.google.firebase.crashlytics'
 }
 ext {
-    AppVersionCode = 10230
-    AppVersionName = "0.2.3"
+    AppVersionCode = 10240
+    AppVersionName = "0.2.4"
 }
 
 android {
