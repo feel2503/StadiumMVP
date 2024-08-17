@@ -851,7 +851,14 @@ public class EventFragment extends Fragment {
         @Override
         public void onPlaybackStateChanged(int playbackState) {
             Player.Listener.super.onPlaybackStateChanged(playbackState);
-            Log.d("BBBB", "onPlaybackStateChanged: " + playbackState);
+            //Log.d("BBBB", "onPlaybackStateChanged: " + playbackState + " mRunEvent : " + mRunEvent.getContinuityType());
+            if(playbackState == ExoPlayer.STATE_ENDED){
+                if(mainActivity.mRunEvent.getTriggerType() == 1 && mainActivity.mRunEvent.getContinuityType() == 1){
+                    EventStartReqDto reqDto = new EventStartReqDto(mainActivity.mServerId, -1, -1, -1, -1, -1, -1);
+                    mServer.eventStart(mEventStartCallBack, reqDto);
+                    mainActivity.mRunEvent.setEventState("START");
+                }
+            }
         }
 
         @Override
