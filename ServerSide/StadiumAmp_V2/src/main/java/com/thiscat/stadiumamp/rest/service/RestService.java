@@ -118,7 +118,7 @@ public class RestService {
             EventStateTimer eventStateTimer = new EventStateTimer(saveSaveRunEvent.getId());
             Timer timer = new Timer();
             timer.schedule(eventStateTimer, stopTime );
-        }else{  // 득표
+        }else if(saveEvent.getTriggerType() == 1){  // 득표
 
         }
 

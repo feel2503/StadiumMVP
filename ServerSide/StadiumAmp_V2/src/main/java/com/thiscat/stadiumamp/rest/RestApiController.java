@@ -351,38 +351,72 @@ public class RestApiController extends BaseController{
         Event event = eventRepository.findById(serverId).orElseThrow(EntityNotFoundException::new);
         RunEvent runevent = runEventRepository.findFirstByEventOrderByIdDesc(event).orElseThrow(EntityNotFoundException::new);
         VoteResultDto voteResultDto = getVoteResult(runevent);
-
-        LocalDateTime startTime = runevent.getStartDateTime();
-        int vTime = event.getTriggerTime();
-        LocalDateTime endTime = startTime.plusSeconds(vTime);
-
-        LocalDateTime nowTime = LocalDateTime.now();
-        if(nowTime.isAfter(endTime) || runevent.getEventState().equalsIgnoreCase("STOP"))
+        if(event.getTriggerType() == 0)
         {
-            voteResultDto.setEventState("이벤트 종료");
-            LocalDateTime finishTime = runevent.getEndDateTime();
-            Duration duration = Duration.between(finishTime, nowTime);
-            long sec = duration.getSeconds();
-            if(sec > 30)
-                voteResultDto.setPlayVideo(false);
-            else
-                voteResultDto.setPlayVideo(true);
-        }
-        else {
-            Duration duration = Duration.between(nowTime, endTime);
-            long sec = duration.getSeconds();
-            long minV = sec / 60;
-            long secV = sec % 60;
-            voteResultDto.setEventState("현재 응원 이벤트 남은 시간 " + minV + "분" + secV + "초");
-            System.out.println("--------Sec : " +sec + " con : " + vTime);
-            System.out.println("--------Sec : " +sec + " con : " + vTime);
-            System.out.println("--------Sec : " +sec + " con : " + vTime);
-            if(sec > vTime-1)
-                voteResultDto.setStart(true);
-            else
-                voteResultDto.setStart(false);
+            LocalDateTime startTime = runevent.getStartDateTime();
+            int vTime = event.getTriggerTime();
+            LocalDateTime endTime = startTime.plusSeconds(vTime);
 
+            LocalDateTime nowTime = LocalDateTime.now();
+            if(nowTime.isAfter(endTime) || runevent.getEventState().equalsIgnoreCase("STOP"))
+            {
+                voteResultDto.setEventState("이벤트 종료");
+                LocalDateTime finishTime = runevent.getEndDateTime();
+                Duration duration = Duration.between(finishTime, nowTime);
+                long sec = duration.getSeconds();
+                if(sec > 30)
+                    voteResultDto.setPlayVideo(false);
+                else
+                    voteResultDto.setPlayVideo(true);
+            }
+            else {
+                Duration duration = Duration.between(nowTime, endTime);
+                long sec = duration.getSeconds();
+                long minV = sec / 60;
+                long secV = sec % 60;
+                voteResultDto.setEventState("현재 응원 이벤트 남은 시간 " + minV + "분" + secV + "초");
+                System.out.println("--------Sec : " +sec + " con : " + vTime);
+                System.out.println("--------Sec : " +sec + " con : " + vTime);
+                System.out.println("--------Sec : " +sec + " con : " + vTime);
+                if(sec > vTime-1)
+                    voteResultDto.setStart(true);
+                else
+                    voteResultDto.setStart(false);
+            }
         }
+        else
+        {
+            if(runevent.getEventState().equalsIgnoreCase("STOP"))
+            {
+                voteResultDto.setEventState("이벤트 종료");
+//                LocalDateTime finishTime = runevent.getEndDateTime();
+//                Duration duration = Duration.between(finishTime, nowTime);
+//                long sec = duration.getSeconds();
+//                if(sec > 30)
+//                    voteResultDto.setPlayVideo(false);
+//                else
+//                    voteResultDto.setPlayVideo(true);
+            }
+            else
+            {
+                int triVote = event.getTriggerVote();
+                int remainCount = triVote - 0;
+                int homeCount = 0;
+                int awayCount = 0;
+                if(runevent.getHomeCount() != null)
+                    homeCount = runevent.getHomeCount();
+                if(runevent.getAwayCount() != null)
+                    awayCount = runevent.getAwayCount();
+
+                if(homeCount > awayCount)
+                    remainCount -= homeCount;
+                else
+                    remainCount -= awayCount;
+
+                voteResultDto.setEventState("현재 남은 투표 : " + remainCount );
+            }
+        }
+
 
         voteResultDto.setHomeName(event.getHomeName());
         voteResultDto.setAwayName(event.getAwayName());
@@ -462,7 +496,14 @@ public class RestApiController extends BaseController{
         else
         { // vote count 로 종료
             int triVote = runEvent.getEvent().getTriggerVote();
-            if(triVote >= runEvent.getHomeCount() || triVote >= runEvent.getAwayCount())
+            int homeCount = 0;
+            int awayCount = 0;
+            if(runEvent.getHomeCount() != null)
+                homeCount = runEvent.getHomeCount();
+            if(runEvent.getAwayCount() != null)
+                awayCount = runEvent.getAwayCount();
+
+            if(triVote < homeCount || triVote < awayCount)
             {
                 VoteResultDto voteResultDto = getVoteResult(runEvent);
                 voteResultDto.setEventState("STOP");
@@ -473,15 +514,23 @@ public class RestApiController extends BaseController{
             else
             {
                 RunEvent resultEvent = restService.updateVoteCount(runEvent, teamType, eventType);
-                if(triVote == resultEvent.getHomeCount() || triVote == resultEvent.getAwayCount())
+                if(runEvent.getHomeCount() != null)
+                    homeCount = runEvent.getHomeCount();
+                if(runEvent.getAwayCount() != null)
+                    awayCount = runEvent.getAwayCount();
+
+                VoteResultDto voteResultDto = getVoteResult(runEvent);
+                if(triVote <= homeCount || triVote <= awayCount)
                 {
                     RunEventDto runEventDto = restService.stopEvent(resultEvent.getId());
+                    voteResultDto.setEventState("STOP");
+                    return getResponseEntity(voteResultDto, "success", HttpStatus.OK);
                 }
-                VoteResultDto voteResultDto = getVoteResult(runEvent);
-//                voteResultDto.setHomeName(resultEvent.getEvent().getHomeName());
-//                voteResultDto.setAwayName(resultEvent.getEvent().getAwayName());
-                voteResultDto.setEventState("START");
-                return getResponseEntity(voteResultDto, "success", HttpStatus.OK);
+                else
+                {
+                    voteResultDto.setEventState("START");
+                    return getResponseEntity(voteResultDto, "success", HttpStatus.OK);
+                }
             }
         }
     }
