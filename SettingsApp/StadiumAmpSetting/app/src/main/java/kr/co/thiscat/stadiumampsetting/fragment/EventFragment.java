@@ -413,11 +413,37 @@ public class EventFragment extends Fragment {
         try{
             int iColorHome = 0xff000000 | Integer.parseUnsignedInt(colorHome, 16);
             mTextHome.setBackgroundColor(iColorHome);
-            mTextHomeCount.setTextColor(iColorHome);
+            //mTextHomeCount.setTextColor(iColorHome);
+            mTextHomeCount.setTextColor(0xff000000);
 
             int iColorAway = 0xff000000 | Integer.parseUnsignedInt(colorAway, 16);
             mTextAway.setBackgroundColor(iColorAway);
-            mTextAwayCount.setTextColor(iColorAway);
+            //mTextAwayCount.setTextColor(iColorAway);
+            mTextAwayCount.setTextColor(0xff000000);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void setEventColor(String colorHome, String fontHome, String colorAway, String fontAway){
+
+        try{
+            int iColorHome = 0xff000000 | Integer.parseUnsignedInt(colorHome, 16);
+            mTextHome.setBackgroundColor(iColorHome);
+            //mTextHomeCount.setTextColor(iColorHome);
+            mTextHomeCount.setTextColor(0xff000000);
+
+            int iFontHome = 0xff000000 | Integer.parseUnsignedInt(fontHome, 16);
+            mTextHome.setTextColor(iFontHome);
+
+            int iColorAway = 0xff000000 | Integer.parseUnsignedInt(colorAway, 16);
+            mTextAway.setBackgroundColor(iColorAway);
+            //mTextAwayCount.setTextColor(iColorAway);
+            mTextAwayCount.setTextColor(0xff000000);
+
+            int iFontAway = 0xff000000 | Integer.parseUnsignedInt(fontAway, 16);
+            mTextAway.setTextColor(iFontAway);
         }catch (Exception e)
         {
             e.printStackTrace();
@@ -851,12 +877,21 @@ public class EventFragment extends Fragment {
         @Override
         public void onPlaybackStateChanged(int playbackState) {
             Player.Listener.super.onPlaybackStateChanged(playbackState);
-            //Log.d("BBBB", "onPlaybackStateChanged: " + playbackState + " mRunEvent : " + mRunEvent.getContinuityType());
+            Log.d("BBBB", "onPlaybackStateChanged: " + playbackState + " mRunEvent : " + mainActivity.currentTriggerType);
+            Log.d("BBBB", "1 onPlaybackStateChanged: " + playbackState + " mRunEvent : " + mainActivity.currentContType);
             if(playbackState == ExoPlayer.STATE_ENDED){
-                if(mainActivity.mRunEvent.getTriggerType() == 1 && mainActivity.mRunEvent.getContinuityType() == 1){
+                if(mainActivity.currentTriggerType == 1 && mainActivity.currentContType == 1){
                     EventStartReqDto reqDto = new EventStartReqDto(mainActivity.mServerId, -1, -1, -1, -1, -1, -1);
                     mServer.eventStart(mEventStartCallBack, reqDto);
                     mainActivity.mRunEvent.setEventState("START");
+//                    new Handler().postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            EventStartReqDto reqDto = new EventStartReqDto(mainActivity.mServerId, -1, -1, -1, -1, -1, -1);
+//                            mServer.eventStart(mEventStartCallBack, reqDto);
+//                            mainActivity.mRunEvent.setEventState("START");
+//                        }
+//                    }, 5000);
                 }
             }
         }
@@ -908,7 +943,10 @@ public class EventFragment extends Fragment {
             updatePlayState(mMusicTitle, total, current);
             handler.postDelayed(updater, 1000);
 
-            if(mainActivity.mEventDto.getContinuityType() == 1 )
+//            if(mainActivity.mEventDto.getTriggerType() == 0
+//                    && mainActivity.mEventDto.getContinuityType() == 1 )
+            if(mainActivity.currentTriggerType == 0
+                    && mainActivity.currentContType == 1 )
             {
                 long diff = (total - current) / 1000;
                 Log.d("AAAA", "total: "+total+" current: "+current+ " diff: " + diff);

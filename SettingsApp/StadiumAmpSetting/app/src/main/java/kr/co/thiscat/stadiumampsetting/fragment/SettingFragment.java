@@ -506,6 +506,7 @@ public class SettingFragment extends Fragment {
                             triggerVote, continuityType, continuityTime, volumeValeu);
 
                     mServer.eventStart(mEventStartCallBack, reqDto);
+
                 }catch (Exception e)
                 {
                     e.printStackTrace();
@@ -524,6 +525,7 @@ public class SettingFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 mServer.eventStop(mEventStoptCallBack, mainActivity.mRunEventId);
+                                mainActivity.currentContType = 0;
                             }
                         })
                         .setNegativeButton("취소", new DialogInterface.OnClickListener() {
@@ -620,6 +622,9 @@ public class SettingFragment extends Fragment {
                 updateEventState(runEvent);
 //                saveEventInfo((int)runEvent.getId());
                 mainActivity.startEventStateCheck(runEvent.getId());
+
+                mainActivity.currentContType = runEvent.getContinuityType();
+                mainActivity.currentTriggerType = runEvent.getTriggerType();
 
 //                MainActivity activity = (MainActivity) getActivity();
 //                if(activity != null)

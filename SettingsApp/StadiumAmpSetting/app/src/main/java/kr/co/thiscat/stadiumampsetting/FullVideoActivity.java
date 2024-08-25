@@ -794,9 +794,34 @@ public class FullVideoActivity extends AppCompatActivity {
             int iColorHome = 0xff000000 | Integer.parseUnsignedInt(colorHome, 16);
             mTextHome.setBackgroundColor(iColorHome);
             //mTextHomeName.setTextColor(iColorHome);
+
             int iColorAway = 0xff000000 | Integer.parseUnsignedInt(colorAway, 16);
             mTextAway.setBackgroundColor(iColorAway);
             //mTextAwayName.setTextColor(iColorAway);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void setEventColor(String colorHome, String fontHome, String colorAway, String fontAway){
+
+        try{
+            int iColorHome = 0xff000000 | Integer.parseUnsignedInt(colorHome, 16);
+            mTextHome.setBackgroundColor(iColorHome);
+
+            int iFontHome = 0xff000000 | Integer.parseUnsignedInt(fontHome, 16);
+            mTextHome.setTextColor(iFontHome);
+
+            //mTextHomeName.setTextColor(iColorHome);
+
+            int iColorAway = 0xff000000 | Integer.parseUnsignedInt(colorAway, 16);
+            mTextAway.setBackgroundColor(iColorAway);
+            //mTextAwayName.setTextColor(iColorAway);
+
+            int iFontAway = 0xff000000 | Integer.parseUnsignedInt(fontAway, 16);
+            mTextAway.setTextColor(iFontAway);
+
         }catch (Exception e)
         {
             e.printStackTrace();
@@ -890,7 +915,8 @@ public class FullVideoActivity extends AppCompatActivity {
                 mEventDto = response.body().getData();
                 Log.d("AAAA", "1 EventState : " + mEventDto.getEventState());
                 setEventInfo(mEventDto.getEventMusicList());
-                setEventColor(mEventDto.getHomeColor(), mEventDto.getAwayColor());
+                //setEventColor(mEventDto.getHomeColor(), mEventDto.getAwayColor());
+                setEventColor(mEventDto.getHomeColor(), mEventDto.getHomeFont(), mEventDto.getAwayColor(), mEventDto.getAwayFont());
                 if(mEventDto.getEventState().equalsIgnoreCase("START"))
                 {
                     startEventStateCheck(mEventDto.getRunEvent());
@@ -926,6 +952,9 @@ public class FullVideoActivity extends AppCompatActivity {
                     else if(mRunEvent.getEventState().equalsIgnoreCase("STOP") && mRunEventId != -1)
                     {
                         mRunEventId = -1;
+
+                        updateScore(mRunEvent);
+
                         setImageView01();
                         playVideo(mRunEvent);
                         //playMusic(mRunEvent);
@@ -1047,6 +1076,7 @@ public class FullVideoActivity extends AppCompatActivity {
             {
                 try{
                     mRunEvent = response.body().getData();
+                    Log.d("AAAA", "111 mEventStateCallBack : " + mRunEvent.getEventState());
                     if(mRunEvent.getEventState().equalsIgnoreCase("START"))
                     {
                         startEventStateCheck(mRunEvent.getId());

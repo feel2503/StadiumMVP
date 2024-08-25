@@ -169,7 +169,8 @@ public class RestService {
         runEvent.setEndDateTime(endDateTime);
         RunEvent saveSaveRunEvent = runEventRepository.save(runEvent);
 
-        if(runEvent.getEvent().getContinuityType() == 1){
+        if(runEvent.getEvent().getTriggerType() == 0
+            && runEvent.getEvent().getContinuityType() == 1){
             long delayTime = 1000 * runEvent.getEvent().getContinuityTime();
             EventContinueTimer eventContinueTimer = new EventContinueTimer(saveSaveRunEvent.getEvent().getId());
             Timer timer = new Timer();

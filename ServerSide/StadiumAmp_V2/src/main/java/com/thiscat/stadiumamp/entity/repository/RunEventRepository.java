@@ -24,4 +24,10 @@ public interface RunEventRepository extends JpaRepository<RunEvent, Long> {
 
 
     List<RunEvent> findAllByOrderByIdAsc();
+
+    @Query(
+            value = " SELECT event_id FROM run_event " +
+                    "   WHERE run_event_id=:runEventId ",
+            nativeQuery = true)
+    Long findEventId(Long runEventId);
 }

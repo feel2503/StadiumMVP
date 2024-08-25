@@ -287,6 +287,11 @@ public class RestApiController extends BaseController{
     @GetMapping(value = "/v1/event/runstate", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResultWithValue> getRunEventState(@RequestParam Long runEventId) throws Exception {
         RunEvent runEvent = runEventRepository.findById(runEventId).orElseThrow(() -> new Exception("runevent-not-fount"));
+
+//        Long evtId = runEventRepository.findEventId(runEventId);
+//        Long eid = (Long)evtId;
+//        Event event = eventRepository.findById(eid).orElseThrow(() -> new Exception("runevent-not-fount"));
+
         RunEventDto runEventDto = RunEventDto.builder()
                 .id(runEvent.getId())
                 .eventId(runEvent.getEvent().getId())
@@ -298,6 +303,8 @@ public class RestApiController extends BaseController{
                 .triggerType(runEvent.getEvent().getTriggerType())
                 .triggerTime(runEvent.getEvent().getTriggerTime())
                 .triggerVote(runEvent.getEvent().getTriggerVote())
+                .continuityTime(runEvent.getEvent().getContinuityTime())
+                .continuityType(runEvent.getEvent().getContinuityType())
                 .homeCount(runEvent.getHomeCount())
                 .home1Count(runEvent.getHome1Count())
                 .home2Count(runEvent.getHome2Count())

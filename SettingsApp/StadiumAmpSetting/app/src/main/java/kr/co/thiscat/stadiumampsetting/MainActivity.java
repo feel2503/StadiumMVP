@@ -116,6 +116,10 @@ public class MainActivity extends AppCompatActivity {
             Environment.DIRECTORY_DOWNLOADS) + "/StadiumAmp/";
 
     public int volumeValue;
+
+    public int currentTriggerType = 0;
+    public int currentContType = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -894,7 +898,9 @@ public class MainActivity extends AppCompatActivity {
         awaySettingFragment.setEventColor(eventDto.getAwayColor(), eventDto.getAwayFont());
         settingFragment.setEventInfo(eventDto);
         eventFragment.setEventInfo(eventDto);
-        eventFragment.setEventColor(eventDto.getHomeColor(), eventDto.getAwayColor());
+        //eventFragment.setEventColor(eventDto.getHomeColor(), eventDto.getAwayColor());
+        eventFragment.setEventColor(eventDto.getHomeColor(), eventDto.getHomeFont(),
+                eventDto.getAwayColor(), eventDto.getAwayFont());
     }
 
     private SECallBack<EventResult> mEventCallBack = new SECallBack<EventResult>()
