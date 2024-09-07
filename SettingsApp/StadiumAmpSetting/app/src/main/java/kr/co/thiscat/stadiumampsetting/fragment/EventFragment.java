@@ -34,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import kr.co.thiscat.stadiumampsetting.FullPortVideoActivity;
 import kr.co.thiscat.stadiumampsetting.FullVideoActivity;
 import kr.co.thiscat.stadiumampsetting.FullsImageActivity;
 import kr.co.thiscat.stadiumampsetting.MainActivity;
@@ -219,6 +220,7 @@ public class EventFragment extends Fragment {
         mTextVolume = view.findViewById(R.id.text_volume);
 
         view.findViewById(R.id.screen_full_view).setOnClickListener(mOnClickListener);
+        view.findViewById(R.id.screen_full_port_view).setOnClickListener(mOnClickListener);
 //        if(mainActivity.mEventDto.getWebUrl() != null){
 //            mFab.setVisibility(View.VISIBLE);
 //            mWebView.loadUrl(mainActivity.mEventDto.getWebUrl());
@@ -472,6 +474,14 @@ public class EventFragment extends Fragment {
             else if(v.getId() == R.id.screen_full_view){
                 //mainActivity.setFullView(true);
                 Intent intent = new Intent(mainActivity, FullVideoActivity.class);
+                intent.putExtra("RunServerID", mainActivity.mServerId);
+                intent.putExtra("EventRepeat", mainActivity.mEventRepeat);
+                intent.putExtra("VideoVolume", mSeekVolume.getProgress());
+                startActivity(intent);
+            }
+            else if(v.getId() == R.id.screen_full_port_view){
+                //mainActivity.setFullView(true);
+                Intent intent = new Intent(mainActivity, FullPortVideoActivity.class);
                 intent.putExtra("RunServerID", mainActivity.mServerId);
                 intent.putExtra("EventRepeat", mainActivity.mEventRepeat);
                 intent.putExtra("VideoVolume", mSeekVolume.getProgress());
@@ -884,6 +894,9 @@ public class EventFragment extends Fragment {
                     EventStartReqDto reqDto = new EventStartReqDto(mainActivity.mServerId, -1, -1, -1, -1, -1, -1);
                     mServer.eventStart(mEventStartCallBack, reqDto);
                     mainActivity.mRunEvent.setEventState("START");
+
+                    // update event button
+                    mainActivity.updateEventButton();
 //                    new Handler().postDelayed(new Runnable() {
 //                        @Override
 //                        public void run() {
@@ -959,6 +972,9 @@ public class EventFragment extends Fragment {
                     EventStartReqDto reqDto = new EventStartReqDto(mainActivity.mServerId, -1, -1, -1, -1, -1, mainActivity.volumeValue);
                     mServer.eventStart(mEventStartCallBack, reqDto);
                     mainActivity.mRunEvent.setEventState("RESTART");
+
+                    // update Event Button
+                    mainActivity.updateEventButton();
                 }
             }
         }

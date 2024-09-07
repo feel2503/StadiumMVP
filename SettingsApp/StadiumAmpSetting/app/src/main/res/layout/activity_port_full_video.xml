@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:theme="@style/ThemeOverlay.StadiumAmpSetting.FullscreenContainer"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".FullPortVideoActivity">
+
+<!--    android:background="?attr/fullscreenBackgroundColor"-->
+    <RelativeLayout
+        android:id="@+id/fullscreen_content_controls"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        android:orientation="horizontal"
+        tools:ignore="UselessParent">
+
+        <LinearLayout
+            android:id="@+id/linear_half_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginRight="5dp">
+
+                <com.google.android.exoplayer2.ui.StyledPlayerView
+                    android:id="@+id/video_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:use_controller="false"
+                    android:visibility="gone" />
+
+                <ImageView
+                    android:id="@+id/image_half_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerInside" />
+
+            </RelativeLayout>
+            <LinearLayout
+                android:id="@+id/linear_right_view"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/text_current_server"
+                    style="@style/white_18_font"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="이벤트 서버 xxxx 실시간 응원 결과" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <LinearLayout
+                        android:id="@+id/linear_vote"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:orientation="vertical">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="5dp">
+                            <TextView
+                                android:id="@+id/text_result_home_count"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/white"
+                                android:text="" />
+                            <TextView
+                                android:id="@+id/text_result_away_count"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentRight="true"
+                                android:textColor="@color/white"
+                                android:text="" />
+                        </RelativeLayout>
+
+                        <LinearLayout
+                            android:id="@+id/linear_score"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/text_result_home"
+                                android:layout_weight="50"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:padding="15dp"
+                                android:textColor="@color/white"
+                                android:background="@drawable/bg_round_2552d9"
+                                android:text="" />
+                            <TextView
+                                android:id="@+id/text_result_away"
+                                android:layout_weight="50"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:padding="15dp"
+                                android:textColor="@color/white"
+                                android:background="@drawable/bg_round_f23827"
+                                android:text="" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="20dp"
+                            android:orientation="vertical">
+                            <TextView
+                                style="@style/white_18_font"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="left"
+                                android:padding="5dp"
+                                android:text="실시간 응원 음원 1위" />
+                            <TextView
+                                android:id="@+id/text_result_01"
+                                style="@style/white_16_font"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="left"
+                                android:padding="5dp"
+                                android:layout_marginLeft="15dp"
+                                android:text="1위 음원" />
+                            <TextView
+                                style="@style/white_18_font"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="left"
+                                android:padding="5dp"
+                                android:text="실시간 응원 음원 2위" />
+                            <TextView
+                                android:id="@+id/text_result_02"
+                                style="@style/white_16_font"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="left"
+                                android:padding="5dp"
+                                android:layout_marginLeft="15dp"
+                                android:text="2위 음원" />
+                            <TextView
+                                style="@style/white_18_font"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="left"
+                                android:padding="5dp"
+                                android:text="실시간 응원 음원 3위" />
+                            <TextView
+                                android:id="@+id/text_result_03"
+                                style="@style/white_16_font"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="left"
+                                android:padding="5dp"
+                                android:layout_marginLeft="15dp"
+                                android:text="3위 음원" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/relative_ad_img"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="gone"
+                        >
+                        <ImageView
+                            android:id="@+id/image_ad"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_centerInParent="true"
+                            android:scaleType="center" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/relative_join"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="visible"
+                        >
+                        <TextView
+                            android:id="@+id/text_join"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentBottom="true"
+                            android:gravity="left"
+                            android:padding="5dp"
+                            android:textSize="20dp"
+                            android:textColor="@color/white"
+                            android:text="실시간 응원 이벤트에 참여해주세요! \n카메라 앱에서 QR로 접속" />
+
+                        <ImageView
+                            android:id="@+id/image_qr"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginBottom="10dp"
+                            android:layout_above="@id/text_join"
+                            android:layout_centerInParent="true"
+                            android:scaleType="centerInside" />
+
+
+                    </RelativeLayout>
+
+                </RelativeLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

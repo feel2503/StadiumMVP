@@ -42,7 +42,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import kr.co.thiscat.stadiumampsetting.databinding.ActivityFullVideoBinding;
+import kr.co.thiscat.stadiumampsetting.databinding.ActivityPortFullVideoBinding;
 import kr.co.thiscat.stadiumampsetting.server.SECallBack;
 import kr.co.thiscat.stadiumampsetting.server.ServerManager;
 import kr.co.thiscat.stadiumampsetting.server.entity.RunEvent;
@@ -58,13 +58,13 @@ import retrofit2.Response;
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class FullVideoActivity extends AppCompatActivity {
+public class FullPortVideoActivity extends AppCompatActivity {
     private View mControlsView;
 
     public String contentDirPath = Environment.getExternalStoragePublicDirectory(
             Environment.DIRECTORY_DOWNLOADS) + "/StadiumAmp/";
 
-    private ActivityFullVideoBinding binding;
+    private ActivityPortFullVideoBinding binding;
     private ServerManager mServer;
     public int mRunEventId = -1;
     public int mServerId;
@@ -118,9 +118,9 @@ public class FullVideoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        binding = ActivityFullVideoBinding.inflate(getLayoutInflater());
+        binding = ActivityPortFullVideoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -133,7 +133,7 @@ public class FullVideoActivity extends AppCompatActivity {
         getIntent().getBooleanExtra("EventRepeat", false);
         mVolume = getIntent().getIntExtra("VideoVolume", 0);
 
-        mServer = ServerManager.getInstance(FullVideoActivity.this);
+        mServer = ServerManager.getInstance(FullPortVideoActivity.this);
 
         initUi();
 
@@ -150,6 +150,21 @@ public class FullVideoActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        //setContentView(R.layout.activity_full_video);
+        binding = ActivityPortFullVideoBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        initUi();
+    }
+
+    @Override
     public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, @NonNull Configuration newConfig) {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
         if (isInPictureInPictureMode) {
@@ -162,7 +177,7 @@ public class FullVideoActivity extends AppCompatActivity {
     private void initUi()
     {
         playerView = findViewById(R.id.video_view);
-        exoPlayer = new ExoPlayer.Builder(FullVideoActivity.this).build();
+        exoPlayer = new ExoPlayer.Builder(FullPortVideoActivity.this).build();
         exoPlayer.addListener(mPlayerListener);
         playerView.setPlayer(exoPlayer);
 
@@ -637,7 +652,7 @@ public class FullVideoActivity extends AppCompatActivity {
                     //Uri uri = Uri.parse(mainActivity.getContentUri(defImage));
                     Uri uri = getContentUri(viewImage);
                     mImgHalf.setImageURI(uri);
-                    Glide.with(FullVideoActivity.this).load(uri).into(mImgHalf);
+                    Glide.with(FullPortVideoActivity.this).load(uri).into(mImgHalf);
                 }
             }
         });

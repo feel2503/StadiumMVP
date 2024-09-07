@@ -44,6 +44,14 @@
             android:theme="@style/FullScreenTheme"/>
 
         <activity
+            android:name=".FullPortVideoActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout"
+            android:exported="false"
+            android:label="FullVideoActivity"
+            android:supportsPictureInPicture="true"
+            android:theme="@style/FullScreenTheme"/>
+
+        <activity
             android:name=".FullsImageActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout"
             android:exported="false"

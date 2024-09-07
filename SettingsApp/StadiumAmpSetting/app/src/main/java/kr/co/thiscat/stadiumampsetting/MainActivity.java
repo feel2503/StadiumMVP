@@ -19,7 +19,9 @@ import android.os.Handler;
 import android.os.StrictMode;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.Toast;
@@ -880,6 +882,11 @@ public class MainActivity extends AppCompatActivity {
         return result;
     }
 
+    public void updateEventButton()
+    {
+        this.settingFragment.setEventBtnState(true);
+    }
+
     public void updateEventInfo(RunEvent runEvent)
     {
         homeSettingFragment.setEventInfo(runEvent.getEventMusicList());
@@ -1026,6 +1033,8 @@ public class MainActivity extends AppCompatActivity {
                         EventStartReqDto reqDto = new EventStartReqDto(mServerId, -1, -1, -1, -1, -1, volumeValue);
                         mServer.eventStart(mEventStartCallBack, reqDto);
                         mRunEvent.setEventState("RESTART");
+                        // button state change
+                        updateEventButton();
                     }
                 }
             }

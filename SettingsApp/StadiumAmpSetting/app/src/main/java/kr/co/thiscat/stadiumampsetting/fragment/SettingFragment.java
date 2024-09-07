@@ -175,6 +175,7 @@ public class SettingFragment extends Fragment {
 //        }
     }
 
+
     private void initView(View view)
     {
         mTextServrName = view.findViewById(R.id.text_event_select);
@@ -262,7 +263,7 @@ public class SettingFragment extends Fragment {
         mEditOpenChat.setText(eventDto.getOpenchatUrl());
     }
 
-    private void setEventBtnState(boolean isRunning)
+    public void setEventBtnState(boolean isRunning)
     {
         mEventIsRunning = isRunning;
         if(isRunning)
