@@ -317,7 +317,6 @@ public class RestApiController extends BaseController{
                 .away3Count(runEvent.getAway3Count())
                 .away4Count(runEvent.getAway4Count())
                 .away5Count(runEvent.getAway5Count())
-                .volumeValue(runEvent.getEvent().getVolumeValue())
                 .build();
         return getResponseEntity( runEventDto, "success", HttpStatus.OK);
     }
@@ -461,7 +460,6 @@ public class RestApiController extends BaseController{
                 .away3Count(runEvent.getAway3Count())
                 .away4Count(runEvent.getAway4Count())
                 .away5Count(runEvent.getAway5Count())
-                .volumeValue(event.getVolumeValue())
                 .build();
         return getResponseEntity( runEventDto, "success", HttpStatus.OK);
     }
