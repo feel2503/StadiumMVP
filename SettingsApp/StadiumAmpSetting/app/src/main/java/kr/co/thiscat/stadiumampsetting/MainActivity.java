@@ -335,6 +335,18 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        Log.d("BBBB", "onKeyDown : " + event);
+        if(settingFragment.mEventIsRunning){
+            settingFragment.eventStop();
+        }
+        else{
+            settingFragment.eventStart();
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
     public void initEventInfo()
     {
         if(mServerId > 0)

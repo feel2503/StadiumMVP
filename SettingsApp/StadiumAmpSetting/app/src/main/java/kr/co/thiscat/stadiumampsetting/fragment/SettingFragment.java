@@ -72,7 +72,7 @@ public class SettingFragment extends Fragment {
     private PreferenceUtil mPreferenceUtil;
     //private int mServerId;
     //private int mEventId;
-    private boolean mEventIsRunning = false;
+    public boolean mEventIsRunning = false;
 
     private ServerManager mServer;
     protected ProgressDialog mProgress = null;
@@ -445,6 +445,46 @@ public class SettingFragment extends Fragment {
                 })
                 .setNegativeButton("취소", null)
                 .show();
+    }
+
+
+    public void eventStart()
+    {
+        if(mEventIsRunning)
+        {
+            Toast.makeText(getContext(), "이벤트가 진행중 입니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(mainActivity.mServerId < 0){
+            return;
+        }
+
+        try{
+            int eventId = mainActivity.mServerId;
+            int triggerType = mRadioTrigger.getCheckedRadioButtonId() == R.id.radio_only_time ? 0 : 1;
+            int triggerTime = Integer.parseInt(mEditTriggerTime.getText().toString());
+            int triggerVote = Integer.parseInt(mEditTriggerVote.getText().toString());;
+            int continuityType = mCheckContinuous.isChecked() ? 1 : 0;
+            //int continuityTime = Integer.parseInt(mEditEventDelay.getText().toString());
+            int continuityTime = -1;
+            int volumeValeu = mainActivity.volumeValue;
+            EventStartReqDto reqDto = new EventStartReqDto(eventId, triggerType, triggerTime,
+                    triggerVote, continuityType, continuityTime, volumeValeu);
+
+            mServer.eventStart(mEventStartCallBack, reqDto);
+
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+    public void eventStop()
+    {
+        if(!mEventIsRunning)
+            return;
+
+        mServer.eventStop(mEventStoptCallBack, mainActivity.mRunEventId);
+        mainActivity.currentContType = 0;
     }
 
     public RadioGroup.OnCheckedChangeListener mOnCheckChangeLister = new RadioGroup.OnCheckedChangeListener() {
