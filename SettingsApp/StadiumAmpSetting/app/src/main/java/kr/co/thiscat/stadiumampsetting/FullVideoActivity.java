@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
@@ -829,6 +830,59 @@ public class FullVideoActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)
+            return super.onKeyDown(keyCode, event);
+
+        if(mRunEvent.getEventState().equalsIgnoreCase("STOP")){
+            startEvent();
+        }
+        else{
+            stopEvent();
+        }
+
+        return super.onKeyDown(keyCode, event);
+    }
+
+    public void startEvent()
+    {
+        if(mEventDto != null  )
+        {
+            if(mRunEvent.getEventState().equalsIgnoreCase("STOP"))
+            {
+                Log.d("AAAA", "-------------- full getTriggerTime: "+mRunEvent.getTriggerTime());
+
+                EventStartReqDto reqDto = new EventStartReqDto(mServerId, -1, -1, -1, -1, -1, -1);
+                mServer.eventStart(mEventStartCallBack, reqDto);
+                mRunEvent.setEventState("RESTART");
+
+                updateViewState(1);
+            }
+        }
+    }
+
+    public void stopEvent()
+    {
+        if(mRunEvent.getEventState().equalsIgnoreCase("START")){
+            mServer.eventStop(mEventStoptCallBack, mRunEvent.getId());
+        }
+    }
+
+    private SECallBack<RunEventResult> mEventStoptCallBack = new SECallBack<RunEventResult>()
+    {
+        @Override
+        public void onResponseResult(Response<RunEventResult> response)
+        {
+            if (response.isSuccessful())
+            {
+
+
+                RunEvent runEvent = response.body().getData();
+            }
+        }
+    };
 
     private class AsyncRestartCheck extends AsyncTask<String, Void, Boolean>
     {

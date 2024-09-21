@@ -54,7 +54,7 @@
                         android:layout_marginEnd="10dp"
                         android:layout_marginBottom="10dp"
                         android:scaleType="centerInside"
-                        android:src="@drawable/full_screen" />
+                        android:src="@drawable/full_landscape" />
 
                     <ImageView
                         android:id="@+id/screen_full_port_view"
@@ -67,7 +67,7 @@
                         android:layout_marginEnd="10dp"
                         android:layout_marginBottom="10dp"
                         android:scaleType="centerInside"
-                        android:src="@drawable/full_screen" />
+                        android:src="@drawable/full_landscape90" />
                 </RelativeLayout>
 
         <!--        <LinearLayout-->

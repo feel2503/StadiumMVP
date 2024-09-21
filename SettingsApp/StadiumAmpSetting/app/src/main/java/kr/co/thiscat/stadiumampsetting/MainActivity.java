@@ -338,6 +338,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         Log.d("BBBB", "onKeyDown : " + event);
+        if(keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)
+            return super.onKeyDown(keyCode, event);
+
         if(settingFragment.mEventIsRunning){
             settingFragment.eventStop();
         }
