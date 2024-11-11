@@ -68,11 +68,13 @@
                         android:id="@+id/radio_only_time"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/bg_round_gray_selector"
                         android:text="지정 시간 동안" />
                     <RadioButton
                         android:id="@+id/radio_only_count"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/bg_round_gray_selector"
                         android:text="지정 투표 횟수" />
                 </RadioGroup>
 
@@ -86,15 +88,16 @@
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:background="@drawable/bg_round_white">
+
                         <EditText
                             android:id="@+id/edit_only_sec"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:background="@drawable/bg_round_white"
                             android:hint="120"
+                            android:inputType="number"
                             android:padding="10dp"
                             android:textAlignment="center"
-                            android:inputType="number"
-                            android:background="@null"
                             android:textSize="15dp" />
                         <TextView
                             style="@style/black_14_font"
@@ -399,6 +402,7 @@
                     android:id="@+id/check_event_continuous"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/bg_round_gray_selector"
                     android:text="이벤트 연속 진행" />
 
                 <!--
@@ -466,6 +470,7 @@
                     android:gravity="center"
                     android:padding="15dp"
                     android:text="이벤트 종료"
+                    android:nextFocusDown="@id/bottomNavigationView"
                     android:textColor="#c2c2c2" />
 
             </LinearLayout>
