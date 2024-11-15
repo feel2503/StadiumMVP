@@ -33,6 +33,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.bumptech.glide.Glide;
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
@@ -119,7 +120,7 @@ public class FullPortVideoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         binding = ActivityPortFullVideoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -181,6 +182,11 @@ public class FullPortVideoActivity extends AppCompatActivity {
         exoPlayer = new ExoPlayer.Builder(FullPortVideoActivity.this).build();
         exoPlayer.addListener(mPlayerListener);
         playerView.setPlayer(exoPlayer);
+        exoPlayer.setVideoScalingMode(C.VIDEO_SCALING_MODE_SCALE_TO_FIT);
+
+
+
+
 
         mImgHalf = findViewById(R.id.image_half_view);
 
