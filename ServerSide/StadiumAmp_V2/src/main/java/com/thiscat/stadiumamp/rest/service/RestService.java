@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -123,7 +124,7 @@ public class RestService {
 //        }
 
         long stopTime = 1000 * saveEvent.getTriggerTime();
-        EventStateTimer eventStateTimer = new EventStateTimer(saveSaveRunEvent.getId());
+        EventStateTimer eventStateTimer = new EventStateTimer(event.getId(), saveSaveRunEvent.getId());
         Timer timer = new Timer();
         timer.schedule(eventStateTimer, stopTime );
 
@@ -174,13 +175,13 @@ public class RestService {
         runEvent.setEndDateTime(endDateTime);
         RunEvent saveSaveRunEvent = runEventRepository.save(runEvent);
 
-        if(runEvent.getEvent().getTriggerType() == 0
-            && runEvent.getEvent().getContinuityType() == 1){
-            long delayTime = 1000 * runEvent.getEvent().getContinuityTime();
-            EventContinueTimer eventContinueTimer = new EventContinueTimer(saveSaveRunEvent.getEvent().getId());
-            Timer timer = new Timer();
-            timer.schedule(eventContinueTimer, delayTime );
-        }
+//        if(runEvent.getEvent().getTriggerType() == 0
+//            && runEvent.getEvent().getContinuityType() == 1){
+//            long delayTime = 1000 * runEvent.getEvent().getContinuityTime();
+//            EventContinueTimer eventContinueTimer = new EventContinueTimer(saveSaveRunEvent.getEvent().getId());
+//            Timer timer = new Timer();
+//            timer.schedule(eventContinueTimer, delayTime );
+//        }
 
         RunEventDto runEventDto = RunEventDto.builder()
                 .id(saveSaveRunEvent.getId())
@@ -189,6 +190,76 @@ public class RestService {
                 .build();
 
         return runEventDto;
+    }
+
+    public VoteResultDto voteSave(Long eventId, String teamType, Long eventType) throws Exception
+    {
+        RunEvent runEvent = runEventRepository.findByEventLimit(eventId).orElseThrow(EntityNotFoundException::new);
+
+        int triVote = runEvent.getEvent().getTriggerVote();
+        int homeCount = 0;
+        int awayCount = 0;
+        if(runEvent.getHomeCount() != null)
+            homeCount = runEvent.getHomeCount();
+        if(runEvent.getAwayCount() != null)
+            awayCount = runEvent.getAwayCount();
+
+        VoteResultDto voteResultDto = getVoteResult(runEvent);
+
+        if(triVote < homeCount || triVote < awayCount)
+        {
+            voteResultDto.setEventState("STOP");
+        }
+        else
+        {
+            RunEvent resultEvent = updateVoteCount(runEvent, teamType, eventType);
+            if(runEvent.getHomeCount() != null)
+                homeCount = runEvent.getHomeCount();
+            if(runEvent.getAwayCount() != null)
+                awayCount = runEvent.getAwayCount();
+
+            if(triVote <= homeCount || triVote <= awayCount)
+            {
+                RunEventDto runEventDto = stopEvent(resultEvent.getId());
+                voteResultDto.setEventState("STOP");
+
+                Event event = eventRepository.findById(eventId).orElse(null);
+                if(event.getContinuityType() == 1){
+                    long delayTime = 3000;
+                    EventContinueTimer eventContinueTimer = new EventContinueTimer(eventId);
+                    Timer timer = new Timer();
+                    timer.schedule(eventContinueTimer, delayTime );
+                }
+            }
+            else
+            {
+                voteResultDto.setEventState("START");
+
+            }
+        }
+        return voteResultDto;
+    }
+
+    public VoteResultDto getVoteResult(RunEvent runevent)
+    {
+        int homeCount = 0;
+        int awayCount = 0;
+        if(runevent.getHomeCount() != null)
+            homeCount = runevent.getHomeCount();
+        if(runevent.getAwayCount() != null)
+            awayCount = runevent.getAwayCount();
+
+        int total = homeCount + awayCount;
+        if(total == 0){
+            return new VoteResultDto("50%", "50%", homeCount, awayCount);
+        }
+
+        int home = (homeCount*100)/ total;
+        int away = (awayCount*100) / total;
+        VoteResultDto voteResultDto = new VoteResultDto(home+"%", away+"%", homeCount, awayCount);
+        voteResultDto.setHomeName(runevent.getEvent().getHomeName());
+        voteResultDto.setAwayName(runevent.getEvent().getAwayName());
+        return voteResultDto;
     }
 
     public RunEvent updateVoteCount(RunEvent runEvent, String teamType, Long eventType)
@@ -303,9 +374,11 @@ public class RestService {
     class EventStateTimer extends TimerTask
     {
         long eventId;
-        public EventStateTimer(long eventId)
+        long runEventId;
+        public EventStateTimer(long eventId, long runEventId)
         {
             this.eventId = eventId;
+            this.runEventId = runEventId;
         }
 
         @Override
@@ -314,7 +387,7 @@ public class RestService {
             SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String strNowTime = sd.format(nowTime.getTime());
 
-            RunEvent runevent = runEventRepository.findById(eventId).orElse(null);
+            RunEvent runevent = runEventRepository.findById(runEventId).orElse(null);
             if(runevent != null && runevent.getEventState().equalsIgnoreCase("START"))
             {
                 LocalDateTime endDateTime = LocalDateTime.now();
@@ -322,9 +395,18 @@ public class RestService {
                 runevent.setEventState("STOP");
                 runEventRepository.save(runevent);
 
+                Event event = eventRepository.findById(eventId).orElse(null);
+                if(event.getContinuityType() == 1){
+                    //long delayTime = 2000 * event.getContinuityTime();
+                    long delayTime = 2000;
+                    EventContinueTimer eventContinueTimer = new EventContinueTimer(event.getId());
+                    Timer timer = new Timer();
+                    timer.schedule(eventContinueTimer, delayTime );
+                }
+
                 strNowTime = runevent.getEdtDateTime().toString();
             }
-            System.out.println("[ " + strNowTime + " ] : " + eventId + " STOP");
+            System.out.println("[ " + strNowTime + " ] : " + runEventId + " STOP");
         }
     }
 
@@ -350,15 +432,10 @@ public class RestService {
                     .build();
 
             RunEvent saveSaveRunEvent =  runEventRepository.save(runEvent);
-
-            if(event.getTriggerType() == 0){ // 시간
-                long stopTime = 1000 * event.getTriggerTime();
-                EventStateTimer eventStateTimer = new EventStateTimer(saveSaveRunEvent.getId());
-                Timer timer = new Timer();
-                timer.schedule(eventStateTimer, stopTime );
-            }else{  // 득표
-
-            }
+            long stopTime = 1000 * event.getTriggerTime();
+            EventStateTimer eventStateTimer = new EventStateTimer(eventId, saveSaveRunEvent.getId());
+            Timer timer = new Timer();
+            timer.schedule(eventStateTimer, stopTime );
 
             System.out.println("[ " + startDateTime + " ] : " + eventId + " START");
         }

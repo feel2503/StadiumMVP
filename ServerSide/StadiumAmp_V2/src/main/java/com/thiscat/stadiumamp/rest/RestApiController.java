@@ -472,72 +472,67 @@ public class RestApiController extends BaseController{
     {
         // 종료 타입이 득표일 경우 여기서 종료 체크
         //RunEvent runEvent = runEventRepository.findById(eventId).orElseThrow(() -> new Exception("runevent-not-fount"));
-        RunEvent runEvent = runEventRepository.findByEventLimit(eventId).orElseThrow(EntityNotFoundException::new);
-        if(runEvent.getEvent().getTriggerType() == 0)
-        {
-            LocalDateTime startTime = runEvent.getStartDateTime();
-            int vTime = runEvent.getEvent().getTriggerTime();
-            LocalDateTime endTime = startTime.plusSeconds(vTime);
-            LocalDateTime nowTime = LocalDateTime.now();
-            if(nowTime.isAfter(endTime) || runEvent.getEventState().equalsIgnoreCase("STOP"))
-            {
-                //VoteResultDto voteResultDto = new VoteResultDto("50%", "50%", 0, 0);
-                VoteResultDto voteResultDto = getVoteResult(runEvent);
-                voteResultDto.setEventState("STOP");
-//                voteResultDto.setHomeName(runEvent.getEvent().getHomeName());
-//                voteResultDto.setAwayName(runEvent.getEvent().getAwayName());
-                return getResponseEntity(voteResultDto, "success", HttpStatus.OK);
-            }
-            else
-            {
-                RunEvent resultEvent = restService.updateVoteCount(runEvent, teamType, eventType);
-                VoteResultDto voteResultDto =getVoteResult(resultEvent);
-                voteResultDto.setEventState("START");
-//                voteResultDto.setHomeName(resultEvent.getEvent().getHomeName());
-//                voteResultDto.setAwayName(resultEvent.getEvent().getAwayName());
-                return getResponseEntity(voteResultDto, "success", HttpStatus.OK);
-            }
-        }
-        else
-        { // vote count 로 종료
-            int triVote = runEvent.getEvent().getTriggerVote();
-            int homeCount = 0;
-            int awayCount = 0;
-            if(runEvent.getHomeCount() != null)
-                homeCount = runEvent.getHomeCount();
-            if(runEvent.getAwayCount() != null)
-                awayCount = runEvent.getAwayCount();
+        VoteResultDto voteResultDto = restService.voteSave(eventId, teamType, eventType);
+        return getResponseEntity(voteResultDto, "success", HttpStatus.OK);
 
-            if(triVote < homeCount || triVote < awayCount)
-            {
-                VoteResultDto voteResultDto = getVoteResult(runEvent);
-                voteResultDto.setEventState("STOP");
-//                voteResultDto.setHomeName(runEvent.getEvent().getHomeName());
-//                voteResultDto.setAwayName(runEvent.getEvent().getAwayName());
-                return getResponseEntity(voteResultDto, "success", HttpStatus.OK);
-            }
-            else
-            {
-                RunEvent resultEvent = restService.updateVoteCount(runEvent, teamType, eventType);
-                if(runEvent.getHomeCount() != null)
-                    homeCount = runEvent.getHomeCount();
-                if(runEvent.getAwayCount() != null)
-                    awayCount = runEvent.getAwayCount();
-
-                VoteResultDto voteResultDto = getVoteResult(runEvent);
-                if(triVote <= homeCount || triVote <= awayCount)
-                {
-                    RunEventDto runEventDto = restService.stopEvent(resultEvent.getId());
-                    voteResultDto.setEventState("STOP");
-                    return getResponseEntity(voteResultDto, "success", HttpStatus.OK);
-                }
-                else
-                {
-                    voteResultDto.setEventState("START");
-                    return getResponseEntity(voteResultDto, "success", HttpStatus.OK);
-                }
-            }
-        }
+//        if(runEvent.getEvent().getTriggerType() == 0)
+//        {
+//            LocalDateTime startTime = runEvent.getStartDateTime();
+//            int vTime = runEvent.getEvent().getTriggerTime();
+//            LocalDateTime endTime = startTime.plusSeconds(vTime);
+//            LocalDateTime nowTime = LocalDateTime.now();
+//            if(nowTime.isAfter(endTime) || runEvent.getEventState().equalsIgnoreCase("STOP"))
+//            {
+//                VoteResultDto voteResultDto = getVoteResult(runEvent);
+//                voteResultDto.setEventState("STOP");
+//                return getResponseEntity(voteResultDto, "success", HttpStatus.OK);
+//            }
+//            else
+//            {
+//                RunEvent resultEvent = restService.updateVoteCount(runEvent, teamType, eventType);
+//                VoteResultDto voteResultDto =getVoteResult(resultEvent);
+//                voteResultDto.setEventState("START");
+//                return getResponseEntity(voteResultDto, "success", HttpStatus.OK);
+//            }
+//        }
+//        else
+//        { // vote count 로 종료
+//            int triVote = runEvent.getEvent().getTriggerVote();
+//            int homeCount = 0;
+//            int awayCount = 0;
+//            if(runEvent.getHomeCount() != null)
+//                homeCount = runEvent.getHomeCount();
+//            if(runEvent.getAwayCount() != null)
+//                awayCount = runEvent.getAwayCount();
+//
+//            if(triVote < homeCount || triVote < awayCount)
+//            {
+//                VoteResultDto voteResultDto = getVoteResult(runEvent);
+//                voteResultDto.setEventState("STOP");
+//                return getResponseEntity(voteResultDto, "success", HttpStatus.OK);
+//            }
+//            else
+//            {
+//                RunEvent resultEvent = restService.updateVoteCount(runEvent, teamType, eventType);
+//                if(runEvent.getHomeCount() != null)
+//                    homeCount = runEvent.getHomeCount();
+//                if(runEvent.getAwayCount() != null)
+//                    awayCount = runEvent.getAwayCount();
+//
+//                VoteResultDto voteResultDto = getVoteResult(runEvent);
+//                if(triVote <= homeCount || triVote <= awayCount)
+//                {
+//                    RunEventDto runEventDto = restService.stopEvent(resultEvent.getId());
+//                    voteResultDto.setEventState("STOP");
+//                    return getResponseEntity(voteResultDto, "success", HttpStatus.OK);
+//                }
+//                else
+//                {
+//                    voteResultDto.setEventState("START");
+//                    return getResponseEntity(voteResultDto, "success", HttpStatus.OK);
+//                }
+//            }
+//        }
     }
 
     @ApiOperation(value = "Add Event Server")

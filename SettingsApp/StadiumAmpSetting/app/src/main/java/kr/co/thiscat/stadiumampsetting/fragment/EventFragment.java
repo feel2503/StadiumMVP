@@ -889,24 +889,16 @@ public class EventFragment extends Fragment {
             Player.Listener.super.onPlaybackStateChanged(playbackState);
             Log.d("BBBB", "onPlaybackStateChanged: " + playbackState + " mRunEvent : " + mainActivity.currentTriggerType);
             Log.d("BBBB", "1 onPlaybackStateChanged: " + playbackState + " mRunEvent : " + mainActivity.currentContType);
-            if(playbackState == ExoPlayer.STATE_ENDED){
-                if(mainActivity.currentTriggerType == 1 && mainActivity.currentContType == 1){
-                    EventStartReqDto reqDto = new EventStartReqDto(mainActivity.mServerId, -1, -1, -1, -1, -1, -1);
-                    mServer.eventStart(mEventStartCallBack, reqDto);
-                    mainActivity.mRunEvent.setEventState("START");
-
-                    // update event button
-                    mainActivity.updateEventButton();
-//                    new Handler().postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            EventStartReqDto reqDto = new EventStartReqDto(mainActivity.mServerId, -1, -1, -1, -1, -1, -1);
-//                            mServer.eventStart(mEventStartCallBack, reqDto);
-//                            mainActivity.mRunEvent.setEventState("START");
-//                        }
-//                    }, 5000);
-                }
-            }
+//            if(playbackState == ExoPlayer.STATE_ENDED){
+//                if(mainActivity.currentTriggerType == 1 && mainActivity.currentContType == 1){
+//                    EventStartReqDto reqDto = new EventStartReqDto(mainActivity.mServerId, -1, -1, -1, -1, -1, -1);
+//                    mServer.eventStart(mEventStartCallBack, reqDto);
+//                    mainActivity.mRunEvent.setEventState("START");
+//
+//                    // update event button
+//                    mainActivity.updateEventButton();
+//                }
+//            }
         }
 
         @Override

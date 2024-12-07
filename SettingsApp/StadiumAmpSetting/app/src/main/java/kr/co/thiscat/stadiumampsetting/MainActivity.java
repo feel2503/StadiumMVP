@@ -340,7 +340,9 @@ public class MainActivity extends AppCompatActivity {
         Log.d("BBBB", "onKeyDown : " + event);
         if(keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN
         || keyCode == KeyEvent.KEYCODE_HOME || keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT
-                || keyCode == KeyEvent.KEYCODE_DPAD_UP  || keyCode == KeyEvent.KEYCODE_DPAD_DOWN || keyCode == KeyEvent.KEYCODE_DPAD_CENTER)
+                || keyCode == KeyEvent.KEYCODE_DPAD_UP  || keyCode == KeyEvent.KEYCODE_DPAD_DOWN || keyCode == KeyEvent.KEYCODE_DPAD_CENTER
+                || keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_HOME || keyCode == KeyEvent.KEYCODE_RECENT_APPS
+        )
             return super.onKeyDown(keyCode, event);
 
         if(settingFragment.mEventIsRunning){
@@ -1038,22 +1040,22 @@ public class MainActivity extends AppCompatActivity {
                 eventFragment.updatePlayState(title, total, current);
 
 
-                if(mEventDto.getContinuityType() == 1 )
-                {
-                    int diff = (total - current) / 1000;
-                    Log.d("AAAA", "total: "+total+" current: "+current+ " diff: " + diff);
-                    Log.d("AAAA", "getTriggerTime: "+mRunEvent.getTriggerTime());
-
-                    if(diff < mRunEvent.getTriggerTime() && mRunEvent.getEventState().equalsIgnoreCase("STOP"))
-                    {
-                        Log.d("AAAA", "getTriggerTime:--- start event ");
-                        EventStartReqDto reqDto = new EventStartReqDto(mServerId, -1, -1, -1, -1, -1, volumeValue);
-                        mServer.eventStart(mEventStartCallBack, reqDto);
-                        mRunEvent.setEventState("RESTART");
-                        // button state change
-                        updateEventButton();
-                    }
-                }
+//                if(mEventDto.getContinuityType() == 1 )
+//                {
+//                    int diff = (total - current) / 1000;
+//                    Log.d("AAAA", "total: "+total+" current: "+current+ " diff: " + diff);
+//                    Log.d("AAAA", "getTriggerTime: "+mRunEvent.getTriggerTime());
+//
+//                    if(diff < mRunEvent.getTriggerTime() && mRunEvent.getEventState().equalsIgnoreCase("STOP"))
+//                    {
+//                        Log.d("AAAA", "getTriggerTime:--- start event ");
+//                        EventStartReqDto reqDto = new EventStartReqDto(mServerId, -1, -1, -1, -1, -1, volumeValue);
+//                        mServer.eventStart(mEventStartCallBack, reqDto);
+//                        mRunEvent.setEventState("RESTART");
+//                        // button state change
+//                        updateEventButton();
+//                    }
+//                }
             }
             else if(action.equalsIgnoreCase(MusicPlayService.ACTION_PLAY_MOVE_POS))
             {

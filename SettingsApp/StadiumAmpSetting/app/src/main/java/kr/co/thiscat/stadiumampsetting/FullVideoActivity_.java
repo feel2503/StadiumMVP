@@ -59,7 +59,7 @@ import retrofit2.Response;
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class FullVideoActivity extends AppCompatActivity {
+public class FullVideoActivity_ extends AppCompatActivity {
     private View mControlsView;
 
     public String contentDirPath = Environment.getExternalStoragePublicDirectory(
@@ -493,6 +493,10 @@ public class FullVideoActivity extends AppCompatActivity {
                             }
                         });
                         return;
+                    }
+                    else if(mRunEvent.getEventState().equalsIgnoreCase("START"))
+                    {
+
                     }
                 }
                 if( isRunningState())
