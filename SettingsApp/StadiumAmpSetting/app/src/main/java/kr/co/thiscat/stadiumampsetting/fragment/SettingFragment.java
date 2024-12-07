@@ -181,8 +181,8 @@ public class SettingFragment extends Fragment {
         mTextServrName = view.findViewById(R.id.text_event_select);
         mTextServrName.setOnClickListener(mOnClicklistener);
 
-        mRadioTrigger = view.findViewById(R.id.radio_vote);
-        mRadioTrigger.setOnCheckedChangeListener(mOnCheckChangeLister);
+//        mRadioTrigger = view.findViewById(R.id.radio_vote);
+//        mRadioTrigger.setOnCheckedChangeListener(mOnCheckChangeLister);
         mEditTriggerTime = view.findViewById(R.id.edit_only_sec);
         mEditTriggerVote = view.findViewById(R.id.edit_only_count);
 
@@ -231,11 +231,11 @@ public class SettingFragment extends Fragment {
         Log.d("AAAA", "---- SettingFragment setEventInfo");
         mTextServrName.setText(eventDto.getEventName());
         //trigger type
-        if(eventDto.getTriggerType() == 0){
-            mRadioTrigger.check(R.id.radio_only_time);
-        }else{
-            mRadioTrigger.check(R.id.radio_only_count);
-        }
+//        if(eventDto.getTriggerType() == 0){
+//            mRadioTrigger.check(R.id.radio_only_time);
+//        }else{
+//            mRadioTrigger.check(R.id.radio_only_count);
+//        }
         mEditTriggerTime.setText(""+eventDto.getTriggerTime());
         mEditTriggerVote.setText(""+eventDto.getTriggerVote());
         // 이벤트 연속진행
@@ -349,11 +349,11 @@ public class SettingFragment extends Fragment {
     public void updateEventInfo(RunEvent runEvent)
     {
         //trigger type
-        if(runEvent.getTriggerType() == 0){
-            mRadioTrigger.check(R.id.radio_only_time);
-        }else{
-            mRadioTrigger.check(R.id.radio_only_count);
-        }
+//        if(runEvent.getTriggerType() == 0){
+//            mRadioTrigger.check(R.id.radio_only_time);
+//        }else{
+//            mRadioTrigger.check(R.id.radio_only_count);
+//        }
         mEditTriggerTime.setText(""+runEvent.getTriggerTime());
         mEditTriggerVote.setText(""+runEvent.getTriggerVote());
         // 이벤트 연속진행
@@ -461,7 +461,8 @@ public class SettingFragment extends Fragment {
 
         try{
             int eventId = mainActivity.mServerId;
-            int triggerType = mRadioTrigger.getCheckedRadioButtonId() == R.id.radio_only_time ? 0 : 1;
+            //int triggerType = mRadioTrigger.getCheckedRadioButtonId() == R.id.radio_only_time ? 0 : 1;
+            int triggerType = 2;
             int triggerTime = Integer.parseInt(mEditTriggerTime.getText().toString());
             int triggerVote = Integer.parseInt(mEditTriggerVote.getText().toString());;
             int continuityType = mCheckContinuous.isChecked() ? 1 : 0;
@@ -536,7 +537,8 @@ public class SettingFragment extends Fragment {
 
                 try{
                     int eventId = mainActivity.mServerId;
-                    int triggerType = mRadioTrigger.getCheckedRadioButtonId() == R.id.radio_only_time ? 0 : 1;
+//                    int triggerType = mRadioTrigger.getCheckedRadioButtonId() == R.id.radio_only_time ? 0 : 1;
+                    int triggerType = 2;
                     int triggerTime = Integer.parseInt(mEditTriggerTime.getText().toString());
                     int triggerVote = Integer.parseInt(mEditTriggerVote.getText().toString());;
                     int continuityType = mCheckContinuous.isChecked() ? 1 : 0;

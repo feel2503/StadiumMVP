@@ -113,14 +113,19 @@ public class RestService {
 
         RunEvent saveSaveRunEvent =  runEventRepository.save(runEvent);
 
-        if(saveEvent.getTriggerType() == 0){ // 시간
-            long stopTime = 1000 * saveEvent.getTriggerTime();
-            EventStateTimer eventStateTimer = new EventStateTimer(saveSaveRunEvent.getId());
-            Timer timer = new Timer();
-            timer.schedule(eventStateTimer, stopTime );
-        }else if(saveEvent.getTriggerType() == 1){  // 득표
+//        if(saveEvent.getTriggerType() == 0){ // 시간
+//            long stopTime = 1000 * saveEvent.getTriggerTime();
+//            EventStateTimer eventStateTimer = new EventStateTimer(saveSaveRunEvent.getId());
+//            Timer timer = new Timer();
+//            timer.schedule(eventStateTimer, stopTime );
+//        }else if(saveEvent.getTriggerType() == 1){  // 득표
+//
+//        }
 
-        }
+        long stopTime = 1000 * saveEvent.getTriggerTime();
+        EventStateTimer eventStateTimer = new EventStateTimer(saveSaveRunEvent.getId());
+        Timer timer = new Timer();
+        timer.schedule(eventStateTimer, stopTime );
 
 //        List<EventMusic> eventMusicList =  eventMusicRepository.findAllByEventOrderBySequenceAsc(saveEvent);
 //        List<EventMusicDto> eventMusicDtoList = eventMusicList
