@@ -620,7 +620,15 @@ public class RestApiController extends BaseController{
         return getResponseEntity( "success", HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Add Event Server")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PostMapping(value = "/v1/event/next-runevent", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultResponse> getNexRunEvent(@RequestBody RunEventDto runEventDto) throws Exception {
+        Event event = eventRepository.findById(runEventDto.getEventId()).orElseThrow(() -> new Exception("event-not-found"));
 
+
+        return getResponseEntity( "success", HttpStatus.OK);
+    }
 
 
 
