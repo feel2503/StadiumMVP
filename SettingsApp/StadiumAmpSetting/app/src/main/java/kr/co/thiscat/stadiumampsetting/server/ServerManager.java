@@ -166,4 +166,16 @@ public class ServerManager {
         Call<EventResult> call = mServerInterface.setEventVolume(serverId, volume);
         call.enqueue(callBack);
     }
+
+    public void nextRunEvent(SECallBack<RunEventResult> callBack, long eventId, long runEventId)
+    {
+        Call<RunEventResult> call = mServerInterface.nextRunEvent(eventId, runEventId);
+        call.enqueue(callBack);
+    }
+
+    public void stopLastEvent(SECallBack<RunEventResult> callBack, long eventId)
+    {
+        Call<RunEventResult> call = mServerInterface.stopLastEvent(eventId);
+        call.enqueue(callBack);
+    }
 }

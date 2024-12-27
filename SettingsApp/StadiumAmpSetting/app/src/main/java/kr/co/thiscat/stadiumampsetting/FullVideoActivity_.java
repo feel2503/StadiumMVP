@@ -134,7 +134,7 @@ public class FullVideoActivity_ extends AppCompatActivity {
         getIntent().getBooleanExtra("EventRepeat", false);
         mVolume = getIntent().getIntExtra("VideoVolume", 0);
 
-        mServer = ServerManager.getInstance(FullVideoActivity.this);
+        mServer = ServerManager.getInstance(FullVideoActivity_.this);
 
         initUi();
 
@@ -163,7 +163,7 @@ public class FullVideoActivity_ extends AppCompatActivity {
     private void initUi()
     {
         playerView = findViewById(R.id.video_view);
-        exoPlayer = new ExoPlayer.Builder(FullVideoActivity.this).build();
+        exoPlayer = new ExoPlayer.Builder(FullVideoActivity_.this).build();
         exoPlayer.addListener(mPlayerListener);
         playerView.setPlayer(exoPlayer);
 
@@ -245,13 +245,11 @@ public class FullVideoActivity_ extends AppCompatActivity {
         @Override
         public void onEvents(Player player, Player.Events events) {
             Player.Listener.super.onEvents(player, events);
-            Log.d("BBBB", "onEvents: " + events);
         }
 
         @Override
         public void onIsPlayingChanged(boolean isPlaying) {
             Player.Listener.super.onIsPlayingChanged(isPlaying);
-            Log.d("BBBB", "onIsPlayingChanged: " + isPlaying);
             if(isPlaying)
             {
 
@@ -638,7 +636,7 @@ public class FullVideoActivity_ extends AppCompatActivity {
                     //Uri uri = Uri.parse(mainActivity.getContentUri(defImage));
                     Uri uri = getContentUri(viewImage);
                     mImgHalf.setImageURI(uri);
-                    Glide.with(FullVideoActivity.this).load(uri).into(mImgHalf);
+                    Glide.with(FullVideoActivity_.this).load(uri).into(mImgHalf);
                 }
             }
         });

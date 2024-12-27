@@ -70,4 +70,10 @@ public interface ServerInterface {
 
     @GET("v1/event/set-volume")
     Call<EventResult> setEventVolume(@Query("eventId")long eventId, @Query("volume")int volume);
+
+    @GET("v1/event/next-runevent")
+    Call<RunEventResult> nextRunEvent(@Query("eventId")long eventId, @Query("runEventId")long runEventId);
+
+    @GET("v1/event/stop-lastevent")
+    Call<RunEventResult> stopLastEvent(@Query("eventId")long eventId);
 }

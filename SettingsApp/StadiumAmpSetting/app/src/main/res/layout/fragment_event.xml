@@ -282,6 +282,40 @@
                         android:background="@drawable/bg_round_white"
                         android:layout_marginTop="10dp" />
 
+
+                    <RadioGroup
+                        android:id="@+id/radio_chromakey"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginLeft="10dp"
+                        android:orientation="horizontal">
+                        <RadioButton
+                            android:id="@+id/radio_chromakey_black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="10dp"
+                            android:background="@drawable/bg_round_black"
+                            android:text="" />
+                        <RadioButton
+                            android:id="@+id/radio_chromakey_green"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="10dp"
+                            android:background="@drawable/bg_round_green"
+                            android:text="" />
+
+                        <RadioButton
+                            android:id="@+id/radio_chromakey_blue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="10dp"
+                            android:background="@drawable/bg_round_blue"
+                            android:text="" />
+                    </RadioGroup>
+
+
+
                 </LinearLayout>
             </LinearLayout>
 

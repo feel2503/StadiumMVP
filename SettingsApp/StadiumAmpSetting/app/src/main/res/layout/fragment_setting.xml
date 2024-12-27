@@ -57,45 +57,45 @@
                 android:orientation="horizontal"
                 android:padding="10dp">
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-                    <TextView
-                        style="@style/black_14_font"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="지정 시간 동안"/>
-                    <TextView
-                        style="@style/black_14_font"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="지정 투표 횟수"/>
-                </LinearLayout>
-<!--                <RadioGroup-->
-<!--                    android:id="@+id/radio_vote"-->
+<!--                <LinearLayout-->
 <!--                    android:layout_width="0dp"-->
-<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_height="match_parent"-->
 <!--                    android:layout_weight="1"-->
 <!--                    android:orientation="vertical">-->
-<!--                    <RadioButton-->
-<!--                        android:id="@+id/radio_only_time"-->
+<!--                    <TextView-->
+<!--                        style="@style/black_14_font"-->
 <!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:background="@drawable/bg_round_gray_selector"-->
-<!--                        android:text="지정 시간 동안" />-->
-<!--                    <RadioButton-->
-<!--                        android:id="@+id/radio_only_count"-->
+<!--                        android:layout_height="0dp"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:gravity="center"-->
+<!--                        android:text="지정 시간 동안"/>-->
+<!--                    <TextView-->
+<!--                        style="@style/black_14_font"-->
 <!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:background="@drawable/bg_round_gray_selector"-->
-<!--                        android:text="지정 투표 횟수" />-->
-<!--                </RadioGroup>-->
+<!--                        android:layout_height="0dp"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:gravity="center"-->
+<!--                        android:text="지정 투표 횟수"/>-->
+<!--                </LinearLayout>-->
+                <RadioGroup
+                    android:id="@+id/radio_vote"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <RadioButton
+                        android:id="@+id/radio_only_time"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_round_gray_selector"
+                        android:text="지정 시간 동안" />
+                    <RadioButton
+                        android:id="@+id/radio_only_count"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_round_gray_selector"
+                        android:text="지정 투표 횟수" />
+                </RadioGroup>
 
                 <LinearLayout
                     android:layout_width="0dp"

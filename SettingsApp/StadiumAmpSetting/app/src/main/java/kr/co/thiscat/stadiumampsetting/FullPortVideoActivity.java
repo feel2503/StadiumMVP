@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -117,6 +118,8 @@ public class FullPortVideoActivity extends AppCompatActivity {
 
     private int mVolume;
 
+    private RelativeLayout mActivityBG;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -185,9 +188,6 @@ public class FullPortVideoActivity extends AppCompatActivity {
         exoPlayer.setVideoScalingMode(C.VIDEO_SCALING_MODE_SCALE_TO_FIT);
 
 
-
-
-
         mImgHalf = findViewById(R.id.image_half_view);
 
         mRightView = findViewById(R.id.linear_right_view);
@@ -207,6 +207,22 @@ public class FullPortVideoActivity extends AppCompatActivity {
 
         mImageAdImg = findViewById(R.id.image_ad);
         mImageQr = findViewById(R.id.image_qr);
+
+        mActivityBG = findViewById(R.id.fullscreen_content_controls);
+
+        SharedPreferences mPref = getSharedPreferences("pref", Activity.MODE_PRIVATE);
+        int iBgColor = mPref.getInt("bgcolor", 0);
+        switch (iBgColor){
+            case 0:
+                mActivityBG.setBackgroundColor(0xff000000);
+                break;
+            case 1:
+                mActivityBG.setBackgroundColor(0xff00b140);
+                break;
+            case 2:
+                mActivityBG.setBackgroundColor(0xff0047bb);
+                break;
+        }
     }
 
     private boolean isRunningState()
@@ -266,20 +282,19 @@ public class FullPortVideoActivity extends AppCompatActivity {
         @Override
         public void onEvents(Player player, Player.Events events) {
             Player.Listener.super.onEvents(player, events);
-            Log.d("BBBB", "onEvents: " + events);
         }
 
         @Override
         public void onIsPlayingChanged(boolean isPlaying) {
             Player.Listener.super.onIsPlayingChanged(isPlaying);
-            Log.d("BBBB", "onIsPlayingChanged: " + isPlaying);
             if(isPlaying)
             {
 
             }
             else
             {
-                updateViewState(0);
+                mServer.nextRunEvent(mNextEventCallBack, mServerId, mRunEvent.getId());
+                //updateViewState(0);
                 //mServer.getRunEventState(mEndEventStateCallBack, mEventDto.getRunEvent());
             }
         }
@@ -362,7 +377,8 @@ public class FullPortVideoActivity extends AppCompatActivity {
     private void setImageView02()
     {
         Log.d("AAAA", "setImageView02 : ");
-        updateViewState(2);
+        if(exoPlayer != null && exoPlayer.isPlaying())
+            updateViewState(2);
 
         String defImage = getTypeImage(mEventDto.getEventImageList(), "IMAGE_ADV");
         if(defImage != null && isRunningState())
@@ -385,7 +401,9 @@ public class FullPortVideoActivity extends AppCompatActivity {
     private void setImageView03()
     {
         Log.d("AAAA", "setImageView03 : ");
-        updateViewState(3);
+        if(exoPlayer != null && exoPlayer.isPlaying())
+            updateViewState(3);
+
         String defImage = getTypeImage(mEventDto.getEventImageList(), "IMAGE_QR");
         if(defImage != null && isRunningState())
         {
@@ -407,7 +425,8 @@ public class FullPortVideoActivity extends AppCompatActivity {
     private void setImageView04()
     {
         Log.d("AAAA", "setImageView04 : ");
-        updateViewState(4);
+        if(exoPlayer != null && exoPlayer.isPlaying())
+            updateViewState(4);
 
 //        mImageFull.setScaleType(ImageView.ScaleType.FIT_CENTER);
 //        String defImage = getTypeImage(mEventDto.getEventImageList(), "IMAGE_ADV");
@@ -854,14 +873,17 @@ public class FullPortVideoActivity extends AppCompatActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if(keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)
+        if(keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN
+                || keyCode == KeyEvent.KEYCODE_HOME || keyCode == KeyEvent.KEYCODE_BACK)
             return super.onKeyDown(keyCode, event);
 
-        if(mRunEvent.getEventState().equalsIgnoreCase("STOP")){
-            startEvent();
-        }
-        else{
+        Log.d("BBBB", "onKeyDown : " + mRunEvent.getEventState()+ " id: "+mRunEvent.getId());
+        if(exoPlayer.isPlaying()) {
             stopEvent();
+        } if(mRunEvent.getEventState().equalsIgnoreCase("START")){
+            stopVoteEvent();
+        } else {
+            startEvent();
         }
 
         return super.onKeyDown(keyCode, event);
@@ -875,7 +897,7 @@ public class FullPortVideoActivity extends AppCompatActivity {
             {
                 Log.d("AAAA", "-------------- full getTriggerTime: "+mRunEvent.getTriggerTime());
 
-                EventStartReqDto reqDto = new EventStartReqDto(mServerId, -1, -1, -1, -1, -1, -1);
+                EventStartReqDto reqDto = new EventStartReqDto(mServerId, -1, -1, -1, 1, -1, -1);
                 mServer.eventStart(mEventStartCallBack, reqDto);
                 mRunEvent.setEventState("RESTART");
 
@@ -886,9 +908,18 @@ public class FullPortVideoActivity extends AppCompatActivity {
 
     public void stopEvent()
     {
-        if(mRunEvent.getEventState().equalsIgnoreCase("START")){
-            mServer.eventStop(mEventStoptCallBack, mRunEvent.getId());
-        }
+        Log.d("BBBB", "stopEvent : " + mRunEvent.getEventState());
+        mServer.stopLastEvent(mLastEventStoptCallBack, mServerId);
+
+//        if(mRunEvent.getEventState().equalsIgnoreCase("START")){
+//            mServer.eventStop(mEventStoptCallBack, mRunEvent.getId());
+//        }
+    }
+
+    public void stopVoteEvent()
+    {
+        Log.d("BBBB", "stopVoteEvent : " + mRunEvent.getEventState());
+        mServer.eventStop(mEventStoptCallBack, mRunEvent.getId());
     }
 
     private SECallBack<RunEventResult> mEventStoptCallBack = new SECallBack<RunEventResult>()
@@ -900,7 +931,26 @@ public class FullPortVideoActivity extends AppCompatActivity {
             {
 
 
-                RunEvent runEvent = response.body().getData();
+//                RunEvent runEvent = response.body().getData();
+            }
+        }
+    };
+
+    private SECallBack<RunEventResult> mLastEventStoptCallBack = new SECallBack<RunEventResult>()
+    {
+        @Override
+        public void onResponseResult(Response<RunEventResult> response)
+        {
+            Log.d("BBBB", "11 mLastEventStoptCallBack : " +response);
+            if (response.isSuccessful())
+            {
+                Log.d("BBBB", "mLastEventStoptCallBack : " + mRunEvent.getEventState());
+                mRunEvent = response.body().getData();
+                exoPlayer.stop();
+            }
+            else
+            {
+                Log.d("BBBB", "mLastEventStoptCallBack : !response.isSuccessful() ");
             }
         }
     };
@@ -980,7 +1030,61 @@ public class FullPortVideoActivity extends AppCompatActivity {
         }
     };
 
+    private SECallBack<RunEventResult> mNextEventCallBack = new SECallBack<RunEventResult>()
+    {
+        @Override
+        public void onResponseResult(Response<RunEventResult> response)
+        {
+            if (response.isSuccessful())
+            {
+                try{
+                    if(response.body().getData() != null)
+                    {
+                        try{
+                            mRunEvent = response.body().getData();
+                            Log.d("BBBB", "mNextEventCallBack : " + mRunEvent.getId());
+                            if(mRunEvent.getEventState().equalsIgnoreCase("START"))
+                            {
+                                mRunEventId = (int)mRunEvent.getId();
+                                startEventStateCheck(mRunEventId);
 
+//                                if(!exoPlayer.isPlaying()) {
+//                                    updateViewState(0);
+//                                    updateScore(mRunEvent);
+//                                }
+                            }
+                            else if(mRunEvent.getEventState().equalsIgnoreCase("STOP") )
+                            {
+                                mRunEventId = -1;
+                                updateScore(mRunEvent);
+                                setImageView01();
+                                playVideo(mRunEvent);
+//                                AsyncCheckState async = new AsyncCheckState();
+//                                async.execute();
+                            }
+                        }catch (Exception e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                    else
+                    {
+                        Log.d("BBBB", "mNextEventCallBack : else " + mRunEvent.getId());
+                        setImageView00();
+                        mServer.getRunEventState(mEndEventStateCallBack, mEventDto.getRunEvent());
+
+                    }
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            else
+            {
+                // no event
+            }
+        }
+    };
 
     private SECallBack<EventResult> mEventCallBack = new SECallBack<EventResult>()
     {
@@ -1041,8 +1145,8 @@ public class FullPortVideoActivity extends AppCompatActivity {
 
                         //mServer.getRunEventState(mEndEventStateCallBack, mEventDto.getRunEvent());
 
-                        AsyncCheckState async = new AsyncCheckState();
-                        async.execute();
+//                        AsyncCheckState async = new AsyncCheckState();
+//                        async.execute();
                     }
                     //setImageView01();
 
@@ -1222,43 +1326,5 @@ public class FullPortVideoActivity extends AppCompatActivity {
         }
     };
 
-    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if(action.equalsIgnoreCase(MusicPlayService.ACTION_PLAY_START_RESULT))
-            {
 
-            }
-            else if(action.equalsIgnoreCase(MusicPlayService.ACTION_UPDATE_CURRENT_POSITION))
-            {
-                String title = intent.getStringExtra(MusicPlayService.EXTRA_MUSIC_TITLE);
-                int total = intent.getIntExtra(MusicPlayService.EXTRA_TOTAL_DURATION, 0);
-                int current = intent.getIntExtra(MusicPlayService.EXTRA_CURRENT_DURATION, 0);
-                if(mEventDto != null && mEventDto.getContinuityType() == 1 )
-                {
-                    int diff = (total - current) / 1000;
-                    Log.d("AAAA", "full total: "+total+" current: "+current+ " diff: " + diff);
-                    Log.d("AAAA", "full getTriggerTime: "+mRunEvent.getTriggerTime());
-                    if(diff < mRunEvent.getTriggerTime() && mRunEvent.getEventState().equalsIgnoreCase("STOP"))
-                    {
-                        Log.d("AAAA", "-------------- full getTriggerTime: "+mRunEvent.getTriggerTime());
-
-                        EventStartReqDto reqDto = new EventStartReqDto(mServerId, -1, -1, -1, -1, -1, -1);
-                        mServer.eventStart(mEventStartCallBack, reqDto);
-                        mRunEvent.setEventState("RESTART");
-
-                        updateViewState(1);
-                    }
-                }
-            }
-            else if(action.equalsIgnoreCase(MusicPlayService.ACTION_PLAY_MOVE_POS))
-            {
-                int pos = intent.getIntExtra(MusicPlayService.EXTRA_UPDATE_POSITION, 0);
-                if(pos > 0){
-
-                }
-            }
-        }
-    };
 }

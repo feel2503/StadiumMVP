@@ -337,7 +337,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        Log.d("BBBB", "onKeyDown : " + event);
         if(keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN
         || keyCode == KeyEvent.KEYCODE_HOME || keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT
                 || keyCode == KeyEvent.KEYCODE_DPAD_UP  || keyCode == KeyEvent.KEYCODE_DPAD_DOWN || keyCode == KeyEvent.KEYCODE_DPAD_CENTER
@@ -611,7 +610,8 @@ public class MainActivity extends AppCompatActivity {
                 strUri = getAwayMusic(runEvent);
             }
 
-            eventFragment.playVideo(strUri);
+//            if(!isFinish)
+//                eventFragment.playVideo(strUri);
 
         }catch (Exception e){
             e.printStackTrace();

@@ -3,6 +3,7 @@ package kr.co.thiscat.stadiumampsetting.fragment;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -19,6 +20,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -104,6 +107,14 @@ public class EventFragment extends Fragment {
     private SeekBar mSeekVolume;
     private TextView mTextVolume;
 
+    private RadioButton mRadioBlack;
+    private RadioButton mRadioGreen;
+    private RadioButton mRadioBlue;
+
+    private SharedPreferences mPref;
+    private SharedPreferences.Editor mEditor;
+
+
     public EventFragment() {
         // Required empty public constructor
     }
@@ -145,6 +156,9 @@ public class EventFragment extends Fragment {
         mPreferenceUtil = new PreferenceUtil(getContext());
         mProgress = new ProgressDialog(getContext());
         mServer = ServerManager.getInstance(getContext());
+
+        mPref = mainActivity.getSharedPreferences("pref", Activity.MODE_PRIVATE);
+        mEditor = mPref.edit();
     }
 
     @Override
@@ -241,6 +255,26 @@ public class EventFragment extends Fragment {
         exoPlayer = new ExoPlayer.Builder(getContext()).build();
         exoPlayer.addListener(mPlayerListener);
         playerView.setPlayer(exoPlayer);
+
+        mRadioBlack = view.findViewById(R.id.radio_chromakey_black);
+        mRadioGreen = view.findViewById(R.id.radio_chromakey_green);
+        mRadioBlue = view.findViewById(R.id.radio_chromakey_blue);
+
+        RadioGroup radioGroup = view.findViewById(R.id.radio_chromakey);
+        radioGroup.setOnCheckedChangeListener(mOnCheckedChangedListner);
+
+        int iBgColor = mPref.getInt("bgcolor", 0);
+        switch (iBgColor){
+            case 0:
+                mRadioBlack.setChecked(true);
+                break;
+            case 1:
+                mRadioGreen.setChecked(true);
+                break;
+            case 2:
+                mRadioBlue.setChecked(true);
+                break;
+        }
 
 
 
@@ -875,20 +909,16 @@ public class EventFragment extends Fragment {
         @Override
         public void onEvents(Player player, Player.Events events) {
             Player.Listener.super.onEvents(player, events);
-            Log.d("BBBB", "onEvents: " + events);
         }
 
         @Override
         public void onSeekProcessed() {
             Player.Listener.super.onSeekProcessed();
-            Log.d("BBBB", "onSeekProcessed : " + "");
         }
 
         @Override
         public void onPlaybackStateChanged(int playbackState) {
             Player.Listener.super.onPlaybackStateChanged(playbackState);
-            Log.d("BBBB", "onPlaybackStateChanged: " + playbackState + " mRunEvent : " + mainActivity.currentTriggerType);
-            Log.d("BBBB", "1 onPlaybackStateChanged: " + playbackState + " mRunEvent : " + mainActivity.currentContType);
 //            if(playbackState == ExoPlayer.STATE_ENDED){
 //                if(mainActivity.currentTriggerType == 1 && mainActivity.currentContType == 1){
 //                    EventStartReqDto reqDto = new EventStartReqDto(mainActivity.mServerId, -1, -1, -1, -1, -1, -1);
@@ -904,7 +934,6 @@ public class EventFragment extends Fragment {
         @Override
         public void onIsPlayingChanged(boolean isPlaying) {
             Player.Listener.super.onIsPlayingChanged(isPlaying);
-            Log.d("BBBB", "onIsPlayingChanged: " + isPlaying);
             if(isPlaying) {
                 updateSeekBar();
             }
@@ -950,25 +979,26 @@ public class EventFragment extends Fragment {
 
 //            if(mainActivity.mEventDto.getTriggerType() == 0
 //                    && mainActivity.mEventDto.getContinuityType() == 1 )
-            if(mainActivity.currentTriggerType == 0
-                    && mainActivity.currentContType == 1 )
-            {
-                long diff = (total - current) / 1000;
-                Log.d("AAAA", "total: "+total+" current: "+current+ " diff: " + diff);
-                Log.d("AAAA", "getTriggerTime: "+ mainActivity.mRunEvent.getTriggerTime());
 
-                if(diff < (mainActivity.mRunEvent.getTriggerTime() -1)
-                        && mainActivity.mRunEvent.getEventState().equalsIgnoreCase("STOP"))
-                {
-                    Log.d("AAAA", "getTriggerTime:--- start event ");
-                    EventStartReqDto reqDto = new EventStartReqDto(mainActivity.mServerId, -1, -1, -1, -1, -1, mainActivity.volumeValue);
-                    mServer.eventStart(mEventStartCallBack, reqDto);
-                    mainActivity.mRunEvent.setEventState("RESTART");
-
-                    // update Event Button
-                    mainActivity.updateEventButton();
-                }
-            }
+//            if(mainActivity.currentTriggerType == 0
+//                    && mainActivity.currentContType == 1 )
+//            {
+//                long diff = (total - current) / 1000;
+//                Log.d("AAAA", "total: "+total+" current: "+current+ " diff: " + diff);
+//                Log.d("AAAA", "getTriggerTime: "+ mainActivity.mRunEvent.getTriggerTime());
+//
+//                if(diff < (mainActivity.mRunEvent.getTriggerTime() -1)
+//                        && mainActivity.mRunEvent.getEventState().equalsIgnoreCase("STOP"))
+//                {
+//                    Log.d("AAAA", "getTriggerTime:--- start event ");
+//                    EventStartReqDto reqDto = new EventStartReqDto(mainActivity.mServerId, -1, -1, -1, -1, -1, mainActivity.volumeValue);
+//                    mServer.eventStart(mEventStartCallBack, reqDto);
+//                    mainActivity.mRunEvent.setEventState("RESTART");
+//
+//                    // update Event Button
+//                    mainActivity.updateEventButton();
+//                }
+//            }
         }
     }
 
@@ -1002,5 +1032,20 @@ public class EventFragment extends Fragment {
         {
 
         }
+    };
+
+    private RadioGroup.OnCheckedChangeListener mOnCheckedChangedListner = new RadioGroup.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(RadioGroup group, int checkedId) {
+            if(checkedId == R.id.radio_chromakey_black)
+                mEditor.putInt("bgcolor", 0);
+            else if(checkedId == R.id.radio_chromakey_green)
+                mEditor.putInt("bgcolor", 1);
+            if(checkedId == R.id.radio_chromakey_blue)
+                mEditor.putInt("bgcolor", 2);
+
+            mEditor.apply();
+        }
+
     };
 }
