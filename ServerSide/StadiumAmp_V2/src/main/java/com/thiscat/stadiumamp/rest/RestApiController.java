@@ -278,8 +278,40 @@ public class RestApiController extends BaseController{
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @GetMapping(value = "/v1/event/stop", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResultWithValue> stopEvent(@RequestParam Long runEventId) throws Exception {
-        RunEventDto runEventDto = restService.stopEvent(runEventId);
+        RunEvent runEvent = runEventRepository.findById(runEventId).orElseThrow(() -> new Exception("runevent-not-fount"));
+        RunEventDto runEventDto = restService.stopEvent(runEvent);
+
+        Event event = runEvent.getEvent();
+        event.setAutoRunState(0);
+        eventRepository.save(event);
+
         return getResponseEntity( runEventDto, "success", HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Event Stop")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @GetMapping(value = "/v1/event/stop-lastevent", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultWithValue> stopLastEvent(@RequestParam Long eventId) throws Exception {
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new Exception("runevent-not-fount"));
+        RunEvent runEvent = runEventRepository.findFirstByEventOrderByIdDesc(event).orElseThrow(EntityNotFoundException::new);
+
+        RunEventDto runEventDto = restService.stopEvent(runEvent);
+        event.setAutoRunState(0);
+        eventRepository.save(event);
+
+        return getResponseEntity( runEventDto, "success", HttpStatus.OK);
+
+//        if(runEvent.getEventState().equalsIgnoreCase("START")) {
+//            RunEventDto runEventDto = restService.stopEvent(runEvent);
+//            event.setAutoRunState(0);
+//            eventRepository.save(event);
+//            return getResponseEntity( runEventDto, "success", HttpStatus.OK);
+//        }
+//        else {
+//            RunEventDto runEventDto = restService.startEvent(eventId);
+//            return getResponseEntity( runEventDto, "success", HttpStatus.OK);
+//        }
+
     }
 
     @ApiOperation(value = "RunEvent State")
@@ -564,6 +596,17 @@ public class RestApiController extends BaseController{
 
     @ApiOperation(value = "Add Event Server")
     @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PostMapping(value = "/v1/server/update-web-img", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultResponse> updateWebImg(@RequestBody WebImgDto webImgDto) throws Exception {
+        Event event = eventRepository.findById(webImgDto.getEventId()).orElseThrow(() -> new Exception("event-not-found"));
+        event.setWebUrl(webImgDto.getWebImg());
+        eventRepository.save(event);
+
+        return getResponseEntity( "success", HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Add Event Server")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
     @PostMapping(value = "/v1/server/team-color", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResultResponse> setTeamColor(@RequestBody TeamColorDto teamColorDto) throws Exception {
         Event event = eventRepository.findById(teamColorDto.getEventId()).orElseThrow(() -> new Exception("event-not-found"));
@@ -582,6 +625,17 @@ public class RestApiController extends BaseController{
     public ResponseEntity<ApiResultResponse> setOpenchatUrl(@RequestBody OpenchatUrlDto openchatUrlDto) throws Exception {
         Event event = eventRepository.findById(openchatUrlDto.getEventId()).orElseThrow(() -> new Exception("event-not-found"));
         event.setOpenchatUrl(openchatUrlDto.getOpenchatUrl());
+        eventRepository.save(event);
+
+        return getResponseEntity( "success", HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Add Event Server")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PostMapping(value = "/v1/server/openchatImg", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultResponse> setOpenchatImg(@RequestBody OpenchatImgDto openchatImgDto) throws Exception {
+        Event event = eventRepository.findById(openchatImgDto.getEventId()).orElseThrow(() -> new Exception("event-not-found"));
+        event.setOpenchatUrl(openchatImgDto.getOpenchatImg());
         eventRepository.save(event);
 
         return getResponseEntity( "success", HttpStatus.OK);
@@ -622,14 +676,49 @@ public class RestApiController extends BaseController{
 
     @ApiOperation(value = "Add Event Server")
     @CrossOrigin(origins = "*", allowedHeaders = "*")
-    @PostMapping(value = "/v1/event/next-runevent", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ApiResultResponse> getNexRunEvent(@RequestBody RunEventDto runEventDto) throws Exception {
-        Event event = eventRepository.findById(runEventDto.getEventId()).orElseThrow(() -> new Exception("event-not-found"));
+    @GetMapping(value = "/v1/event/next-runevent", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultWithValue> getNexRunEvent(@RequestParam Long eventId, @RequestParam Long runEventId) throws Exception {
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new Exception("event-not-found"));
 
+        if(event.getAutoRunState() == 0)
+        {
+            return getResponseEntity( null, "last-event", HttpStatus.OK);
+        }
+        //RunEvent runEvent = runEventRepository.findFirstByIdGreaterThanAndByEventOrderByIdAsc(runEventId, event).orElse(null);
+        RunEvent runEvent = runEventRepository.findNextRunEvent(eventId, runEventId).orElse(null);
 
-        return getResponseEntity( "success", HttpStatus.OK);
+        if(runEvent != null)
+        {
+            RunEventDto result = RunEventDto.builder()
+                    .id(runEvent.getId())
+                    .eventId(runEvent.getEvent().getId())
+                    .eventState(runEvent.getEventState())
+                    .serverName(runEvent.getEvent().getName())
+                    .homeName(runEvent.getEvent().getHomeName())
+                    .awayName(runEvent.getEvent().getAwayName())
+                    .startDateTime(runEvent.getStartDateTime())
+                    .triggerType(runEvent.getEvent().getTriggerType())
+                    .triggerTime(runEvent.getEvent().getTriggerTime())
+                    .triggerVote(runEvent.getEvent().getTriggerVote())
+                    .homeCount(runEvent.getHomeCount())
+                    .home1Count(runEvent.getHome1Count())
+                    .home2Count(runEvent.getHome2Count())
+                    .home3Count(runEvent.getHome3Count())
+                    .home4Count(runEvent.getHome4Count())
+                    .home5Count(runEvent.getHome5Count())
+                    .awayCount(runEvent.getAwayCount())
+                    .away1Count(runEvent.getAway1Count())
+                    .away2Count(runEvent.getAway2Count())
+                    .away3Count(runEvent.getAway3Count())
+                    .away4Count(runEvent.getAway4Count())
+                    .away5Count(runEvent.getAway5Count())
+                    .build();
+            return getResponseEntity( result, "success", HttpStatus.OK);
+        }
+        else {
+            return getResponseEntity( null, "last-event", HttpStatus.OK);
+        }
     }
-
 
 
 

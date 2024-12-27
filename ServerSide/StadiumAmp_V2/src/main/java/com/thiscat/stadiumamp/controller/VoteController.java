@@ -115,6 +115,8 @@ public class VoteController {
         model.addAttribute("awayFont", "#"+event.getAwayFont());
         model.addAttribute("bgimg", bgImage);
         model.addAttribute("bgcolor", "#"+event.getEventBkcolor());
+        model.addAttribute("openchatimg", null);
+        model.addAttribute("webimg", null);
 
 
 //        if((team == 1 || team == 3) && (move == null)) {

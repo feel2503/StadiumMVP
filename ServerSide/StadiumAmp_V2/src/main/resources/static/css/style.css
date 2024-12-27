@@ -184,7 +184,7 @@ div{
 .result_graph{
     display: flex;
     flex-direction: row;
-    margin-bottom: 30px;
+    margin-bottom: 10px;
 }
 .result_graph_hidden{
     display: none;

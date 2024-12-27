@@ -30,4 +30,13 @@ public interface RunEventRepository extends JpaRepository<RunEvent, Long> {
                     "   WHERE run_event_id=:runEventId ",
             nativeQuery = true)
     Long findEventId(Long runEventId);
+
+    @Query(
+            value = " SELECT * FROM run_event " +
+            "   WHERE event_id=:eventId " +
+                    " AND run_event_id > :runEventId order by run_event_id asc limit 1 ;",
+            nativeQuery = true)
+    Optional<RunEvent> findNextRunEvent(Long eventId, Long runEventId);
+
+    //Optional<RunEvent> findFirstByIdGreaterThanAndByEventOrderByIdAsc(Long runEventId, Event event);
 }

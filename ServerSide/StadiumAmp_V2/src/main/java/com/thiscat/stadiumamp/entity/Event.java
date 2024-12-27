@@ -55,4 +55,7 @@ public class Event extends BaseEntity {
     Integer volumeValue;
 
     String eventBkcolor;
+
+    @Column(name = "auto_run_state")
+    Integer autoRunState;
 }

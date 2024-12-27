@@ -24,7 +24,8 @@
     </div>
     <div  class="sample" >
 
-        <div style="padding:20px;" onclick="location.href='https://sites.google.com/view/introduce-stadiumamp/';">
+        <div style="padding-left: 20px; padding-right:20px; padding-top:0px; padding-bottom: 0px;"
+             onclick="location.href='https://sites.google.com/view/introduce-stadiumamp/';">
             <div class="wc_text_01">
 <!--                <b>[[${event.name}]]</b> 실시간 응원 (설문하기)-->
                 <b>[[${event.name}]]</b>
@@ -211,7 +212,9 @@
             <div>
                 <!--                    <img class="profile" src="asset/floating_button.svg">-->
                 <div class="box" style="background: #BDBDBD;">
-                    <img class="profile" src="asset/floating_button.svg">
+<!--                    <img class="profile" src="asset/floating_button.svg">-->
+                    <img class="profile" th:src="${webimg} ?: @{/asset/floating_button.svg}">
+
                 </div>
             </div>
         </a>
@@ -222,7 +225,8 @@
             <div>
                 <!--                    <img class="profile" src="asset/floating_button.svg">-->
                 <div class="box" style="background: #BDBDBD;">
-                    <img class="profile" src="asset/openchat.png">
+<!--                    <img class="profile" src="asset/openchat.png">-->
+                    <img class="profile" th:src="${openchatimg} ?: @{/asset/openchat.png}">
                 </div>
             </div>
         </a>
