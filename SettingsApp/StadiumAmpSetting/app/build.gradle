@@ -7,8 +7,8 @@ plugins {
     id 'com.google.firebase.crashlytics'
 }
 ext {
-    AppVersionCode = 10370
-    AppVersionName = "0.3.7"
+    AppVersionCode = 10380
+    AppVersionName = "0.3.8"
 }
 
 android {
@@ -94,6 +94,9 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer-core:2.18.0'
     implementation 'com.google.android.exoplayer:exoplayer-dash:2.18.0'
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.18.0'
+
+
+
 
 
     modules {

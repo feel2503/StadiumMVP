@@ -22,6 +22,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.view.WindowManager;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -120,6 +123,11 @@ public class FullPortVideoActivity extends AppCompatActivity {
 
     private RelativeLayout mActivityBG;
 
+    private WebView webView1;
+    private WebView webView2;
+    private WebSettings mWebSettings1;
+    private WebSettings mWebSettings2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,7 +141,6 @@ public class FullPortVideoActivity extends AppCompatActivity {
         mControlsView = binding.fullscreenContentControls;
         hide();
 
-
         mServerId = getIntent().getIntExtra("RunServerID", -1);
         getIntent().getBooleanExtra("EventRepeat", false);
         mVolume = getIntent().getIntExtra("VideoVolume", 0);
@@ -141,6 +148,7 @@ public class FullPortVideoActivity extends AppCompatActivity {
         mServer = ServerManager.getInstance(FullPortVideoActivity.this);
 
         initUi();
+        setWebView();
 
 //        IntentFilter filter = new IntentFilter();
 //        filter.addAction(MusicPlayService.ACTION_PLAY_START_RESULT);
@@ -223,6 +231,51 @@ public class FullPortVideoActivity extends AppCompatActivity {
                 mActivityBG.setBackgroundColor(0xff0047bb);
                 break;
         }
+    }
+
+    private void setWebView()
+    {
+        /// webview1
+        webView1 = findViewById(R.id.webview1);
+
+        webView1.setBackgroundColor(0); // 완전 투명
+        webView1.setLayerType(View.LAYER_TYPE_SOFTWARE, null); // 소프트웨어 렌더링 사용
+//        webView1.setScaleX(-1);
+
+        webView1.setWebViewClient(new WebViewClient()); // 현재 앱을 나가서 새로운 브라우저를 열지 않도록 함.
+
+        mWebSettings1 = webView1.getSettings(); // 웹뷰에서 webSettings를 사용할 수 있도록 함.
+        mWebSettings1.setJavaScriptEnabled(true); //웹뷰에서 javascript를 사용하도록 설정
+        mWebSettings1.setJavaScriptCanOpenWindowsAutomatically(false); //멀티윈도우 띄우는 것
+        mWebSettings1.setAllowFileAccess(true); //파일 엑세스
+        mWebSettings1.setLoadWithOverviewMode(true); // 메타태그
+        mWebSettings1.setUseWideViewPort(true); //화면 사이즈 맞추기
+        mWebSettings1.setSupportZoom(true); // 화면 줌 사용 여부
+        mWebSettings1.setBuiltInZoomControls(true); //화면 확대 축소 사용 여부
+        mWebSettings1.setDisplayZoomControls(true); //화면 확대 축소시, webview에서 확대/축소 컨트롤 표시 여부
+        mWebSettings1.setCacheMode(WebSettings.LOAD_NO_CACHE); // 브라우저 캐시 사용 재정의 value : LOAD_DEFAULT, LOAD_NORMAL, LOAD_CACHE_ELSE_NETWORK, LOAD_NO_CACHE, or LOAD_CACHE_ONLY
+        mWebSettings1.setDefaultFixedFontSize(14); //기본 고정 글꼴 크기, value : 1~72 사이의 숫자
+
+        /// webview2
+        webView2 = findViewById(R.id.webview2);
+
+        webView2.setBackgroundColor(0); // 완전 투명
+        webView2.setLayerType(View.LAYER_TYPE_SOFTWARE, null); // 소프트웨어 렌더링 사용
+//        webView2.setScaleX(-1);
+
+        webView2.setWebViewClient(new WebViewClient()); // 현재 앱을 나가서 새로운 브라우저를 열지 않도록 함.
+
+        mWebSettings2 = webView2.getSettings(); // 웹뷰에서 webSettings를 사용할 수 있도록 함.
+        mWebSettings2.setJavaScriptEnabled(true); //웹뷰에서 javascript를 사용하도록 설정
+        mWebSettings2.setJavaScriptCanOpenWindowsAutomatically(false); //멀티윈도우 띄우는 것
+        mWebSettings2.setAllowFileAccess(true); //파일 엑세스
+        mWebSettings2.setLoadWithOverviewMode(true); // 메타태그
+        mWebSettings2.setUseWideViewPort(true); //화면 사이즈 맞추기
+        mWebSettings2.setSupportZoom(true); // 화면 줌 사용 여부
+        mWebSettings2.setBuiltInZoomControls(true); //화면 확대 축소 사용 여부
+        mWebSettings2.setDisplayZoomControls(true); //화면 확대 축소시, webview에서 확대/축소 컨트롤 표시 여부
+        mWebSettings2.setCacheMode(WebSettings.LOAD_NO_CACHE); // 브라우저 캐시 사용 재정의 value : LOAD_DEFAULT, LOAD_NORMAL, LOAD_CACHE_ELSE_NETWORK, LOAD_NO_CACHE, or LOAD_CACHE_ONLY
+        mWebSettings2.setDefaultFixedFontSize(14); //기본 고정 글꼴 크기, value : 1~72 사이의 숫자
     }
 
     private boolean isRunningState()
@@ -922,6 +975,19 @@ public class FullPortVideoActivity extends AppCompatActivity {
         mServer.eventStop(mEventStoptCallBack, mRunEvent.getId());
     }
 
+    private void loadCheerWeb(EventDto eventDto)
+    {
+        if(eventDto.getCheerUrl1() != null && eventDto.getCheerUrl1().length() > 1)
+        {
+            webView1.loadUrl(eventDto.getCheerUrl1());
+        }
+
+        if(eventDto.getCheerUrl2() != null && eventDto.getCheerUrl2().length() > 1)
+        {
+            webView2.loadUrl(eventDto.getCheerUrl2());
+        }
+    }
+
     private SECallBack<RunEventResult> mEventStoptCallBack = new SECallBack<RunEventResult>()
     {
         @Override
@@ -1098,6 +1164,7 @@ public class FullPortVideoActivity extends AppCompatActivity {
                 setEventInfo(mEventDto.getEventMusicList());
                 //setEventColor(mEventDto.getHomeColor(), mEventDto.getAwayColor());
                 setEventColor(mEventDto.getHomeColor(), mEventDto.getHomeFont(), mEventDto.getAwayColor(), mEventDto.getAwayFont());
+                loadCheerWeb(mEventDto);
                 if(mEventDto.getEventState().equalsIgnoreCase("START"))
                 {
                     startEventStateCheck(mEventDto.getRunEvent());

@@ -77,6 +77,14 @@ public class EventDto
     @SerializedName("volumeValue")
     int volumeValue;
 
+    @Expose
+    @SerializedName("cheerUrl1")
+    String cheerUrl1;
+
+    @Expose
+    @SerializedName("cheerUrl2")
+    String cheerUrl2;
+
     public int getEventId() {
         return eventId;
     }
@@ -227,5 +235,21 @@ public class EventDto
 
     public void setVolumeValue(int volumeValue) {
         this.volumeValue = volumeValue;
+    }
+
+    public String getCheerUrl1() {
+        return cheerUrl1;
+    }
+
+    public void setCheerUrl1(String cheerUrl1) {
+        this.cheerUrl1 = cheerUrl1;
+    }
+
+    public String getCheerUrl2() {
+        return cheerUrl2;
+    }
+
+    public void setCheerUrl2(String cheerUrl2) {
+        this.cheerUrl2 = cheerUrl2;
     }
 }

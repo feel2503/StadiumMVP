@@ -220,6 +220,34 @@
             </LinearLayout>
         </LinearLayout>
 
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintlayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <WebView
+                android:id="@+id/webview1"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@color/transparent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintWidth_percent="1"
+                app:layout_constraintHeight_percent="0.5" />
+
+            <WebView
+                android:id="@+id/webview2"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@color/transparent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintWidth_percent="1"
+                app:layout_constraintHeight_percent="0.5" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </RelativeLayout>
 
 
