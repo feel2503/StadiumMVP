@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import java.util.ArrayList;
 
 
@@ -51,4 +52,7 @@ public class EventDto {
     int volumeValue = 5;
 
     String eventBkcolor;
+
+    String cheerUrl1;
+    String cheerUrl2;
 }

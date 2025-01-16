@@ -58,4 +58,14 @@ public class Event extends BaseEntity {
 
     @Column(name = "auto_run_state")
     Integer autoRunState;
+
+    @Column(columnDefinition = "TEXT")
+    String openchatImg;
+    @Column(columnDefinition = "TEXT")
+    String webImg;
+
+    @Column(columnDefinition = "TEXT")
+    String cheerUrl1;
+    @Column(columnDefinition = "TEXT")
+    String cheerUrl2;
 }

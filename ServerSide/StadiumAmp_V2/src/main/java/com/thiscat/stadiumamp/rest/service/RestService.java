@@ -68,6 +68,8 @@ public class RestService {
                 .homeFont(event.getHomeFont())
                 .awayColor(event.getAwayColor())
                 .awayFont(event.getAwayFont())
+                .cheerUrl1(event.getCheerUrl1())
+                .cheerUrl2(event.getCheerUrl2())
                 .build();
 
         RunEvent runEvent = runEventRepository.findByEventLimit(event.getId()).orElse(null);

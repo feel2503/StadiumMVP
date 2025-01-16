@@ -22,6 +22,7 @@
     <div class="remain_text_02" id="display">
         현재 응원 이벤트 남은 시간 0분 0초
     </div>
+
     <div  class="sample" >
 
         <div style="padding-left: 20px; padding-right:20px; padding-top:0px; padding-bottom: 0px;"
@@ -179,6 +180,8 @@
 
                 </div>
             </div>
+
+<!--            <button onclick="showActionSheet()">Show Action Sheet</button>-->
         </div>
         </div>
 
@@ -188,9 +191,6 @@
         <input type="hidden" id="startSec" th:value="${sec}" >
         <input type="hidden" id="startIdVal" th:value="${event.id}" >
         <input type="hidden" id="eventState" th:value="${state}" >
-
-
-
 
     </div>
 
@@ -231,6 +231,19 @@
             </div>
         </a>
     </div>
+
+
+    <div class="action-sheet" id="actionSheet" onclick="hideActionSheet()">
+        <div class="action-options">
+            <div class="option close" onclick="hideActionSheet()">Close</div>
+            <!-- 여러 선택 옵션들 -->
+            <div class="option" onclick="handleOption('Option 1')">Option 1</div>
+            <div class="option" onclick="handleOption('Option 2')">Option 2</div>
+            <div class="option" onclick="handleOption('Option 3')">Option 3</div>
+        </div>
+    </div>
+
+
 
     <script th:src="@{jquery/jquery-3.4.1.min.js}"></script>
     <script th:src="@{js/timer.js}"></script>
@@ -319,6 +332,22 @@
 
         }
 
+        function showActionSheet() {
+            document.getElementById("actionSheet").classList.add("active");
+        }
+
+        // Action Sheet 감추기
+        function hideActionSheet() {
+            document.getElementById("actionSheet").classList.remove("active");
+        }
+
+        // 각 옵션 클릭 시 처리
+        function handleOption(option) {
+            // 여기에 옵션 클릭 시 로직 작성
+            alert("Selected Option: " + option);
+            // Action Sheet 감추기
+            hideActionSheet();
+        }
     </script>
 
 </div>

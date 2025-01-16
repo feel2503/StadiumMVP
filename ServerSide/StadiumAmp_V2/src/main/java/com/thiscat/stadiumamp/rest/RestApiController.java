@@ -599,7 +599,7 @@ public class RestApiController extends BaseController{
     @PostMapping(value = "/v1/server/update-web-img", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResultResponse> updateWebImg(@RequestBody WebImgDto webImgDto) throws Exception {
         Event event = eventRepository.findById(webImgDto.getEventId()).orElseThrow(() -> new Exception("event-not-found"));
-        event.setWebUrl(webImgDto.getWebImg());
+        event.setWebImg(webImgDto.getWebImg());
         eventRepository.save(event);
 
         return getResponseEntity( "success", HttpStatus.OK);
@@ -635,7 +635,7 @@ public class RestApiController extends BaseController{
     @PostMapping(value = "/v1/server/openchatImg", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResultResponse> setOpenchatImg(@RequestBody OpenchatImgDto openchatImgDto) throws Exception {
         Event event = eventRepository.findById(openchatImgDto.getEventId()).orElseThrow(() -> new Exception("event-not-found"));
-        event.setOpenchatUrl(openchatImgDto.getOpenchatImg());
+        event.setOpenchatImg(openchatImgDto.getOpenchatImg());
         eventRepository.save(event);
 
         return getResponseEntity( "success", HttpStatus.OK);
@@ -719,6 +719,20 @@ public class RestApiController extends BaseController{
             return getResponseEntity( null, "last-event", HttpStatus.OK);
         }
     }
+
+    @ApiOperation(value = "Add Event Server")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PostMapping(value = "/v1/server/cheerurl", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultResponse> setCheerUrl(@RequestBody CheerUrlDto cheerUrlDto) throws Exception {
+        Event event = eventRepository.findById(cheerUrlDto.getEventId()).orElseThrow(() -> new Exception("event-not-found"));
+        event.setCheerUrl1(cheerUrlDto.getCheerUrl1());
+        event.setCheerUrl2(cheerUrlDto.getCheerUrl2());
+        eventRepository.save(event);
+
+        return getResponseEntity( "success", HttpStatus.OK);
+    }
+
+
 
 
 
