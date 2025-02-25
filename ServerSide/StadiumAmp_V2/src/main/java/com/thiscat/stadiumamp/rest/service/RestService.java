@@ -324,6 +324,66 @@ public class RestService {
         return voteResultDto;
     }
 
+    public VoteResultDto voteSave(VoteDto voteDto) throws Exception
+    {
+        RunEvent runEvent = runEventRepository.findByEventLimit(voteDto.getEventId()).orElseThrow(EntityNotFoundException::new);
+        Event event = eventRepository.findById(voteDto.getEventId()).orElse(null);
+
+        int triVote = runEvent.getEvent().getTriggerVote();
+        int homeCount = 0;
+        int awayCount = 0;
+        if(runEvent.getHomeCount() != null)
+            homeCount = runEvent.getHomeCount();
+        if(runEvent.getAwayCount() != null)
+            awayCount = runEvent.getAwayCount();
+
+        VoteResultDto voteResultDto = getVoteResult(runEvent);
+        if(event.getTriggerType() == 0)
+        {
+            RunEvent resultEvent = updateVoteCount(runEvent, voteDto.getTeamType(), voteDto.getEventType());
+            resultEvent = updateTagState(runEvent, voteDto);
+
+            voteResultDto.setEventState(runEvent.getEventState());
+        }
+        else
+        {
+            if(triVote <= homeCount || triVote <= awayCount)
+            {
+                voteResultDto.setEventState("STOP");
+            }
+            else
+            {
+                RunEvent resultEvent = updateVoteCount(runEvent, voteDto.getTeamType(), voteDto.getEventType());
+                resultEvent = updateTagState(runEvent, voteDto);
+                if(runEvent.getHomeCount() != null)
+                    homeCount = runEvent.getHomeCount();
+                if(runEvent.getAwayCount() != null)
+                    awayCount = runEvent.getAwayCount();
+
+                if(triVote <= homeCount || triVote <= awayCount)
+                {
+                    RunEventDto runEventDto = stopEvent(resultEvent);
+                    voteResultDto.setEventState("STOP");
+
+
+                    if(event.getContinuityType() == 1){
+                        System.out.println("[ EventContinueTimer ] : " +" voteSave");
+                        long delayTime = 2000;
+                        EventContinueTimer eventContinueTimer = new EventContinueTimer(voteDto.getEventId());
+                        Timer timer = new Timer();
+                        timer.schedule(eventContinueTimer, delayTime );
+                    }
+                }
+                else
+                {
+                    voteResultDto.setEventState("START");
+                }
+            }
+        }
+
+        return voteResultDto;
+    }
+
     public VoteResultDto getVoteResult(RunEvent runevent)
     {
         int homeCount = 0;
@@ -453,6 +513,99 @@ public class RestService {
         }
         RunEvent saveResult = runEventRepository.save(runEvent);
         return saveResult;
+    }
+
+    private int getBoolToInt(Boolean value)
+    {
+        if(value == null)
+            return 0;
+        else
+            return value ? 1 : 0;
+    }
+
+    public RunEvent updateTagState(RunEvent runEvent, VoteDto voteDto)
+    {
+        for (Map.Entry<String, Boolean> entry : voteDto.getTags().entrySet()) {
+            String key = entry.getKey();
+            Boolean value = entry.getValue();
+            System.out.println("Key: " + key + ", Value: " + value);
+            updateValue(runEvent, key, value);
+        }
+
+//        runEvent.setTag1(runEvent.getTag1().intValue() + getBoolToInt(voteDto.getTagState1()));
+//        runEvent.setTag2(runEvent.getTag1().intValue() + getBoolToInt(voteDto.getTagState1()));
+//        runEvent.setTag3(runEvent.getTag2().intValue() + getBoolToInt(voteDto.getTagState1()));
+//        runEvent.setTag4(runEvent.getTag3().intValue() + getBoolToInt(voteDto.getTagState1()));
+//        runEvent.setTag5(runEvent.getTag4().intValue() + getBoolToInt(voteDto.getTagState1()));
+//        runEvent.setTag5(runEvent.getTag5().intValue() + getBoolToInt(voteDto.getTagState1()));
+//        runEvent.setTag7(runEvent.getTag6().intValue() + getBoolToInt(voteDto.getTagState1()));
+//        runEvent.setTag8(runEvent.getTag7().intValue() + getBoolToInt(voteDto.getTagState1()));
+//        runEvent.setTag9(runEvent.getTag1().intValue() + getBoolToInt(voteDto.getTagState1()));
+//        runEvent.setTag10(runEvent.getTag1().intValue() + getBoolToInt(voteDto.getTagState1()));
+
+        RunEvent saveResult = runEventRepository.save(runEvent);
+        return saveResult;
+    }
+
+    private void updateValue(RunEvent runEvent, String key, boolean value)
+    {
+        if(key.equalsIgnoreCase("tag0"))
+            runEvent.setTag0(getValue(runEvent.getTag0(), value));
+        else if(key.equalsIgnoreCase("tag1"))
+            runEvent.setTag1(getValue(runEvent.getTag1(), value));
+        else if(key.equalsIgnoreCase("tag2"))
+            runEvent.setTag2(getValue(runEvent.getTag2(), value));
+        else if(key.equalsIgnoreCase("tag3"))
+            runEvent.setTag3(getValue(runEvent.getTag3(), value));
+        else if(key.equalsIgnoreCase("tag4"))
+            runEvent.setTag4(getValue(runEvent.getTag4(), value));
+        else if(key.equalsIgnoreCase("tag5"))
+            runEvent.setTag5(getValue(runEvent.getTag5(), value));
+        else if(key.equalsIgnoreCase("tag6"))
+            runEvent.setTag6(getValue(runEvent.getTag6(), value));
+        else if(key.equalsIgnoreCase("tag7"))
+            runEvent.setTag7(getValue(runEvent.getTag7(), value));
+        else if(key.equalsIgnoreCase("tag8"))
+            runEvent.setTag8(getValue(runEvent.getTag8(), value));
+        else if(key.equalsIgnoreCase("tag9"))
+            runEvent.setTag9(getValue(runEvent.getTag9(), value));
+
+//        if(key.equalsIgnoreCase("tag0"))
+//            runEvent.setTag0(runEvent.getTag0().intValue() + getBoolToInt(value));
+//        else if(key.equalsIgnoreCase("tag1"))
+//            runEvent.setTag1(runEvent.getTag1().intValue() + getBoolToInt(value));
+//        else if(key.equalsIgnoreCase("tag2"))
+//            runEvent.setTag2(runEvent.getTag2().intValue() + getBoolToInt(value));
+//        else if(key.equalsIgnoreCase("tag3"))
+//            runEvent.setTag3(runEvent.getTag3().intValue() + getBoolToInt(value));
+//        else if(key.equalsIgnoreCase("tag4"))
+//            runEvent.setTag4(runEvent.getTag4().intValue() + getBoolToInt(value));
+//        else if(key.equalsIgnoreCase("tag5"))
+//            runEvent.setTag5(runEvent.getTag5().intValue() + getBoolToInt(value));
+//        else if(key.equalsIgnoreCase("tag6"))
+//            runEvent.setTag6(runEvent.getTag6().intValue() + getBoolToInt(value));
+//        else if(key.equalsIgnoreCase("tag7"))
+//            runEvent.setTag7(runEvent.getTag7().intValue() + getBoolToInt(value));
+//        else if(key.equalsIgnoreCase("tag8"))
+//            runEvent.setTag8(runEvent.getTag8().intValue() + getBoolToInt(value));
+//        else if(key.equalsIgnoreCase("tag9"))
+//            runEvent.setTag9(runEvent.getTag9().intValue() + getBoolToInt(value));
+    }
+
+    private int getValue(Integer tag, Boolean value)
+    {
+        int result = 0;
+        if(tag != null)
+            result = tag.intValue();
+
+        int iValue = 0;
+        if(value != null)
+            iValue = value ? 1 : 0;
+
+        result += iValue;
+
+        return result;
+
     }
 
     class EventStateTimer extends TimerTask

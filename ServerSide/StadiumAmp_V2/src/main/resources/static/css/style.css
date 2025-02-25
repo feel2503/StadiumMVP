@@ -543,12 +543,12 @@ footer{
     /* 세로 컨텐츠가 늘어나는 경우 스크롤이 생기도록 설정 */
     overflow: auto;
 
-    max-height: 300px;
+    max-height: 600px;
     /* 아래에서 위로 나타나는 효과, max-height과 동일하게 작성 */
     position: relative;
-    bottom: -300px;
+    bottom: -600px;
 
-    transition: 1s;
+    transition: 0.3s;
 }
 #actionSheet.active .action-options {
     /* 아래에서 위로 나타나는 효과, max-height과 동일하게 작성 */
@@ -556,11 +556,16 @@ footer{
 }
 
 .option {
-    padding: 15px;
+    padding: 5px 15px 5px 15px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 .option.close {
+    padding: 10px 15px 10px 15px;
+    text-align: center;
+}
+.option.save {
+    padding: 15px 15px 15px 15px;
     text-align: center;
 }
 
@@ -568,3 +573,108 @@ footer{
     background-color: #f2f2f2;
 }
 
+
+
+
+
+
+
+
+
+/*body {*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    justify-content: center;*/
+/*    height: 100vh;*/
+/*    background: #FFEFBA;*/
+/*    !* fallback for old browsers *!*/
+/*    background: -webkit-linear-gradient(to right, #FFFFFF, #FFEFBA);*/
+/*    !* Chrome 10-25, Safari 5.1-6 *!*/
+/*    background: linear-gradient(to right, #FFFFFF, #FFEFBA);*/
+/*    !* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ *!*/
+
+/*}*/
+
+.flexbox_cont {
+    display: flex;
+    flex-direction: column;
+    max-height: 80vh;
+    overflow: auto;
+}
+
+.container {
+    max-width: 640px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 13px;
+}
+
+ul.ks-cboxtags {
+    list-style: none;
+    padding: 0px 20px 0px 20px;
+}
+ul.ks-cboxtags li{
+    display: block;
+    width: 100%;
+}
+ul.ks-cboxtags li label{
+    display: block;
+    width: 100%;
+    box-sizing: border-box; /* padding과 border를 포함하여 크기를 계산 */
+    text-align: center; /* 텍스트를 중앙 정렬 (선택 사항) */
+    background-color: rgba(255, 255, 255, .9);
+    border: 2px solid rgba(139, 139, 139, .3);
+    color: #adadad;
+    border-radius: 25px;
+    white-space: nowrap;
+    margin: 10px 0px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: all .2s;
+}
+
+ul.ks-cboxtags li label {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+ul.ks-cboxtags li label::before {
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    font-size: 12px;
+    padding: 2px 6px 2px 2px;
+    content: "★";
+    transition: transform .3s ease-in-out;
+}
+
+ul.ks-cboxtags li input[type="checkbox"]:checked + label::before {
+    content: "★";
+    transform: rotate(-360deg);
+    transition: transform .3s ease-in-out;
+}
+
+ul.ks-cboxtags li input[type="checkbox"]:checked + label {
+    border: 2px solid #1bdbf8;
+    background-color: #12bbd4;
+    color: #fff;
+    transition: all .2s;
+}
+
+ul.ks-cboxtags li input[type="checkbox"] {
+    display: absolute;
+}
+ul.ks-cboxtags li input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+}
+ul.ks-cboxtags li input[type="checkbox"]:focus + label {
+    border: 2px solid #e9a1ff;
+}

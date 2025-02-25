@@ -1,16 +1,16 @@
 package com.thiscat.stadiumamp.controller;
 
 import com.thiscat.stadiumamp.dao.EventMusicDao;
+import com.thiscat.stadiumamp.dao.TagDao;
 import com.thiscat.stadiumamp.dto.EventMusicDto;
 import com.thiscat.stadiumamp.dto.RunEventDto;
 import com.thiscat.stadiumamp.dto.RunEventWebDto;
+import com.thiscat.stadiumamp.dto.TagDto;
+import com.thiscat.stadiumamp.entity.Cheertag;
 import com.thiscat.stadiumamp.entity.Event;
 import com.thiscat.stadiumamp.entity.EventMusic;
 import com.thiscat.stadiumamp.entity.RunEvent;
-import com.thiscat.stadiumamp.entity.repository.EventImageRepository;
-import com.thiscat.stadiumamp.entity.repository.EventMusicRepository;
-import com.thiscat.stadiumamp.entity.repository.EventRepository;
-import com.thiscat.stadiumamp.entity.repository.RunEventRepository;
+import com.thiscat.stadiumamp.entity.repository.*;
 
 import com.thiscat.stadiumamp.entity.value.TeamType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +26,7 @@ import java.math.BigInteger;
 import java.net.URLDecoder;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,6 +41,8 @@ public class VoteController {
     EventMusicRepository eventMusicRepository;
     @Autowired
     EventImageRepository eventImageRepository;
+    @Autowired
+    private CheertagRepository cheertagRepository;
 
     @GetMapping("/vote")
     public String vote(Model model,  @RequestParam Integer team, @RequestParam Long event_id,
@@ -104,6 +107,7 @@ public class VoteController {
 
         }
 
+
         //bgImage = "https://lh3.googleusercontent.com/drive-viewer/AKGpihYYrUREeok3BOYgpR_kdlLX4MhYkeEVIjVM6UlDkhWlY86tCtknoo_2bgBWHnQ5DiyBGAnnuYdJN9uZ7LLCRw0rw06fsPWdwg=s2560";
         model.addAttribute("event", event);
         model.addAttribute("runevent", runEventDto);
@@ -119,67 +123,14 @@ public class VoteController {
         model.addAttribute("webimg", event.getWebImg());
 
 
-//        if((team == 1 || team == 3) && (move == null)) {
-//            model.addAttribute("data", server_id);
-//            model.addAttribute("team", team);
-//            return "sso";
-//        }
+        // Tag 추가
+        List<Cheertag> cheertags = cheertagRepository.findAllByEventOrderById(event);
+        List<TagDao> tags = cheertags.stream()
+                .map(x ->  new TagDao(x.getTag_id(), x.getValue(), x.getLabel(), false))
+                .collect(Collectors.toList());
 
-//        Stadiumserver stadiumserver = stadiumServerRepository.findById(server_id).orElseThrow(EntityNotFoundException::new);
-//        Runevent runevent = runEventRepository.findFirstByStadiumserverOrderByIdDesc(stadiumserver).orElseThrow(EntityNotFoundException::new);
-//
-//        RunEventDto runEventDto = RunEventDto.builder()
-//                .id(runevent.getId())
-//                .stadiumServerId(runevent.getStadiumserver().getId())
-//                .voteTime(runevent.getVoteTime())
-//                .resultTime(runevent.getResultTime())
-//                .homeCount(runevent.getHomeCount())
-//                .awayCount(runevent.getAwayCount())
-//                .eventState(runevent.getEventState())
-//                .startDateTime(runevent.getStartDateTime())
-//                .build();
-//
-//        String strTeam = "";
-//        if(team == 0 || team == 1)
-//            strTeam = "Home";
-//        else
-//            strTeam = "Away";
-//
-//
-//        LocalDateTime startTime = runevent.getStartDateTime();
-//        int vTime = runevent.getVoteTime();
-//        LocalDateTime endTime = startTime.plusMinutes(vTime);
-//
-//        LocalDateTime nowTime = LocalDateTime.now();
-//        if(nowTime.isAfter(endTime))
-//        {
-//            model.addAttribute("state", "이벤트 종료");
-//        }
-//        else {
-//            Duration duration = Duration.between(nowTime, endTime);
-//            long sec = duration.getSeconds();
-//            long minV = sec / 60;
-//            long secV = sec % 60;
-//            String tVal = ""+minV+"분"+secV+"초";
-//            model.addAttribute("state", tVal);
-//            model.addAttribute("min", minV);
-//            model.addAttribute("sec", secV);
-//
-//        }
-//
-//        stadiumserver.setHomeMusic1(getFileName(stadiumserver.getHomeMusic1()));
-//        stadiumserver.setHomeMusic2(getFileName(stadiumserver.getHomeMusic2()));
-//        stadiumserver.setAwayMusic1(getFileName(stadiumserver.getAwayMusic1()));
-//        stadiumserver.setAwayMusic2(getFileName(stadiumserver.getAwayMusic2()));
-////        model.addAttribute("min", 1);
-////        model.addAttribute("sec", 10);
-//        model.addAttribute("server", stadiumserver);
-//        model.addAttribute("event", runEventDto);
-//        model.addAttribute("teamtype", strTeam);
-//        model.addAttribute("team", team);
+        model.addAttribute("tags", tags);
 
-//        if(move != null && move == false)
-//            return "redirect:vote";
         return "vote";
     }
 

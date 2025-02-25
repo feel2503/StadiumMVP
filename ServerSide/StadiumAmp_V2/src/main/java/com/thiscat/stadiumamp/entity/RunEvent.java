@@ -48,6 +48,17 @@ public class RunEvent extends BaseEntity {
 
     String eventState;
 
+    Integer tag0;
+    Integer tag1;
+    Integer tag2;
+    Integer tag3;
+    Integer tag4;
+    Integer tag5;
+    Integer tag6;
+    Integer tag7;
+    Integer tag8;
+    Integer tag9;
+
 
 
 //    @Column(unique = true)

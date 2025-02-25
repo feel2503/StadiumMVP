@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -43,6 +44,8 @@ public class RestApiController extends BaseController{
     private EventImageRepository eventImageRepository;
     @Autowired
     private RunEventRepository runEventRepository;
+    @Autowired
+    private CheertagRepository cheertagRepository;
 
 
     Logger logger = LoggerFactory.getLogger(RestApiController.class);
@@ -567,6 +570,17 @@ public class RestApiController extends BaseController{
 //        }
     }
 
+    @ApiOperation(value = "Event List")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PostMapping(value = "/v1/vote/save-tag", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultWithValue> voteSave2(@RequestBody VoteDto voteDto) throws Exception
+    {
+
+        VoteResultDto voteResultDto = restService.voteSave(voteDto);
+        return getResponseEntity(voteResultDto, "success", HttpStatus.OK);
+        //return getResponseEntity( "success", HttpStatus.OK);
+    }
+
     @ApiOperation(value = "Add Event Server")
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @PostMapping(value = "/v1/server/update-video", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -722,7 +736,7 @@ public class RestApiController extends BaseController{
 
     @ApiOperation(value = "Add Event Server")
     @CrossOrigin(origins = "*", allowedHeaders = "*")
-    @PostMapping(value = "/v1/server/cheerurl", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/v1/server/donaitonURL", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResultResponse> setCheerUrl(@RequestBody CheerUrlDto cheerUrlDto) throws Exception {
         Event event = eventRepository.findById(cheerUrlDto.getEventId()).orElseThrow(() -> new Exception("event-not-found"));
         event.setCheerUrl1(cheerUrlDto.getCheerUrl1());
@@ -732,7 +746,64 @@ public class RestApiController extends BaseController{
         return getResponseEntity( "success", HttpStatus.OK);
     }
 
+    @Transactional
+    @ApiOperation(value = "Set Event information")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PostMapping(value = "/v1/server/tag", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultResponse> setCheerTag(@RequestBody TagDto tagDto) throws Exception {
+        Event event = eventRepository.findById(tagDto.getEventId()).orElseThrow(() -> new Exception("event-not-found"));
 
+        ArrayList<String> tagList = tagDto.getTagList();
+        if(tagList != null && tagList.size() > 0)
+        {
+            cheertagRepository.deleteAllByEvent(event);
+
+            ArrayList<Cheertag> cheertags = new ArrayList<>();
+            for(int i = 0; i < tagList.size(); i++ )
+            {
+                String tagStr = tagList.get(i);
+                String tagId = "tag"+i;
+                Cheertag cheertag = Cheertag.builder()
+                        .event(event)
+                        .tag_id(tagId)
+                        .value(tagStr)
+                        .label(tagStr)
+                        .build();
+
+                cheertags.add(cheertag);
+            }
+            cheertagRepository.saveAll(cheertags);
+        }
+
+        return getResponseEntity( "success", HttpStatus.OK);
+    }
+
+
+    @ApiOperation(value = "Add Event Server")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PostMapping(value = "/v2/server/externalURL1", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultResponse> setExternalUrl1(@RequestBody OpenchatDto openchatDto) throws Exception {
+        Event event = eventRepository.findById(openchatDto.getEventId()).orElseThrow(() -> new Exception("event-not-found"));
+        event.setOpenchatImg(openchatDto.getOpenchatImg());
+        event.setOpenchatUrl(openchatDto.getOpenchatUrl());
+
+        eventRepository.save(event);
+
+        return getResponseEntity( "success", HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Add Event Server")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PostMapping(value = "/v2/server/externalURL2", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultResponse> setExternalUrl2(@RequestBody External2Dto external2Dto) throws Exception {
+        Event event = eventRepository.findById(external2Dto.getEventId()).orElseThrow(() -> new Exception("event-not-found"));
+        event.setWebUrl(external2Dto.getWebUrl());
+        event.setWebImg(external2Dto.getWebImg());
+
+        eventRepository.save(event);
+
+        return getResponseEntity( "success", HttpStatus.OK);
+    }
 
 
 

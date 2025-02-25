@@ -24,6 +24,7 @@ public interface RunEventRepository extends JpaRepository<RunEvent, Long> {
 
 
     List<RunEvent> findAllByOrderByIdAsc();
+    List<RunEvent> findTop30ByOrderByIdDesc();
 
     @Query(
             value = " SELECT event_id FROM run_event " +

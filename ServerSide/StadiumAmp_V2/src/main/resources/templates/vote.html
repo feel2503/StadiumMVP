@@ -77,7 +77,7 @@
 
         <div class="event_bg" th:styleAppend="'background-image: url('+${bgimg}+');'">
 <!--        <div class="event_bg" >-->
-        <div style="padding:0px 0px 0px 20px;">
+        <div style="padding:0px 20px 0px 20px;">
 
 <!--        <div class="event_bg" style="padding:20px;">-->
 
@@ -102,22 +102,6 @@
 
             <div class="bt-02">
                 <div th:if="${teamtype =='Home'}">
-<!--                    <button th:onclick="|vote(${team}, ${event.id}, 1);|" class="marquee" style="background-color: #ec0f32;">-->
-<!--                            <span>[[${runevent.home1Name}]]</span>-->
-<!--                    </button>-->
-<!--                    <button th:onclick="|vote(${team}, ${event.id}, 2);|" class="marquee" style="background-color: #ec0f32;">-->
-<!--                            <span>[[${runevent.home2Name}]]</span>-->
-<!--                    </button>-->
-<!--                    <button th:onclick="|vote(${team}, ${event.id}, 3);|" class="marquee" style="background-color: #ec0f32;">-->
-<!--                        <span>[[${runevent.home3Name}]]</span>-->
-<!--                    </button>-->
-<!--                    <button th:onclick="|vote(${team}, ${event.id}, 4);|" class="marquee" style="background-color: #ec0f32;">-->
-<!--                        <span>[[${runevent.home4Name}]]</span>-->
-<!--                    </button>-->
-<!--                    <button th:onclick="|vote(${team}, ${event.id}, 5);|" class="marquee" style="background-color: #ec0f32;">-->
-<!--                        <span>[[${runevent.home5Name}]]</span>-->
-<!--                    </button>-->
-
                     <button th:onclick="|vote(${team}, ${event.id}, 1);|" class="marquee"
                             th:styleAppend="|background-color: ${homeColor}; color:${homeFont}|">
                         <span>[[${runevent.home1Name}]]</span>
@@ -141,22 +125,6 @@
 
                 </div>
                 <div th:if="${teamtype =='Away'}">
-<!--                    <button th:onclick="|vote(${team}, ${event.id}, 1);|" class="marquee" style="background-color: #326295;">-->
-<!--                        <span>[[${runevent.away1Name}]]</span>-->
-<!--                    </button>-->
-<!--                    <button th:onclick="|vote(${team}, ${event.id}, 2);|" class="marquee" style="background-color: #326295;">-->
-<!--                        <span>[[${runevent.away2Name}]]</span>-->
-<!--                    </button>-->
-<!--                    <button th:onclick="|vote(${team}, ${event.id}, 3);|" class="marquee" style="background-color: #326295;">-->
-<!--                        <span>[[${runevent.away3Name}]]</span>-->
-<!--                    </button>-->
-<!--                    <button th:onclick="|vote(${team}, ${event.id}, 4);|" class="marquee" style="background-color: #326295;">-->
-<!--                        <span>[[${runevent.away4Name}]]</span>-->
-<!--                    </button>-->
-<!--                    <button th:onclick="|vote(${team}, ${event.id}, 5);|" class="marquee" style="background-color: #326295;">-->
-<!--                        <span>[[${runevent.away5Name}]]</span>-->
-<!--                    </button>-->
-
                     <button th:onclick="|vote(${team}, ${event.id}, 1);|" class="marquee"
                             th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|">
                         <span>[[${runevent.away1Name}]]</span>
@@ -181,7 +149,8 @@
                 </div>
             </div>
 
-<!--            <button onclick="showActionSheet()">Show Action Sheet</button>-->
+            <button class="join_event"
+                    onclick="showActionSheet()">응원태그를 설정하면 +1표</button>
         </div>
         </div>
 
@@ -233,17 +202,79 @@
     </div>
 
 
-    <div class="action-sheet" id="actionSheet" onclick="hideActionSheet()">
+<!--    <div class="action-sheet" id="actionSheet" onclick="hideActionSheet()">-->
+<!--        <div class="action-options">-->
+<!--            <div class="option close" onclick="hideActionSheet()">Close</div>-->
+<!--            &lt;!&ndash; 여러 선택 옵션들 &ndash;&gt;-->
+<!--            -->
+<!--            <div class="option" onclick="handleOption('Option 1')">Option 1</div>-->
+<!--            <div class="option" onclick="handleOption('Option 2')">Option 2</div>-->
+<!--            <div class="option" onclick="handleOption('Option 3')">Option 3</div>-->
+<!--            <div class="option" onclick="handleOption('Option 1')">Option 1</div>-->
+<!--            <div class="option" onclick="handleOption('Option 2')">Option 2</div>-->
+<!--            <div class="option" onclick="handleOption('Option 3')">Option 3</div>-->
+<!--            <div class="option" onclick="handleOption('Option 1')">Option 1</div>-->
+<!--            <div class="option" onclick="handleOption('Option 2')">Option 2</div>-->
+<!--            <div class="option" onclick="handleOption('Option 3')">Option 3</div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+
+    <div class="action-sheet" id="actionSheet" >
         <div class="action-options">
-            <div class="option close" onclick="hideActionSheet()">Close</div>
-            <!-- 여러 선택 옵션들 -->
-            <div class="option" onclick="handleOption('Option 1')">Option 1</div>
-            <div class="option" onclick="handleOption('Option 2')">Option 2</div>
-            <div class="option" onclick="handleOption('Option 3')">Option 3</div>
+<!--            <div class="container">-->
+            <div class="option close" onclick="hideActionSheet()">닫기</div>
+            <div class="option">응원태그를 설정하시면 투표마다 1표씩 추가로 집계 됩니다.</div>
+
+            <ul class="ks-cboxtags">
+<!--                <li><input type="checkbox" id="checkbox1" ><label for="checkbox1">xxx 팀 화이팅</label></li>-->
+<!--                <li><input type="checkbox" id="checkbox2"  checked><label for="checkbox2">용병 교체</label></li>-->
+<!--                <li><input type="checkbox" id="checkbox3" value="Rarity" ><label for="checkbox3">A 선수 MVP</label></li>-->
+<!--                <li><input type="checkbox" id="checkbox4" value="Rainbow Dash"><label for="checkbox4">응원 Tag1</label></li>-->
+<!--                <li><input type="checkbox" id="checkbox5" value="Cotton Candy" checked><label for="checkbox5">응원 Tag2</label></li>-->
+<!--                <li><input type="checkbox" id="checkbox6" value="Rarity"><label for="checkbox6">응원 Tag3</label></li>-->
+<!--                <li><input type="checkbox" id="checkbox7" value="Rainbow Dash"><label for="checkbox7">응원 Tag4</label></li>-->
+
+
+                <li th:each="tag : ${tags}">
+                    <input type="checkbox"
+                           th:id="${tag.id}"
+                           th:value="${tag.value}"
+                           th:checked="${tag.checked} ? true : false">
+                    <label th:for="${tag.id}" th:text="${tag.label}"></label>
+                </li>
+
+            </ul>
+            <div class="option save" onclick="saveActionSheet()">저장하기</div>
         </div>
     </div>
 
 
+
+
+<!--    <div class="container">-->
+<!--        <ul class="ks-cboxtags">-->
+<!--            <li><input type="checkbox" id="checkboxOne" value="Rainbow Dash"><label for="checkboxOne">Rainbow Dash</label></li>-->
+<!--            <li><input type="checkbox" id="checkboxTwo" value="Cotton Candy" checked><label for="checkboxTwo">Cotton Candy</label></li>-->
+<!--            <li><input type="checkbox" id="checkboxThree" value="Rarity" checked><label for="checkboxThree">Rarity</label></li>-->
+<!--            <li><input type="checkbox" id="checkboxFour" value="Moondancer"><label for="checkboxFour">Moondancer</label></li>-->
+<!--            <li><input type="checkbox" id="checkboxFive" value="Surprise"><label for="checkboxFive">Surprise</label></li>-->
+<!--            <li><input type="checkbox" id="checkboxSix" value="Twilight Sparkle" checked><label for="checkboxSix">Twilight-->
+<!--                Sparkle</label></li>-->
+<!--            <li><input type="checkbox" id="checkboxSeven" value="Fluttershy"><label for="checkboxSeven">Fluttershy</label></li>-->
+<!--            <li><input type="checkbox" id="checkboxEight" value="Derpy Hooves"><label for="checkboxEight">Derpy Hooves</label></li>-->
+<!--            <li><input type="checkbox" id="checkboxNine" value="Princess Celestia"><label for="checkboxNine">Princess-->
+<!--                Celestia</label></li>-->
+<!--            <li><input type="checkbox" id="checkboxTen" value="Gusty"><label for="checkboxTen">Gusty</label></li>-->
+<!--            <li class="ks-selected"><input type="checkbox" id="checkboxEleven" value="Discord"><label for="checkboxEleven">Discord</label></li>-->
+<!--            <li><input type="checkbox" id="checkboxTwelve" value="Clover"><label for="checkboxTwelve">Clover</label></li>-->
+<!--            <li><input type="checkbox" id="checkboxThirteen" value="Baby Moondancer"><label for="checkboxThirteen">Baby-->
+<!--                Moondancer</label></li>-->
+<!--            <li><input type="checkbox" id="checkboxFourteen" value="Medley"><label for="checkboxFourteen">Medley</label></li>-->
+<!--            <li><input type="checkbox" id="checkboxFifteen" value="Firefly"><label for="checkboxFifteen">Firefly</label></li>-->
+<!--        </ul>-->
+
+<!--    </div>-->
 
     <script th:src="@{jquery/jquery-3.4.1.min.js}"></script>
     <script th:src="@{js/timer.js}"></script>
@@ -266,7 +297,7 @@
 
     <script>
         /// vote
-        function vote(teamType, eventId, eventType)
+        function vote_(teamType, eventId, eventType)
         {
             console.log("vote : ",teamType, eventId, eventType)
             $.ajax({
@@ -332,12 +363,92 @@
 
         }
 
+        function vote(teamType, eventId, eventType)
+        {
+            console.log("vote_tag : ",teamType, eventId, eventType)
+            let tagData = {};
+
+            $("input[type='checkbox']").each(function() {
+                tagData[$(this).attr("id")] = $(this).is(":checked");
+            });
+            console.log("tagData : ",tagData)
+            $.ajax({
+                url:  '/v1/vote/save-tag',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({  // 데이터를 JSON 문자열로 변환
+                    teamType: teamType,
+                    eventId: eventId,
+                    eventType: eventType,
+                    tags: tagData  // 체크박스 데이터
+                }),
+                dataType: 'json'
+            }).done(function(res) {
+                if (res) {
+                    console.log("res", res);
+                    var homeGraph = document.getElementById("home_graph");
+                    homeGraph.style.flexBasis=res.data.home;
+                    if(res.data.home === "100%")
+                        homeGraph.style.borderRadius="10px";
+                    else{
+                        homeGraph.style.borderTopRightRadius="0px";
+                        homeGraph.style.borderBottomRightRadius="0px";
+                    }
+                    var awayGraph = document.getElementById("away_graph");
+                    awayGraph.style.flexBasis=res.data.away;
+                    if(res.data.away === "100%")
+                        awayGraph.style.borderRadius="10px";
+                    else{
+                        awayGraph.style.borderTopLeftRadius="0px";
+                        awayGraph.style.borderBottomLeftRadius="0px";
+                    }
+
+                    // var homeStr = document.querySelector("#home_text").value;
+                    // var awayStr = document.querySelector("#away_text").value;
+                    // if(res.data.eventState === "START")
+                    // {
+                    //     document.getElementById("home_text").innerText = homeStr+" "+res.data.homeCount;
+                    //     document.getElementById("away_text").innerText = ""+res.data.awayCount+" " + awayStr;
+                    // }
+
+                    if(res.data.eventState === "START")
+                    {
+
+                        //document.getElementById("home_text").innerText = res.data.homeName + " " +res.data.homeCount;
+                        console.log(res.data.homeName, res.data.homeName.trim().length,  res.data.homeName.length, res.data.awayName, res.data.awayName.length);
+                        if(res.data.homeName.trim().length > 0 && res.data.awayName.trim().length > 0)
+                        {
+                            document.getElementById("home_text").innerText = ""+res.data.homeName + " " + res.data.homeCount;
+                            document.getElementById("away_text").innerText = ""+res.data.awayCount + " " + res.data.awayName;
+                        }
+                        else if(res.data.homeName.trim().length > 0)
+                        {
+                            document.getElementById("home_text").innerText = ""+res.data.homeName + " " + res.data.homeCount;
+                        }
+                        else if(res.data.awayName.trim().length > 0)
+                        {
+                            document.getElementById("away_text").innerText = ""+res.data.awayCount + " " + res.data.awayName;
+                        }
+
+                    }
+                } else {
+
+                }
+            });
+
+        }
+
         function showActionSheet() {
             document.getElementById("actionSheet").classList.add("active");
         }
 
         // Action Sheet 감추기
         function hideActionSheet() {
+            document.getElementById("actionSheet").classList.remove("active");
+        }
+
+        // Action Sheet 감추기
+        function saveActionSheet() {
             document.getElementById("actionSheet").classList.remove("active");
         }
 
