@@ -113,11 +113,41 @@ public class FullPortVideoActivity extends AppCompatActivity {
     public String mTextHome3;
     public String mTextHome4;
     public String mTextHome5;
+    public String mTextHome6;
+    public String mTextHome7;
+    public String mTextHome8;
+    public String mTextHome9;
+    public String mTextHome10;
+    public String mTextHome11;
+    public String mTextHome12;
+    public String mTextHome13;
+    public String mTextHome14;
+    public String mTextHome15;
+    public String mTextHome16;
+    public String mTextHome17;
+    public String mTextHome18;
+    public String mTextHome19;
+    public String mTextHome20;
     public String mTextAway1;
     public String mTextAway2;
     public String mTextAway3;
     public String mTextAway4;
     public String mTextAway5;
+    public String mTextAway6;
+    public String mTextAway7;
+    public String mTextAway8;
+    public String mTextAway9;
+    public String mTextAway10;
+    public String mTextAway11;
+    public String mTextAway12;
+    public String mTextAway13;
+    public String mTextAway14;
+    public String mTextAway15;
+    public String mTextAway16;
+    public String mTextAway17;
+    public String mTextAway18;
+    public String mTextAway19;
+    public String mTextAway20;
 
     private int mVolume;
 
@@ -663,9 +693,12 @@ public class FullPortVideoActivity extends AppCompatActivity {
 
     private String getHomeRankMusic(int[] arrRank, int rank)
     {
-        String[] homeMusics = {mTextHome1, mTextHome2, mTextHome3, mTextHome4, mTextHome5};
+        String[] homeMusics = {mTextHome1, mTextHome2, mTextHome3, mTextHome4, mTextHome5,
+                mTextHome6, mTextHome7, mTextHome8, mTextHome8, mTextHome10,
+                mTextHome11, mTextHome12, mTextHome13, mTextHome14, mTextHome15,
+                mTextHome16, mTextHome17, mTextHome18, mTextHome19, mTextHome20};
         String result = "";
-        for(int i = 0; i < 5; i++)
+        for(int i = 0; i < arrRank.length; i++)
         {
             if(arrRank[i] == rank)
             {
@@ -678,9 +711,12 @@ public class FullPortVideoActivity extends AppCompatActivity {
 
     private String getAwayRankMusic(int[] arrRank, int rank)
     {
-        String[] awayMusics = {mTextAway1, mTextAway2, mTextAway3, mTextAway4, mTextAway5};
+        String[] awayMusics = {mTextAway1, mTextAway2, mTextAway3, mTextAway4, mTextAway5,
+                mTextAway6, mTextAway7, mTextAway8, mTextAway9, mTextAway10,
+                mTextAway10, mTextAway12, mTextAway13, mTextAway14, mTextAway15,
+                mTextAway16, mTextAway17, mTextAway18, mTextAway19, mTextAway20 };
         String result = "";
-        for(int i = 0; i < 5; i++)
+        for(int i = 0; i < arrRank.length; i++)
         {
             if(arrRank[i] == rank)
             {
@@ -795,21 +831,63 @@ public class FullPortVideoActivity extends AppCompatActivity {
         int max = runEvent.getHome1Count();
         String name = mTextHome1;
         if(max < runEvent.getHome2Count()){
-            max = runEvent.getHome2Count();
-            name = mTextHome2;
+            max = runEvent.getHome2Count(); name = mTextHome2;
         }
         if(max < runEvent.getHome3Count()){
-            max = runEvent.getHome3Count();
-            name = mTextHome3;
+            max = runEvent.getHome3Count(); name = mTextHome3;
         }
         if(max < runEvent.getHome4Count()){
-            max = runEvent.getHome4Count();
-            name = mTextHome4;
+            max = runEvent.getHome4Count(); name = mTextHome4;
         }
         if(max < runEvent.getHome5Count()){
-            max = runEvent.getHome5Count();
-            name = mTextHome5;
+            max = runEvent.getHome5Count(); name = mTextHome5;
         }
+        if(max < runEvent.getHome6Count()){
+            max = runEvent.getHome6Count(); name = mTextHome6;
+        }
+        if(max < runEvent.getHome7Count()){
+            max = runEvent.getHome7Count(); name = mTextHome7;
+        }
+        if(max < runEvent.getHome8Count()){
+            max = runEvent.getHome8Count(); name = mTextHome8;
+        }
+        if(max < runEvent.getHome9Count()){
+            max = runEvent.getHome9Count(); name = mTextHome9;
+        }
+        if(max < runEvent.getHome10Count()){
+            max = runEvent.getHome10Count(); name = mTextHome10;
+        }
+        if(max < runEvent.getHome11Count()){
+            max = runEvent.getHome11Count(); name = mTextHome11;
+        }
+        if(max < runEvent.getHome12Count()){
+            max = runEvent.getHome12Count(); name = mTextHome12;
+        }
+        if(max < runEvent.getHome13Count()){
+            max = runEvent.getHome13Count(); name = mTextHome13;
+        }
+        if(max < runEvent.getHome14Count()){
+            max = runEvent.getHome14Count(); name = mTextHome14;
+        }
+        if(max < runEvent.getHome15Count()){
+            max = runEvent.getHome15Count(); name = mTextHome15;
+        }
+        if(max < runEvent.getHome16Count()){
+            max = runEvent.getHome16Count(); name = mTextHome16;
+        }
+        if(max < runEvent.getHome17Count()){
+            max = runEvent.getHome17Count(); name = mTextHome17;
+        }
+        if(max < runEvent.getHome18Count()){
+            max = runEvent.getHome18Count(); name = mTextHome18;
+        }
+        if(max < runEvent.getHome19Count()){
+            max = runEvent.getHome19Count(); name = mTextHome19;
+        }
+        if(max < runEvent.getHome20Count()){
+            max = runEvent.getHome20Count(); name = mTextHome20;
+        }
+
         return name;
     }
 
@@ -817,8 +895,7 @@ public class FullPortVideoActivity extends AppCompatActivity {
         int max = runEvent.getAway1Count();
         String name = mTextAway1;
         if(max < runEvent.getAway2Count()){
-            max = runEvent.getAway2Count();
-            name = mTextAway2;
+            max = runEvent.getAway2Count(); name = mTextAway2;
         }
         if(max < runEvent.getAway3Count()){
             max = runEvent.getAway3Count();
@@ -831,6 +908,51 @@ public class FullPortVideoActivity extends AppCompatActivity {
         if(max < runEvent.getAway5Count()){
             max = runEvent.getAway5Count();
             name = mTextAway5;
+        }
+        if(max < runEvent.getAway6Count()){
+            max = runEvent.getAway6Count(); name = mTextAway6;
+        }
+        if(max < runEvent.getAway7Count()){
+            max = runEvent.getAway7Count(); name = mTextAway7;
+        }
+        if(max < runEvent.getAway8Count()){
+            max = runEvent.getAway8Count(); name = mTextAway8;
+        }
+        if(max < runEvent.getAway9Count()){
+            max = runEvent.getAway9Count(); name = mTextAway9;
+        }
+        if(max < runEvent.getAway10Count()){
+            max = runEvent.getAway10Count(); name = mTextAway10;
+        }
+        if(max < runEvent.getAway11Count()){
+            max = runEvent.getAway11Count(); name = mTextAway11;
+        }
+        if(max < runEvent.getAway12Count()){
+            max = runEvent.getAway12Count(); name = mTextAway12;
+        }
+        if(max < runEvent.getAway13Count()){
+            max = runEvent.getAway13Count(); name = mTextAway13;
+        }
+        if(max < runEvent.getAway14Count()){
+            max = runEvent.getAway14Count(); name = mTextAway14;
+        }
+        if(max < runEvent.getAway15Count()){
+            max = runEvent.getAway15Count(); name = mTextAway15;
+        }
+        if(max < runEvent.getAway16Count()){
+            max = runEvent.getAway16Count(); name = mTextAway16;
+        }
+        if(max < runEvent.getAway17Count()){
+            max = runEvent.getAway17Count(); name = mTextAway17;
+        }
+        if(max < runEvent.getAway18Count()){
+            max = runEvent.getAway18Count(); name = mTextAway18;
+        }
+        if(max < runEvent.getAway19Count()){
+            max = runEvent.getAway19Count(); name = mTextAway19;
+        }
+        if(max < runEvent.getAway20Count()){
+            max = runEvent.getAway20Count(); name = mTextAway20;
         }
         return name;
     }
@@ -862,25 +984,95 @@ public class FullPortVideoActivity extends AppCompatActivity {
             case 4:
                 mTextHome5 = name;
                 break;
+            case 5:
+                mTextHome6 = name;
+                break;
+            case 6:
+                mTextHome7 = name;
+                break;
+            case 7:
+                mTextHome8 = name;
+                break;
+            case 8:
+                mTextHome9 = name;
+                break;
+            case 9:
+                mTextHome10 = name;
+                break;
+            case 10:
+                mTextHome11 = name;
+                break;
+            case 11:
+                mTextHome12 = name;
+                break;
+            case 12:
+                mTextHome13 = name;
+                break;
+            case 13:
+                mTextHome14 = name;
+                break;
+            case 14:
+                mTextHome15 = name;
+                break;
+            case 15:
+                mTextHome16 = name;
+                break;
+            case 16:
+                mTextHome17 = name;
+                break;
+            case 17:
+                mTextHome18 = name;
+                break;
+            case 18:
+                mTextHome19 = name;
+                break;
+            case 19:
+                mTextHome20 = name;
+                break;
         }
     }
     private void setAwayMusicSequenc(int sequenc, String name){
         switch (sequenc){
             case 0:
-                mTextAway1 = name;
-                break;
+                mTextAway1 = name; break;
             case 1:
-                mTextAway2 = name;
-                break;
+                mTextAway2 = name; break;
             case 2:
-                mTextAway3 = name;
-                break;
+                mTextAway3 = name; break;
             case 3:
-                mTextAway4 = name;
-                break;
+                mTextAway4 = name; break;
             case 4:
-                mTextAway5 = name;
-                break;
+                mTextAway5 = name; break;
+            case 5:
+                mTextAway6 = name; break;
+            case 6:
+                mTextAway7 = name; break;
+            case 7:
+                mTextAway8 = name; break;
+            case 8:
+                mTextAway9 = name; break;
+            case 9:
+                mTextAway10 = name; break;
+            case 10:
+                mTextAway11 = name; break;
+            case 11:
+                mTextAway12 = name; break;
+            case 12:
+                mTextAway13 = name; break;
+            case 13:
+                mTextAway14 = name; break;
+            case 14:
+                mTextAway15 = name; break;
+            case 15:
+                mTextAway16 = name; break;
+            case 16:
+                mTextAway17 = name; break;
+            case 17:
+                mTextAway18 = name; break;
+            case 18:
+                mTextAway19 = name; break;
+            case 19:
+                mTextAway20 = name; break;
         }
     }
 
