@@ -1,5 +1,9 @@
 package kr.co.thiscat.stadiumampsetting;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.PictureInPictureParams;
 import android.app.ProgressDialog;
@@ -700,14 +704,50 @@ public class FullVideoActivity extends AppCompatActivity {
         return result;
     }
 
+    private void changeTextWithScale(TextView textView, String text) {
+        ObjectAnimator scaleX = ObjectAnimator.ofFloat(textView, "scaleX", 1f, 0f);
+        scaleX.setDuration(200);
+        scaleX.start();
+
+        scaleX.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                textView.setText(text);
+
+                ObjectAnimator scaleXBack = ObjectAnimator.ofFloat(textView, "scaleX", 0f, 1f);
+                scaleXBack.setDuration(200);
+                scaleXBack.start();
+            }
+        });
+    }
+
+    private void animateTextSize(TextView textView) {
+        ValueAnimator animator = ValueAnimator.ofFloat(16f, 26f, 16f);  // 텍스트 크기 변경 (sp)
+        animator.setDuration(300);
+        animator.addUpdateListener(animation -> {
+            float textSize = (float) animation.getAnimatedValue();
+            textView.setTextSize(textSize);
+        });
+        animator.start();
+    }
+
     private void updateScoreValue(RunEvent runEvent, final int home, final int away)
     {
         runOnUiThread(new Runnable()
         {
             @Override
             public void run() {
+                String oldHome = mTextHome.getText().toString();
+                String oldAway = mTextAway.getText().toString();
                 mTextHome.setText("" + home);
                 mTextAway.setText("" + away);
+                String nowHome = mTextHome.getText().toString();
+                String nowAway = mTextAway.getText().toString();
+                if(!oldHome.equalsIgnoreCase(nowHome))
+                    animateTextSize(mTextHome);
+                if(!oldAway.equalsIgnoreCase(nowAway))
+                    animateTextSize(mTextAway);
+
                 int homwVal = home;
                 int awayVal = away;
                 if (homwVal == awayVal && homwVal == 0) {
@@ -718,10 +758,10 @@ public class FullVideoActivity extends AppCompatActivity {
                 mTextHomeName.setText(runEvent.getHomeName());
                 mTextAwayName.setText(runEvent.getAwayName());
 
-                ViewGroup.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, homwVal);
+                ViewGroup.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, homwVal);
                 mTextHome.setLayoutParams(params);
 
-                ViewGroup.LayoutParams params1 = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, awayVal);
+                ViewGroup.LayoutParams params1 = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, awayVal);
                 mTextAway.setLayoutParams(params1);
 
                 String imageType = "IMAGE_DEFAULT";

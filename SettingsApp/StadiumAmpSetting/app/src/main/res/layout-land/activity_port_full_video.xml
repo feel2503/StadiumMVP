@@ -95,7 +95,7 @@
                         <LinearLayout
                             android:id="@+id/linear_score"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="50dp"
                             android:orientation="horizontal">
 
                             <TextView
@@ -104,7 +104,6 @@
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:gravity="center"
-                                android:padding="15dp"
                                 android:textColor="@color/white"
                                 android:background="@drawable/bg_round_2552d9"
                                 android:text="" />
@@ -114,7 +113,6 @@
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:gravity="center"
-                                android:padding="15dp"
                                 android:textColor="@color/white"
                                 android:background="@drawable/bg_round_f23827"
                                 android:text="" />
