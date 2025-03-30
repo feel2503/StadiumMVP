@@ -1,101 +1,119 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="shortcut icon" href="favicon.ico">
-    <meta http-equiv="X-UA-Compatible" content="IE=9;IE=10;IE=Edge,chrome=1"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <title>Welcome to Stadium AMP</title>
+    <title>게시글 리스트 페이지</title>
+    <style>
+        .layout {
+            width: 90%;
+            margin: 40px auto;
+            font-family: Arial, sans-serif;
+        }
 
-    <!-- Global CSS -->
-    <link rel="stylesheet" href="css/style.css">
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        a {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .pagination a, .pagination strong {
+            margin: 0 5px;
+            padding: 5px 10px;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .pagination strong {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
 </head>
-<body >
-    <div class="flexbox_cont">
-        <h1>Server 테이블</h1>
-        <table border="1">
-            <tr>
-                <th>Server ID</th>
-                <th>Server Name</th>
-            </tr>
-            <tr th:each="server : ${server}">
-                <td th:text="${server.id}">Server ID</td>
-                <td th:text="${server.name}">Server Name</td>
-            </tr>
-        </table>
+<body>
+<div class="layout">
+    <h1>Server 테이블</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>Server ID</th>
+            <th>Server Name</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="server : ${server}">
+            <td th:text="${server.id}">Server ID</td>
+            <td th:text="${server.name}">Server Name</td>
+        </tr>
+        </tbody>
+    </table>
 
+    <h1>Event 테이블</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>Server</th>
+            <th>Event</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Event Time</th>
+            <th>State</th>
+            <th>Result</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="event : ${event}">
+            <td th:text="${event.eventId}">1</td>
+            <td>
+                <a th:text="${event.id}" th:href="@{/result/view(id=${event.id})}">제목입니다.</a>
+            </td>
+            <td th:text="${event.strStartDateTime}">2025-03-22 15:53:18</td>
+            <td th:text="${event.strEndDateTime}">2025-03-22 15:53:18</td>
+            <td th:text="${event.duration}">0h 5m 4s</td>
+            <td th:text="${event.eventState}">STOP</td>
+            <td th:text="${event.result}">Home1</td>
+        </tr>
+        </tbody>
+    </table>
 
-        <h1>Event 테이블</h1>
-
-        <table border="1">
-            <tr>
-                <th>Event ID</th>
-                <th>RunEvent</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>State</th>
-                <th>Result</th>
-                <th>Home</th>
-                <th>H1</th>
-                <th>H2</th>
-                <th>H3</th>
-                <th>H4</th>
-                <th>H5</th>
-                <th>Away</th>
-                <th>A1</th>
-                <th>A2</th>
-                <th>A3</th>
-                <th>A4</th>
-                <th>A5</th>
-                <th>t0</th>
-                <th>t1</th>
-                <th>t2</th>
-                <th>t3</th>
-                <th>t4</th>
-                <th>t5</th>
-                <th>t6</th>
-                <th>t7</th>
-                <th>t8</th>
-                <th>t9</th>
-
-
-            </tr>
-            <tr th:each="event : ${event}">
-                <td th:text="${event.eventId}">Event ID</td>
-                <td th:text="${event.id}">RunEvent ID</td>
-                <td th:text="${event.startDateTime}">Start Date</td>
-                <td th:text="${event.endDateTime}">End Date</td>
-                <td th:text="${event.eventState}">State</td>
-                <td th:text="${event.result}">Result</td>
-                <td th:text="${event.homeCount}">Home Count</td>
-                <td th:text="${event.home1Count}">Home1 Count</td>
-                <td th:text="${event.home2Count}">Home2 Count</td>
-                <td th:text="${event.home3Count}">Home3 Count</td>
-                <td th:text="${event.home4Count}">Home4 Count</td>
-                <td th:text="${event.home5Count}">Home5 Count</td>
-
-                <td th:text="${event.awayCount}">Away Count</td>
-                <td th:text="${event.away1Count}">Away1 Count</td>
-                <td th:text="${event.away2Count}">Away2 Count</td>
-                <td th:text="${event.away3Count}">Away3 Count</td>
-                <td th:text="${event.away4Count}">Away4 Count</td>
-                <td th:text="${event.away5Count}">Away5 Count</td>
-
-                <td th:text="${event.tag0}">tag0 Count</td>
-                <td th:text="${event.tag1}">tag0 Count</td>
-                <td th:text="${event.tag2}">tag0 Count</td>
-                <td th:text="${event.tag3}">tag0 Count</td>
-                <td th:text="${event.tag4}">tag0 Count</td>
-                <td th:text="${event.tag5}">tag0 Count</td>
-                <td th:text="${event.tag6}">tag0 Count</td>
-                <td th:text="${event.tag7}">tag0 Count</td>
-                <td th:text="${event.tag8}">tag0 Count</td>
-                <td th:text="${event.tag9}">tag0 Count</td>
-            </tr>
-        </table>
+    <div class="pagination">
+        <th:block th:each="page : ${#numbers.sequence(startPage, endPage)}">
+            <a th:if="${page != nowPage}" th:href="@{/result(page = ${page-1})}" th:text="${page}"></a>
+            <strong th:if="${page == nowPage}" th:text="${page}"></strong>
+        </th:block>
     </div>
+</div>
 </body>
 </html>

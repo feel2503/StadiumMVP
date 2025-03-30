@@ -4,12 +4,14 @@ import com.thiscat.stadiumamp.dto.*;
 import com.thiscat.stadiumamp.dto.request.*;
 import com.thiscat.stadiumamp.entity.*;
 import com.thiscat.stadiumamp.entity.repository.*;
+import com.thiscat.stadiumamp.entity.value.TeamType;
 import com.thiscat.stadiumamp.rest.service.RestService;
 import com.thiscat.stadiumamp.system.common.ApiResultResponse;
 import com.thiscat.stadiumamp.system.common.ApiResultWithValue;
 import com.thiscat.stadiumamp.system.common.InputRequestBodyWriteFile;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,7 @@ public class RestApiController extends BaseController{
     private RunEventRepository runEventRepository;
     @Autowired
     private CheertagRepository cheertagRepository;
+
 
 
     Logger logger = LoggerFactory.getLogger(RestApiController.class);
@@ -346,12 +349,42 @@ public class RestApiController extends BaseController{
                 .home3Count(runEvent.getHome3Count())
                 .home4Count(runEvent.getHome4Count())
                 .home5Count(runEvent.getHome5Count())
+                .home6Count(runEvent.getHome6Count())
+                .home7Count(runEvent.getHome7Count())
+                .home8Count(runEvent.getHome8Count())
+                .home9Count(runEvent.getHome9Count())
+                .home10Count(runEvent.getHome10Count())
+                .home11Count(runEvent.getHome11Count())
+                .home12Count(runEvent.getHome12Count())
+                .home13Count(runEvent.getHome13Count())
+                .home14Count(runEvent.getHome14Count())
+                .home15Count(runEvent.getHome15Count())
+                .home16Count(runEvent.getHome16Count())
+                .home17Count(runEvent.getHome17Count())
+                .home18Count(runEvent.getHome18Count())
+                .home19Count(runEvent.getHome19Count())
+                .home20Count(runEvent.getHome20Count())
                 .awayCount(runEvent.getAwayCount())
                 .away1Count(runEvent.getAway1Count())
                 .away2Count(runEvent.getAway2Count())
                 .away3Count(runEvent.getAway3Count())
                 .away4Count(runEvent.getAway4Count())
                 .away5Count(runEvent.getAway5Count())
+                .away6Count(runEvent.getAway6Count())
+                .away7Count(runEvent.getAway7Count())
+                .away8Count(runEvent.getAway8Count())
+                .away9Count(runEvent.getAway9Count())
+                .away10Count(runEvent.getAway10Count())
+                .away11Count(runEvent.getAway11Count())
+                .away12Count(runEvent.getAway12Count())
+                .away13Count(runEvent.getAway13Count())
+                .away14Count(runEvent.getAway14Count())
+                .away15Count(runEvent.getAway15Count())
+                .away16Count(runEvent.getAway16Count())
+                .away17Count(runEvent.getAway17Count())
+                .away18Count(runEvent.getAway18Count())
+                .away19Count(runEvent.getAway19Count())
+                .away20Count(runEvent.getAway20Count())
                 .build();
         return getResponseEntity( runEventDto, "success", HttpStatus.OK);
     }
@@ -779,6 +812,8 @@ public class RestApiController extends BaseController{
     }
 
 
+
+
     @ApiOperation(value = "Add Event Server")
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @PostMapping(value = "/v2/server/externalURL1", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -801,6 +836,61 @@ public class RestApiController extends BaseController{
         event.setWebImg(external2Dto.getWebImg());
 
         eventRepository.save(event);
+
+        return getResponseEntity( "success", HttpStatus.OK);
+    }
+
+    @Transactional
+    @ApiOperation(value = "Set Event music")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PostMapping(value = "/v2/server/set-event-music", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultResponse> setEventMusic2(@RequestBody ReqEventMusics2 reqEventMusics) throws Exception {
+        Event event = eventRepository.findById(reqEventMusics.getEventId()).orElseThrow(()->new Exception("event-not-found"));
+        if(reqEventMusics.getHomeMusics() != null || reqEventMusics.getAwayMusics() != null)
+        {
+            eventMusicRepository.deleteAllByEvent(event);
+        }
+        if(reqEventMusics.getHomeMusics() != null && reqEventMusics.getHomeMusics().size() > 0)
+        {
+            ArrayList<EventMusic> homeMusics = new ArrayList<>();
+            for(int i = 0; i < reqEventMusics.getHomeMusics().size(); i++)
+            {
+//                EventMusicDto2 eventMusicDto2 = reqEventMusics.getHomeMusics().get(i);
+//                Music music = musicRepository.findById(eventMusicDto2.getMusicId()).orElse(null);
+                Long eventMusicDto2 = reqEventMusics.getHomeMusics().get(i);
+                Music music = musicRepository.findById(eventMusicDto2).orElse(null);
+                EventMusic eventMusic = EventMusic.builder()
+                        .event(event)
+                        .music(music)
+                        .sequence(i)
+                        .teamType(TeamType.TEAM_HOME)
+                        .build();
+
+                homeMusics.add(eventMusic);
+            }
+            eventMusicRepository.saveAll(homeMusics);
+        }
+
+        if(reqEventMusics.getAwayMusics() != null && reqEventMusics.getAwayMusics().size() > 0)
+        {
+            ArrayList<EventMusic> awayMusics = new ArrayList<>();
+            for(int i = 0; i < reqEventMusics.getAwayMusics().size(); i++)
+            {
+//                EventMusicDto2 eventMusicDto2 = reqEventMusics.getAwayMusics().get(i);
+//                Music music = musicRepository.findById(eventMusicDto2.getMusicId()).orElse(null);
+                Long eventMusicDto2 = reqEventMusics.getAwayMusics().get(i);
+                Music music = musicRepository.findById(eventMusicDto2).orElse(null);
+                EventMusic eventMusic = EventMusic.builder()
+                        .event(event)
+                        .music(music)
+                        .sequence(i)
+                        .teamType(TeamType.TEAM_AWAY)
+                        .build();
+
+                awayMusics.add(eventMusic);
+            }
+            eventMusicRepository.saveAll(awayMusics);
+        }
 
         return getResponseEntity( "success", HttpStatus.OK);
     }

@@ -16,7 +16,9 @@ public interface EventMusicRepository extends JpaRepository<EventMusic, Long> {
             value = " select em.event_id, em.music_id, em.team_type, em.sequence, m.music_name, m.music_url "      +
                     "   FROM event_music em  "                                                   +
                     "   left join music m on em.music_id=m.music_id "           +
-                    "   WHERE em.event_id = :eventId   ",
+                    "   WHERE em.event_id = :eventId order by sequence  ",
             nativeQuery = true)
     List<Object[]> findAllEventMusic(Long eventId);
+
+    void deleteAllByEvent(Event event);
 }

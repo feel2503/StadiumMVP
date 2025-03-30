@@ -12,6 +12,8 @@ import java.util.Optional;
 
 public interface RunEventRepository extends JpaRepository<RunEvent, Long> {
 
+    Optional<RunEvent> findById(Long id);
+
     Optional<RunEvent> findByEvent(Event event);
 
     @Query(
@@ -21,6 +23,9 @@ public interface RunEventRepository extends JpaRepository<RunEvent, Long> {
     Optional<RunEvent> findByEventLimit(Long eventId);
 
     Optional<RunEvent> findFirstByEventOrderByIdDesc(Event event);
+
+
+    Page<RunEvent> findAll(Pageable var1);
 
 
     List<RunEvent> findAllByOrderByIdAsc();

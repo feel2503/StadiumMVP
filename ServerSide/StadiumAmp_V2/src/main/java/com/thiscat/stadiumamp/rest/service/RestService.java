@@ -10,6 +10,7 @@ import com.thiscat.stadiumamp.rest.RestApiController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.math.BigInteger;
@@ -353,8 +354,8 @@ public class RestService {
             }
             else
             {
-                RunEvent resultEvent = updateVoteCount(runEvent, voteDto.getTeamType(), voteDto.getEventType());
-                resultEvent = updateTagState(runEvent, voteDto);
+                updateVoteCount(runEvent, voteDto.getTeamType(), voteDto.getEventType());
+                updateTagState(runEvent, voteDto);
                 if(runEvent.getHomeCount() != null)
                     homeCount = runEvent.getHomeCount();
                 if(runEvent.getAwayCount() != null)
@@ -362,7 +363,7 @@ public class RestService {
 
                 if(triVote <= homeCount || triVote <= awayCount)
                 {
-                    RunEventDto runEventDto = stopEvent(resultEvent);
+                    RunEventDto runEventDto = stopEvent(runEvent);
                     voteResultDto.setEventState("STOP");
 
 
@@ -406,6 +407,11 @@ public class RestService {
         return voteResultDto;
     }
 
+    private Integer addNullAbleValue(Integer value, Integer addVal)
+    {
+        return value != null ? value + addVal : addVal;
+    }
+
     public RunEvent updateVoteCount(RunEvent runEvent, String teamType, Long eventType)
     {
         int voteCount = 1;
@@ -420,47 +426,110 @@ public class RestService {
                 total += homeCount;
             runEvent.setHomeCount(total);
 
-            if(eventType == 1)
+            switch (eventType.intValue())
             {
-                Integer home1 = runEvent.getHome1Count();
-                int tot1 = voteCount;
-                if(home1 != null)
-                    tot1 += home1;
-                runEvent.setHome1Count(tot1);
-            }
-            else if(eventType == 2)
-            {
-                Integer home2 = runEvent.getHome2Count();
-                int tot2 = voteCount;
-                if(home2 != null)
-                    tot2 += home2;
-                runEvent.setHome2Count(tot2);
-            }
-            else if(eventType == 3)
-            {
-                Integer home = runEvent.getHome3Count();
-                int tot2 = voteCount;
-                if(home != null)
-                    tot2 += home;
-                runEvent.setHome3Count(tot2);
-            }
-            else if(eventType == 4)
-            {
-                Integer home2 = runEvent.getHome4Count();
-                int tot2 = voteCount;
-                if(home2 != null)
-                    tot2 += home2;
-                runEvent.setHome4Count(tot2);
-            }
-            else if(eventType == 5)
-            {
-                Integer home2 = runEvent.getHome5Count();
-                int tot2 = voteCount;
-                if(home2 != null)
-                    tot2 += home2;
-                runEvent.setHome5Count(tot2);
+                case 1:
+                    runEvent.setHome1Count(addNullAbleValue(runEvent.getHome1Count(), voteCount));
+                    break;
+                case 2:
+                    runEvent.setHome2Count(addNullAbleValue(runEvent.getHome2Count(), voteCount));
+                    break;
+                case 3:
+                    runEvent.setHome3Count(addNullAbleValue(runEvent.getHome3Count() , voteCount));
+                    break;
+                case 4:
+                    runEvent.setHome4Count(addNullAbleValue(runEvent.getHome4Count() , voteCount));
+                    break;
+                case 5:
+                    runEvent.setHome5Count(addNullAbleValue(runEvent.getHome5Count() , voteCount));
+                    break;
+                case 6:
+                    runEvent.setHome6Count(addNullAbleValue(runEvent.getHome6Count() , voteCount));
+                    break;
+                case 7:
+                    runEvent.setHome7Count(addNullAbleValue(runEvent.getHome7Count() , voteCount));
+                    break;
+                case 8:
+                    runEvent.setHome8Count(addNullAbleValue(runEvent.getHome8Count() , voteCount));
+                    break;
+                case 9:
+                    runEvent.setHome9Count(addNullAbleValue(runEvent.getHome9Count() , voteCount));
+                    break;
+                case 10:
+                    runEvent.setHome10Count(addNullAbleValue(runEvent.getHome10Count() , voteCount));
+                    break;
+                case 11:
+                    runEvent.setHome11Count(addNullAbleValue(runEvent.getHome11Count() , voteCount));
+                    break;
+                case 12:
+                    runEvent.setHome12Count(addNullAbleValue(runEvent.getHome12Count() , voteCount));
+                    break;
+                case 13:
+                    runEvent.setHome13Count(addNullAbleValue(runEvent.getHome13Count() , voteCount));
+                    break;
+                case 14:
+                    runEvent.setHome14Count(addNullAbleValue(runEvent.getHome14Count() , voteCount));
+                    break;
+                case 15:
+                    runEvent.setHome15Count(addNullAbleValue(runEvent.getHome15Count() , voteCount));
+                    break;
+                case 16:
+                    runEvent.setHome16Count(addNullAbleValue(runEvent.getHome16Count() , voteCount));
+                    break;
+                case 17:
+                    runEvent.setHome17Count(addNullAbleValue(runEvent.getHome17Count(), voteCount));
+                    break;
+                case 18:
+                    runEvent.setHome18Count(addNullAbleValue(runEvent.getHome18Count() , voteCount));
+                    break;
+                case 19:
+                    runEvent.setHome19Count(addNullAbleValue(runEvent.getHome19Count() , voteCount));
+                    break;
+                case 20:
+                    runEvent.setHome20Count(addNullAbleValue(runEvent.getHome20Count() , voteCount));
+                    break;
             }
 
+//            if(eventType == 1)
+//            {
+//                Integer home1 = runEvent.getHome1Count();
+//                int tot1 = voteCount;
+//                if(home1 != null)
+//                    tot1 += home1;
+//                runEvent.setHome1Count(tot1);
+//            }
+//            else if(eventType == 2)
+//            {
+//                Integer home2 = runEvent.getHome2Count();
+//                int tot2 = voteCount;
+//                if(home2 != null)
+//                    tot2 += home2;
+//                runEvent.setHome2Count(tot2);
+//            }
+//            else if(eventType == 3)
+//            {
+//                Integer home = runEvent.getHome3Count();
+//                int tot2 = voteCount;
+//                if(home != null)
+//                    tot2 += home;
+//                runEvent.setHome3Count(tot2);
+//            }
+//            else if(eventType == 4)
+//            {
+//                Integer home2 = runEvent.getHome4Count();
+//                int tot2 = voteCount;
+//                if(home2 != null)
+//                    tot2 += home2;
+//                runEvent.setHome4Count(tot2);
+//            }
+//            else if(eventType == 5)
+//            {
+//                Integer home2 = runEvent.getHome5Count();
+//                int tot2 = voteCount;
+//                if(home2 != null)
+//                    tot2 += home2;
+//                runEvent.setHome5Count(tot2);
+//            }
         }
         else
         {
@@ -470,46 +539,110 @@ public class RestService {
                 total += awayCount;
             runEvent.setAwayCount(total);
 
-            if(eventType == 1)
+            switch (eventType.intValue())
             {
-                Integer away = runEvent.getAway1Count();
-                int tot = voteCount;
-                if(away != null)
-                    tot += away;
-                runEvent.setAway1Count(tot);
+                case 1:
+                    runEvent.setAway1Count(addNullAbleValue(runEvent.getAway1Count() , voteCount));
+                    break;
+                case 2:
+                    runEvent.setAway2Count(addNullAbleValue(runEvent.getAway2Count() , voteCount));
+                    break;
+                case 3:
+                    runEvent.setAway3Count(addNullAbleValue(runEvent.getAway3Count() , voteCount));
+                    break;
+                case 4:
+                    runEvent.setAway4Count(addNullAbleValue(runEvent.getAway4Count() , voteCount));
+                    break;
+                case 5:
+                    runEvent.setAway5Count(addNullAbleValue(runEvent.getAway5Count() , voteCount));
+                    break;
+                case 6:
+                    runEvent.setAway6Count(addNullAbleValue(runEvent.getAway6Count() , voteCount));
+                    break;
+                case 7:
+                    runEvent.setAway7Count(addNullAbleValue(runEvent.getAway7Count() , voteCount));
+                    break;
+                case 8:
+                    runEvent.setAway8Count(addNullAbleValue(runEvent.getAway8Count() , voteCount));
+                    break;
+                case 9:
+                    runEvent.setAway9Count(addNullAbleValue(runEvent.getAway9Count() , voteCount));
+                    break;
+                case 10:
+                    runEvent.setAway10Count(addNullAbleValue(runEvent.getAway10Count() , voteCount));
+                    break;
+                case 11:
+                    runEvent.setAway11Count(addNullAbleValue(runEvent.getAway11Count() , voteCount));
+                    break;
+                case 12:
+                    runEvent.setAway12Count(addNullAbleValue(runEvent.getAway12Count() , voteCount));
+                    break;
+                case 13:
+                    runEvent.setAway13Count(addNullAbleValue(runEvent.getAway13Count() , voteCount));
+                    break;
+                case 14:
+                    runEvent.setAway14Count(addNullAbleValue(runEvent.getAway14Count() , voteCount));
+                    break;
+                case 15:
+                    runEvent.setAway15Count(addNullAbleValue(runEvent.getAway15Count() , voteCount));
+                    break;
+                case 16:
+                    runEvent.setAway16Count(addNullAbleValue(runEvent.getAway16Count() , voteCount));
+                    break;
+                case 17:
+                    runEvent.setAway17Count(addNullAbleValue(runEvent.getAway17Count() , voteCount));
+                    break;
+                case 18:
+                    runEvent.setAway18Count(addNullAbleValue(runEvent.getAway18Count() , voteCount));
+                    break;
+                case 19:
+                    runEvent.setAway19Count(addNullAbleValue(runEvent.getAway19Count() , voteCount));
+                    break;
+                case 20:
+                    runEvent.setAway20Count(addNullAbleValue(runEvent.getAway20Count() , voteCount));
+                    break;
             }
-            else if(eventType == 2)
-            {
-                Integer away = runEvent.getAway2Count();
-                int tot = voteCount;
-                if(away != null)
-                    tot += away;
-                runEvent.setAway2Count(tot);
-            }
-            else if(eventType == 3)
-            {
-                Integer away = runEvent.getAway3Count();
-                int tot = voteCount;
-                if(away != null)
-                    tot += away;
-                runEvent.setAway3Count(tot);
-            }
-            else if(eventType == 4)
-            {
-                Integer away = runEvent.getAway4Count();
-                int tot = voteCount;
-                if(away != null)
-                    tot += away;
-                runEvent.setAway4Count(tot);
-            }
-            else if(eventType == 5)
-            {
-                Integer away = runEvent.getAway5Count();
-                int tot = voteCount;
-                if(away != null)
-                    tot += away;
-                runEvent.setAway5Count(tot);
-            }
+
+//            if(eventType == 1)
+//            {
+//                Integer away = runEvent.getAway1Count();
+//                int tot = voteCount;
+//                if(away != null)
+//                    tot += away;
+//                runEvent.setAway1Count(tot);
+//            }
+//            else if(eventType == 2)
+//            {
+//                Integer away = runEvent.getAway2Count();
+//                int tot = voteCount;
+//                if(away != null)
+//                    tot += away;
+//                runEvent.setAway2Count(tot);
+//            }
+//            else if(eventType == 3)
+//            {
+//                Integer away = runEvent.getAway3Count();
+//                int tot = voteCount;
+//                if(away != null)
+//                    tot += away;
+//                runEvent.setAway3Count(tot);
+//            }
+//            else if(eventType == 4)
+//            {
+//                Integer away = runEvent.getAway4Count();
+//                int tot = voteCount;
+//                if(away != null)
+//                    tot += away;
+//                runEvent.setAway4Count(tot);
+//            }
+//            else if(eventType == 5)
+//            {
+//                Integer away = runEvent.getAway5Count();
+//                int tot = voteCount;
+//                if(away != null)
+//                    tot += away;
+//                runEvent.setAway5Count(tot);
+//            }
         }
         RunEvent saveResult = runEventRepository.save(runEvent);
         return saveResult;
@@ -605,6 +738,12 @@ public class RestService {
         result += iValue;
 
         return result;
+
+    }
+
+    @Transactional
+    public void updateEventMusic()
+    {
 
     }
 

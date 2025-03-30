@@ -39,23 +39,6 @@
                      id="away_text">[[${event.awayName}]] [[${runevent.awayCount}]]</div>
             </div>
 
-<!--            <div th:if="${state =='STOP'}">-->
-<!--                <div class="result_graph" id="event_stop_graph">-->
-<!--                    <div class="gray_graph_full" th:styleAppend="|background-color: ${homeColor}|"></div>-->
-<!--                    <div class="away_graph_zero" th:styleAppend="|background-color: ${awayColor}|"></div>-->
-<!--                </div>-->
-<!--            </div>-->
-
-<!--            <div th:if="${state !='STOP'}">-->
-<!--                <div class="result_graph" id="event_start_graph">-->
-<!--                    <div class="home_graph" th:styleAppend="|background-color: ${homeColor}|"-->
-<!--                         id="home_graph"></div>-->
-<!--                    <div class="away_graph" th:styleAppend="|background-color: ${awayColor}|"-->
-<!--                         id="away_graph"></div>-->
-<!--                </div>-->
-<!--            </div>-->
-
-
                 <div class="result_graph" id="event_stop_graph">
                     <div class="gray_graph_full" >
                         <div class="flex-center">다음 응원 이벤트를 기다려주세요</div>
@@ -101,52 +84,70 @@
             </div>-->
 
             <div class="bt-02">
-                <div th:if="${teamtype =='Home'}">
-                    <button th:onclick="|vote(${team}, ${event.id}, 1);|" class="marquee"
+                <div th:if="${teamtype == 'Home'}">
+                    <button th:each="home, stat : ${runevent.homeTitles}"
+                            th:onclick="|vote(${team}, ${event.id}, ${stat.index + 1});|"
+                            class="marquee"
                             th:styleAppend="|background-color: ${homeColor}; color:${homeFont}|">
-                        <span>[[${runevent.home1Name}]]</span>
+                        <span>[[${home}]]</span>
                     </button>
-                    <button th:onclick="|vote(${team}, ${event.id}, 2);|" class="marquee"
-                            th:styleAppend="|background-color: ${homeColor}; color:${homeFont}|">
-                        <span>[[${runevent.home2Name}]]</span>
-                    </button>
-                    <button th:onclick="|vote(${team}, ${event.id}, 3);|" class="marquee"
-                            th:styleAppend="|background-color: ${homeColor}; color:${homeFont}|">
-                        <span>[[${runevent.home3Name}]]</span>
-                    </button>
-                    <button th:onclick="|vote(${team}, ${event.id}, 4);|" class="marquee"
-                            th:styleAppend="|background-color: ${homeColor}; color:${homeFont}|">
-                        <span>[[${runevent.home4Name}]]</span>
-                    </button>
-                    <button th:onclick="|vote(${team}, ${event.id}, 5);|" class="marquee"
-                            th:styleAppend="|background-color: ${homeColor}; color:${homeFont}|">
-                        <span>[[${runevent.home5Name}]]</span>
-                    </button>
-
                 </div>
-                <div th:if="${teamtype =='Away'}">
-                    <button th:onclick="|vote(${team}, ${event.id}, 1);|" class="marquee"
-                            th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|">
-                        <span>[[${runevent.away1Name}]]</span>
-                    </button>
-                    <button th:onclick="|vote(${team}, ${event.id}, 2);|" class="marquee"
-                            th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|">
-                        <span>[[${runevent.away2Name}]]</span>
-                    </button>
-                    <button th:onclick="|vote(${team}, ${event.id}, 3);|" class="marquee"
-                            th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|">
-                        <span>[[${runevent.away3Name}]]</span>
-                    </button>
-                    <button th:onclick="|vote(${team}, ${event.id}, 4);|" class="marquee"
-                            th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|">
-                        <span>[[${runevent.away4Name}]]</span>
-                    </button>
-                    <button th:onclick="|vote(${team}, ${event.id}, 5);|" class="marquee"
-                            th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|">
-                        <span>[[${runevent.away5Name}]]</span>
-                    </button>
 
-                </div>
+                <div class="bt-02">
+                    <div th:if="${teamtype == 'Away'}">
+                        <button th:each="away, stat : ${runevent.awayTitles}"
+                                th:onclick="|vote(${team}, ${event.id}, ${stat.index + 1});|"
+                                class="marquee"
+                                th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|">
+                            <span>[[${away}]]</span>
+                        </button>
+                    </div>
+
+<!--                <div th:if="${teamtype =='Home'}">-->
+<!--                    <button th:onclick="|vote(${team}, ${event.id}, 1);|" class="marquee"-->
+<!--                            th:styleAppend="|background-color: ${homeColor}; color:${homeFont}|">-->
+<!--                        <span>[[${runevent.home1Name}]]</span>-->
+<!--                    </button>-->
+<!--                    <button th:onclick="|vote(${team}, ${event.id}, 2);|" class="marquee"-->
+<!--                            th:styleAppend="|background-color: ${homeColor}; color:${homeFont}|">-->
+<!--                        <span>[[${runevent.home2Name}]]</span>-->
+<!--                    </button>-->
+<!--                    <button th:onclick="|vote(${team}, ${event.id}, 3);|" class="marquee"-->
+<!--                            th:styleAppend="|background-color: ${homeColor}; color:${homeFont}|">-->
+<!--                        <span>[[${runevent.home3Name}]]</span>-->
+<!--                    </button>-->
+<!--                    <button th:onclick="|vote(${team}, ${event.id}, 4);|" class="marquee"-->
+<!--                            th:styleAppend="|background-color: ${homeColor}; color:${homeFont}|">-->
+<!--                        <span>[[${runevent.home4Name}]]</span>-->
+<!--                    </button>-->
+<!--                    <button th:onclick="|vote(${team}, ${event.id}, 5);|" class="marquee"-->
+<!--                            th:styleAppend="|background-color: ${homeColor}; color:${homeFont}|">-->
+<!--                        <span>[[${runevent.home5Name}]]</span>-->
+<!--                    </button>-->
+<!--                </div>-->
+
+<!--                <div th:if="${teamtype =='Away'}">-->
+<!--                    <button th:onclick="|vote(${team}, ${event.id}, 1);|" class="marquee"-->
+<!--                            th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|">-->
+<!--                        <span>[[${runevent.away1Name}]]</span>-->
+<!--                    </button>-->
+<!--                    <button th:onclick="|vote(${team}, ${event.id}, 2);|" class="marquee"-->
+<!--                            th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|">-->
+<!--                        <span>[[${runevent.away2Name}]]</span>-->
+<!--                    </button>-->
+<!--                    <button th:onclick="|vote(${team}, ${event.id}, 3);|" class="marquee"-->
+<!--                            th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|">-->
+<!--                        <span>[[${runevent.away3Name}]]</span>-->
+<!--                    </button>-->
+<!--                    <button th:onclick="|vote(${team}, ${event.id}, 4);|" class="marquee"-->
+<!--                            th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|">-->
+<!--                        <span>[[${runevent.away4Name}]]</span>-->
+<!--                    </button>-->
+<!--                    <button th:onclick="|vote(${team}, ${event.id}, 5);|" class="marquee"-->
+<!--                            th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|">-->
+<!--                        <span>[[${runevent.away5Name}]]</span>-->
+<!--                    </button>-->
+<!--                </div>-->
             </div>
 
             <button class="join_event"

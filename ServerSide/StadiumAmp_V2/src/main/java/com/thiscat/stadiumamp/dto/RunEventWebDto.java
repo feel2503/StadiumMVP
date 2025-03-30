@@ -2,6 +2,7 @@ package com.thiscat.stadiumamp.dto;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.thiscat.stadiumamp.dao.TagDao;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 
 @Data
@@ -61,4 +63,6 @@ public class RunEventWebDto {
     int continuityType;
     int continuityTime;
 
+    List<String> homeTitles;
+    List<String> awayTitles;
 }

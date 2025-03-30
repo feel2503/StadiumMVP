@@ -27,6 +27,7 @@ import java.net.URLDecoder;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,7 +68,6 @@ public class VoteController {
                 .webUrl(event.getWebUrl())
                 .openchatUrl(event.getOpenchatUrl())
                 .build();
-
 
 //        List<EventMusic> eventMusicList =  eventMusicRepository.findAllByEventOrderBySequenceAsc(event);
 
@@ -367,50 +367,67 @@ public class VoteController {
                         (String)x[2], (Integer)x[3], (String)x[4],(String)x[5]))
                 .collect(Collectors.toList());
 
+        ArrayList<String> homeList = new ArrayList<>();
+        ArrayList<String> awayList = new ArrayList<>();
         for(EventMusicDto music : eventMusicDtos){
             if(music.getTeamType() == TeamType.TEAM_HOME)
             {
-                switch (music.getSequence())
-                {
-                    case 0 :
-                        runEventDto.setHome1Name(removeExtension(music.getMusicName()));
-                        break;
-                    case 1 :
-                        runEventDto.setHome2Name(removeExtension(music.getMusicName()));
-                        break;
-                    case 2 :
-                        runEventDto.setHome3Name(removeExtension(music.getMusicName()));
-                        break;
-                    case 3 :
-                        runEventDto.setHome4Name(removeExtension(music.getMusicName()));
-                        break;
-                    case 4 :
-                        runEventDto.setHome5Name(removeExtension(music.getMusicName()));
-                        break;
-                }
+                homeList.add(removeExtension(music.getMusicName()));
+
             }
             else if(music.getTeamType() == TeamType.TEAM_AWAY)
             {
-                switch (music.getSequence())
-                {
-                    case 0 :
-                        runEventDto.setAway1Name(removeExtension(music.getMusicName()));
-                        break;
-                    case 1 :
-                        runEventDto.setAway2Name(removeExtension(music.getMusicName()));
-                        break;
-                    case 2 :
-                        runEventDto.setAway3Name(removeExtension(music.getMusicName()));
-                        break;
-                    case 3 :
-                        runEventDto.setAway4Name(removeExtension(music.getMusicName()));
-                        break;
-                    case 4 :
-                        runEventDto.setAway5Name(removeExtension(music.getMusicName()));
-                        break;
-                }
+                awayList.add(removeExtension(music.getMusicName()));
             }
         }
+
+        runEventDto.setHomeTitles(homeList);
+        runEventDto.setAwayTitles(awayList);
+
+//        for(EventMusicDto music : eventMusicDtos){
+//            if(music.getTeamType() == TeamType.TEAM_HOME)
+//            {
+//                switch (music.getSequence())
+//                {
+//                    case 0 :
+//                        runEventDto.setHome1Name(removeExtension(music.getMusicName()));
+//                        break;
+//                    case 1 :
+//                        runEventDto.setHome2Name(removeExtension(music.getMusicName()));
+//                        break;
+//                    case 2 :
+//                        runEventDto.setHome3Name(removeExtension(music.getMusicName()));
+//                        break;
+//                    case 3 :
+//                        runEventDto.setHome4Name(removeExtension(music.getMusicName()));
+//                        break;
+//                    case 4 :
+//                        runEventDto.setHome5Name(removeExtension(music.getMusicName()));
+//                        break;
+//                }
+//            }
+//            else if(music.getTeamType() == TeamType.TEAM_AWAY)
+//            {
+//                switch (music.getSequence())
+//                {
+//                    case 0 :
+//                        runEventDto.setAway1Name(removeExtension(music.getMusicName()));
+//                        break;
+//                    case 1 :
+//                        runEventDto.setAway2Name(removeExtension(music.getMusicName()));
+//                        break;
+//                    case 2 :
+//                        runEventDto.setAway3Name(removeExtension(music.getMusicName()));
+//                        break;
+//                    case 3 :
+//                        runEventDto.setAway4Name(removeExtension(music.getMusicName()));
+//                        break;
+//                    case 4 :
+//                        runEventDto.setAway5Name(removeExtension(music.getMusicName()));
+//                        break;
+//                }
+//            }
+//        }
         return runEventDto;
     }
 

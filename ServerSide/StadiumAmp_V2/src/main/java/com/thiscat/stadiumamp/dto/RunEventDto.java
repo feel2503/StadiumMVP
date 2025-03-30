@@ -39,6 +39,21 @@ public class RunEventDto {
     Integer home3Count;
     Integer home4Count;
     Integer home5Count;
+    Integer home6Count;
+    Integer home7Count;
+    Integer home8Count;
+    Integer home9Count;
+    Integer home10Count;
+    Integer home11Count;
+    Integer home12Count;
+    Integer home13Count;
+    Integer home14Count;
+    Integer home15Count;
+    Integer home16Count;
+    Integer home17Count;
+    Integer home18Count;
+    Integer home19Count;
+    Integer home20Count;
 
     Integer awayCount;
     Integer away1Count;
@@ -46,6 +61,21 @@ public class RunEventDto {
     Integer away3Count;
     Integer away4Count;
     Integer away5Count;
+    Integer away6Count;
+    Integer away7Count;
+    Integer away8Count;
+    Integer away9Count;
+    Integer away10Count;
+    Integer away11Count;
+    Integer away12Count;
+    Integer away13Count;
+    Integer away14Count;
+    Integer away15Count;
+    Integer away16Count;
+    Integer away17Count;
+    Integer away18Count;
+    Integer away19Count;
+    Integer away20Count;
 
     String eventState;
 
@@ -54,6 +84,10 @@ public class RunEventDto {
 
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
+    private String strStartDateTime;
+    private String strEndDateTime;
+    private String duration;
+
     int triggerType;
     int triggerTime;
     int triggerVote;
