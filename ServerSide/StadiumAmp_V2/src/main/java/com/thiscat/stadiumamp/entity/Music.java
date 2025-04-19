@@ -29,5 +29,7 @@ public class Music extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     String musicUrl;
 
+    @Column(columnDefinition = "TEXT")
+    String youtubeUrl;
 
 }

@@ -44,7 +44,7 @@ public class RestService {
         List<Object[]> objects = eventMusicRepository.findAllEventMusic(event.getId());
         List<EventMusicDto> eventMusicDtos = objects.stream()
                 .map(x -> new EventMusicDto(((BigInteger)(x[0])).longValue(), ((BigInteger)(x[1])).longValue(),
-                        (String)x[2], (Integer)x[3], (String)x[4],(String)x[5]))
+                        (String)x[2], (Integer)x[3], (String)x[4],(String)x[5], (String)x[6]))
                 .collect(Collectors.toList());
 
         List<EventImage> eventImageList = eventImageRepository.findAllByEventOrderByImageTypeAsc(event);
@@ -71,6 +71,8 @@ public class RestService {
                 .awayFont(event.getAwayFont())
                 .cheerUrl1(event.getCheerUrl1())
                 .cheerUrl2(event.getCheerUrl2())
+                .volumeValue(event.getVolumeValue())
+                .volumeSync(event.getVolumeSync())
                 .build();
 
         RunEvent runEvent = runEventRepository.findByEventLimit(event.getId()).orElse(null);
@@ -114,7 +116,7 @@ public class RestService {
         List<Object[]> objects = eventMusicRepository.findAllEventMusic(event.getId());
         List<EventMusicDto> eventMusicDtos = objects.stream()
                 .map(x -> new EventMusicDto(((BigInteger)(x[0])).longValue(), ((BigInteger)(x[1])).longValue(),
-                        (String)x[2], (Integer)x[3], (String)x[4],(String)x[5]))
+                        (String)x[2], (Integer)x[3], (String)x[4],(String)x[5], (String)x[6]))
                 .collect(Collectors.toList());
 
         List<EventImage> eventImageList = eventImageRepository.findAllByEventOrderByImageTypeAsc(saveEvent);
@@ -214,7 +216,7 @@ public class RestService {
         List<Object[]> objects = eventMusicRepository.findAllEventMusic(event.getId());
         List<EventMusicDto> eventMusicDtos = objects.stream()
                 .map(x -> new EventMusicDto(((BigInteger)(x[0])).longValue(), ((BigInteger)(x[1])).longValue(),
-                        (String)x[2], (Integer)x[3], (String)x[4],(String)x[5]))
+                        (String)x[2], (Integer)x[3], (String)x[4],(String)x[5], (String)x[6]))
                 .collect(Collectors.toList());
 
         List<EventImage> eventImageList = eventImageRepository.findAllByEventOrderByImageTypeAsc(saveEvent);
@@ -339,6 +341,8 @@ public class RestService {
             awayCount = runEvent.getAwayCount();
 
         VoteResultDto voteResultDto = getVoteResult(runEvent);
+        voteResultDto.setHomeName(event.getHomeName());
+        voteResultDto.setAwayName(event.getAwayName());
         if(event.getTriggerType() == 0)
         {
             RunEvent resultEvent = updateVoteCount(runEvent, voteDto.getTeamType(), voteDto.getEventType());

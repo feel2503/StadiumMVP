@@ -145,6 +145,7 @@ public class RestApiController extends BaseController{
                     return Music.builder()
                             .musicUrl(x.getMusicUrl())
                             .musicName(x.getMusicName())
+                            .youtubeUrl(x.getYoutubeUrl())
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -161,8 +162,30 @@ public class RestApiController extends BaseController{
         Music music = musicRepository.findById(musicDto.getId()).orElse(null);
         music.setMusicUrl(musicDto.getMusicUrl());
         music.setMusicName(musicDto.getMusicName());
+        music.setYoutubeUrl(musicDto.getYoutubeUrl());
 
         musicRepository.save(music);
+
+
+        return getResponseEntity( "success", HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Set Event information")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PostMapping(value = "/v1/server/update-music-youtube", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultResponse> updateMusicYoutube(@RequestBody MusicYoutubeDto musicYoutubeDto) throws Exception {
+        if(musicYoutubeDto.getMusicArrayList() != null)
+        {
+            ArrayList<Music> musicArryaList = new ArrayList<>();
+
+            for(MusicYoutube musicYoutube: musicYoutubeDto.getMusicArrayList())
+            {
+                Music music = musicRepository.findById(musicYoutube.getId()).orElse(null);
+                music.setYoutubeUrl(musicYoutube.getYoutubeUrl());
+                musicArryaList.add(music);
+            }
+            musicRepository.saveAll(musicArryaList);
+        }
 
 
         return getResponseEntity( "success", HttpStatus.OK);
@@ -172,7 +195,7 @@ public class RestApiController extends BaseController{
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @GetMapping(value = "/v1/server/musiclist", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResultWithValue> getMusicList() throws Exception {
-        List<Music> music = musicRepository.findAll();
+        List<Music> music = musicRepository.findAll(Sort.by("id").ascending());
         return getResponseEntity( music, "success", HttpStatus.OK);
     }
 
@@ -212,7 +235,7 @@ public class RestApiController extends BaseController{
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @GetMapping(value = "/v1/server/imagelist", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResultWithValue> getImageList() throws Exception {
-        List<Image> images = imageRepository.findAll();
+        List<Image> images = imageRepository.findAll(Sort.by("id").ascending());
         return getResponseEntity( images, "success", HttpStatus.OK);
     }
 
@@ -330,62 +353,8 @@ public class RestApiController extends BaseController{
 //        Long eid = (Long)evtId;
 //        Event event = eventRepository.findById(eid).orElseThrow(() -> new Exception("runevent-not-fount"));
 
-        RunEventDto runEventDto = RunEventDto.builder()
-                .id(runEvent.getId())
-                .eventId(runEvent.getEvent().getId())
-                .eventState(runEvent.getEventState())
-                .serverName(runEvent.getEvent().getName())
-                .homeName(runEvent.getEvent().getHomeName())
-                .awayName(runEvent.getEvent().getAwayName())
-                .startDateTime(runEvent.getStartDateTime())
-                .triggerType(runEvent.getEvent().getTriggerType())
-                .triggerTime(runEvent.getEvent().getTriggerTime())
-                .triggerVote(runEvent.getEvent().getTriggerVote())
-                .continuityTime(runEvent.getEvent().getContinuityTime())
-                .continuityType(runEvent.getEvent().getContinuityType())
-                .homeCount(runEvent.getHomeCount())
-                .home1Count(runEvent.getHome1Count())
-                .home2Count(runEvent.getHome2Count())
-                .home3Count(runEvent.getHome3Count())
-                .home4Count(runEvent.getHome4Count())
-                .home5Count(runEvent.getHome5Count())
-                .home6Count(runEvent.getHome6Count())
-                .home7Count(runEvent.getHome7Count())
-                .home8Count(runEvent.getHome8Count())
-                .home9Count(runEvent.getHome9Count())
-                .home10Count(runEvent.getHome10Count())
-                .home11Count(runEvent.getHome11Count())
-                .home12Count(runEvent.getHome12Count())
-                .home13Count(runEvent.getHome13Count())
-                .home14Count(runEvent.getHome14Count())
-                .home15Count(runEvent.getHome15Count())
-                .home16Count(runEvent.getHome16Count())
-                .home17Count(runEvent.getHome17Count())
-                .home18Count(runEvent.getHome18Count())
-                .home19Count(runEvent.getHome19Count())
-                .home20Count(runEvent.getHome20Count())
-                .awayCount(runEvent.getAwayCount())
-                .away1Count(runEvent.getAway1Count())
-                .away2Count(runEvent.getAway2Count())
-                .away3Count(runEvent.getAway3Count())
-                .away4Count(runEvent.getAway4Count())
-                .away5Count(runEvent.getAway5Count())
-                .away6Count(runEvent.getAway6Count())
-                .away7Count(runEvent.getAway7Count())
-                .away8Count(runEvent.getAway8Count())
-                .away9Count(runEvent.getAway9Count())
-                .away10Count(runEvent.getAway10Count())
-                .away11Count(runEvent.getAway11Count())
-                .away12Count(runEvent.getAway12Count())
-                .away13Count(runEvent.getAway13Count())
-                .away14Count(runEvent.getAway14Count())
-                .away15Count(runEvent.getAway15Count())
-                .away16Count(runEvent.getAway16Count())
-                .away17Count(runEvent.getAway17Count())
-                .away18Count(runEvent.getAway18Count())
-                .away19Count(runEvent.getAway19Count())
-                .away20Count(runEvent.getAway20Count())
-                .build();
+        RunEventDto runEventDto = getRunEventDto(runEvent);
+
         return getResponseEntity( runEventDto, "success", HttpStatus.OK);
     }
 
@@ -394,27 +363,8 @@ public class RestApiController extends BaseController{
     @GetMapping(value = "/v1/event/runscorestate", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResultWithValue> getRunScoreEventState(@RequestParam Long runEventId) throws Exception {
         RunEvent runEvent = runEventRepository.findById(runEventId).orElseThrow(() -> new Exception("runevent-not-fount"));
-        RunEventDto runEventDto = RunEventDto.builder()
-                .id(runEvent.getId())
-                .eventId(runEvent.getEvent().getId())
-                .eventState(runEvent.getEventState())
-                .startDateTime(runEvent.getStartDateTime())
-                .triggerType(runEvent.getEvent().getTriggerType())
-                .triggerTime(runEvent.getEvent().getTriggerTime())
-                .triggerVote(runEvent.getEvent().getTriggerVote())
-                .homeCount(runEvent.getHomeCount())
-                .home1Count(runEvent.getHome1Count())
-                .home2Count(runEvent.getHome2Count())
-                .home3Count(runEvent.getHome3Count())
-                .home4Count(runEvent.getHome4Count())
-                .home5Count(runEvent.getHome5Count())
-                .awayCount(runEvent.getAwayCount())
-                .away1Count(runEvent.getAway1Count())
-                .away2Count(runEvent.getAway2Count())
-                .away3Count(runEvent.getAway3Count())
-                .away4Count(runEvent.getAway4Count())
-                .away5Count(runEvent.getAway5Count())
-                .build();
+        RunEventDto runEventDto = getRunEventDto(runEvent);
+
         return getResponseEntity( runEventDto, "success", HttpStatus.OK);
     }
 
@@ -505,30 +455,8 @@ public class RestApiController extends BaseController{
     public ResponseEntity<ApiResultWithValue> getLastEvent(@RequestParam Long serverId) throws Exception {
         Event event = eventRepository.findById(serverId).orElseThrow(EntityNotFoundException::new);
         RunEvent runEvent = runEventRepository.findFirstByEventOrderByIdDesc(event).orElseThrow(EntityNotFoundException::new);
-        RunEventDto runEventDto = RunEventDto.builder()
-                .id(runEvent.getId())
-                .eventId(runEvent.getEvent().getId())
-                .eventState(runEvent.getEventState())
-                .serverName(runEvent.getEvent().getName())
-                .homeName(runEvent.getEvent().getHomeName())
-                .awayName(runEvent.getEvent().getAwayName())
-                .startDateTime(runEvent.getStartDateTime())
-                .triggerType(runEvent.getEvent().getTriggerType())
-                .triggerTime(runEvent.getEvent().getTriggerTime())
-                .triggerVote(runEvent.getEvent().getTriggerVote())
-                .homeCount(runEvent.getHomeCount())
-                .home1Count(runEvent.getHome1Count())
-                .home2Count(runEvent.getHome2Count())
-                .home3Count(runEvent.getHome3Count())
-                .home4Count(runEvent.getHome4Count())
-                .home5Count(runEvent.getHome5Count())
-                .awayCount(runEvent.getAwayCount())
-                .away1Count(runEvent.getAway1Count())
-                .away2Count(runEvent.getAway2Count())
-                .away3Count(runEvent.getAway3Count())
-                .away4Count(runEvent.getAway4Count())
-                .away5Count(runEvent.getAway5Count())
-                .build();
+        RunEventDto runEventDto = getRunEventDto(runEvent);
+
         return getResponseEntity( runEventDto, "success", HttpStatus.OK);
     }
 
@@ -736,30 +664,8 @@ public class RestApiController extends BaseController{
 
         if(runEvent != null)
         {
-            RunEventDto result = RunEventDto.builder()
-                    .id(runEvent.getId())
-                    .eventId(runEvent.getEvent().getId())
-                    .eventState(runEvent.getEventState())
-                    .serverName(runEvent.getEvent().getName())
-                    .homeName(runEvent.getEvent().getHomeName())
-                    .awayName(runEvent.getEvent().getAwayName())
-                    .startDateTime(runEvent.getStartDateTime())
-                    .triggerType(runEvent.getEvent().getTriggerType())
-                    .triggerTime(runEvent.getEvent().getTriggerTime())
-                    .triggerVote(runEvent.getEvent().getTriggerVote())
-                    .homeCount(runEvent.getHomeCount())
-                    .home1Count(runEvent.getHome1Count())
-                    .home2Count(runEvent.getHome2Count())
-                    .home3Count(runEvent.getHome3Count())
-                    .home4Count(runEvent.getHome4Count())
-                    .home5Count(runEvent.getHome5Count())
-                    .awayCount(runEvent.getAwayCount())
-                    .away1Count(runEvent.getAway1Count())
-                    .away2Count(runEvent.getAway2Count())
-                    .away3Count(runEvent.getAway3Count())
-                    .away4Count(runEvent.getAway4Count())
-                    .away5Count(runEvent.getAway5Count())
-                    .build();
+            RunEventDto result = getRunEventDto(runEvent);
+
             return getResponseEntity( result, "success", HttpStatus.OK);
         }
         else {
@@ -895,7 +801,48 @@ public class RestApiController extends BaseController{
         return getResponseEntity( "success", HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Add Event Server")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PostMapping(value = "/v2/server/count-effect", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultResponse> setExternalUrl2(@RequestBody CountEffectDto countEffectDto) throws Exception {
+        Event event = eventRepository.findById(countEffectDto.getEventId()).orElseThrow(() -> new Exception("event-not-found"));
 
+        event.setAnimationCount(countEffectDto.getAnimationCount());
+        event.setAnimationColor(countEffectDto.getAnimationColor());
+        event.setEmoji(countEffectDto.getEmoji());
+
+        eventRepository.save(event);
+
+        return getResponseEntity( "success", HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Add Event Server")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PostMapping(value = "/v2/server/sync-volume", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultResponse> setSyncVolume(@RequestBody VolumeDto volumeDto) throws Exception {
+        Event event = eventRepository.findById(volumeDto.getEventId()).orElseThrow(() -> new Exception("event-not-found"));
+        int value = volumeDto.getValue();
+        if(value > 15)
+            value = 15;
+        else if(value < -1)
+            value = -1;
+
+        event.setVolumeValue(value);
+
+        eventRepository.save(event);
+
+        return getResponseEntity( "success", HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Add Event Server")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @GetMapping(value = "/v2/server/get-volume", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultWithValue> getSyncVolume(@RequestParam Long eventId) throws Exception {
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new Exception("event-not-found"));
+        VolumeDto volumeDto = new VolumeDto(eventId, event.getVolumeValue());
+
+        return getResponseEntity( volumeDto, "success", HttpStatus.OK);
+    }
 
     private VoteResultDto getVoteResult(RunEvent runevent)
     {
@@ -921,8 +868,69 @@ public class RestApiController extends BaseController{
     /////////// timer task
 
 
+    private RunEventDto getRunEventDto(RunEvent runEvent)
+    {
+        RunEventDto runEventDto = RunEventDto.builder()
+                .id(runEvent.getId())
+                .eventId(runEvent.getEvent().getId())
+                .eventState(runEvent.getEventState())
+                .serverName(runEvent.getEvent().getName())
+                .homeName(runEvent.getEvent().getHomeName())
+                .awayName(runEvent.getEvent().getAwayName())
+                .startDateTime(runEvent.getStartDateTime())
+                .triggerType(runEvent.getEvent().getTriggerType())
+                .triggerTime(runEvent.getEvent().getTriggerTime())
+                .triggerVote(runEvent.getEvent().getTriggerVote())
+                .continuityTime(runEvent.getEvent().getContinuityTime())
+                .continuityType(runEvent.getEvent().getContinuityType())
+                .volumeValue(runEvent.getEvent().getVolumeValue())
+                .volumeSync(runEvent.getEvent().getVolumeSync())
+                .homeCount(runEvent.getHomeCount())
+                .home1Count(runEvent.getHome1Count())
+                .home2Count(runEvent.getHome2Count())
+                .home3Count(runEvent.getHome3Count())
+                .home4Count(runEvent.getHome4Count())
+                .home5Count(runEvent.getHome5Count())
+                .home6Count(runEvent.getHome6Count())
+                .home7Count(runEvent.getHome7Count())
+                .home8Count(runEvent.getHome8Count())
+                .home9Count(runEvent.getHome9Count())
+                .home10Count(runEvent.getHome10Count())
+                .home11Count(runEvent.getHome11Count())
+                .home12Count(runEvent.getHome12Count())
+                .home13Count(runEvent.getHome13Count())
+                .home14Count(runEvent.getHome14Count())
+                .home15Count(runEvent.getHome15Count())
+                .home16Count(runEvent.getHome16Count())
+                .home17Count(runEvent.getHome17Count())
+                .home18Count(runEvent.getHome18Count())
+                .home19Count(runEvent.getHome19Count())
+                .home20Count(runEvent.getHome20Count())
+                .awayCount(runEvent.getAwayCount())
+                .away1Count(runEvent.getAway1Count())
+                .away2Count(runEvent.getAway2Count())
+                .away3Count(runEvent.getAway3Count())
+                .away4Count(runEvent.getAway4Count())
+                .away5Count(runEvent.getAway5Count())
+                .away6Count(runEvent.getAway6Count())
+                .away7Count(runEvent.getAway7Count())
+                .away8Count(runEvent.getAway8Count())
+                .away9Count(runEvent.getAway9Count())
+                .away10Count(runEvent.getAway10Count())
+                .away11Count(runEvent.getAway11Count())
+                .away12Count(runEvent.getAway12Count())
+                .away13Count(runEvent.getAway13Count())
+                .away14Count(runEvent.getAway14Count())
+                .away15Count(runEvent.getAway15Count())
+                .away16Count(runEvent.getAway16Count())
+                .away17Count(runEvent.getAway17Count())
+                .away18Count(runEvent.getAway18Count())
+                .away19Count(runEvent.getAway19Count())
+                .away20Count(runEvent.getAway20Count())
+                .build();
 
-
+        return runEventDto;
+    }
 
     public String getFileNameFromURL(String url)
     {

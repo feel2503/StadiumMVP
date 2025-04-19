@@ -13,7 +13,7 @@ public interface EventMusicRepository extends JpaRepository<EventMusic, Long> {
     List<EventMusic> findAllByEventOrderBySequenceAsc(Event event);
 
     @Query(
-            value = " select em.event_id, em.music_id, em.team_type, em.sequence, m.music_name, m.music_url "      +
+            value = " select em.event_id, em.music_id, em.team_type, em.sequence, m.music_name, m.music_url,  m.youtube_url "      +
                     "   FROM event_music em  "                                                   +
                     "   left join music m on em.music_id=m.music_id "           +
                     "   WHERE em.event_id = :eventId order by sequence  ",

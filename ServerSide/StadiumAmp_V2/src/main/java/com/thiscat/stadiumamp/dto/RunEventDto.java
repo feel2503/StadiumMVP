@@ -102,6 +102,7 @@ public class RunEventDto {
     String result;
 
     int volumeValue = 5;
+    boolean volumeSync = false;
 
     Integer tag0;
     Integer tag1;

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org"  >
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -9,26 +9,24 @@
     <meta name="author" content="">
     <title>Welcome to Stadium AMP</title>
 
-    <!-- Global CSS -->
-<!--    <link rel="stylesheet" href="css/style.css">-->
     <link rel="stylesheet"
           th:href="@{css/style.css}"/>
 
 
+    <script src="https://www.youtube.com/iframe_api"></script>
 </head>
-<body class="sample"  onload="startTimer()" >
+<body class="sample" onload="startTimer()">
 <div th:styleAppend="|background-color: ${bgcolor}|">
 
     <div class="remain_text_02" id="display">
         현재 응원 이벤트 남은 시간 0분 0초
     </div>
 
-    <div  class="sample" >
+    <div class="sample">
 
         <div style="padding-left: 20px; padding-right:20px; padding-top:0px; padding-bottom: 0px;"
              onclick="location.href='https://sites.google.com/view/introduce-stadiumamp/';">
             <div class="wc_text_01">
-<!--                <b>[[${event.name}]]</b> 실시간 응원 (설문하기)-->
                 <b>[[${event.name}]]</b>
             </div>
 
@@ -39,429 +37,530 @@
                      id="away_text">[[${event.awayName}]] [[${runevent.awayCount}]]</div>
             </div>
 
-                <div class="result_graph" id="event_stop_graph">
-                    <div class="gray_graph_full" >
-                        <div class="flex-center">다음 응원 이벤트를 기다려주세요</div>
-                    </div>
-                    <div class="away_graph_zero" ></div>
+<!--            <div class="result_text">-->
+<!--                <div class="home_text" th:if="${runevent.homeCount > 0}"-->
+<!--                     th:styleAppend="|color: ${homeColor}|" id="home_text">-->
+<!--                    [[${event.homeName}]] [[${runevent.homeCount}]]-->
+<!--                </div>-->
+
+<!--                <div class="away_text" th:if="${runevent.awayCount > 0}"-->
+<!--                     th:styleAppend="|color: ${awayColor}|" id="away_text">-->
+<!--                    [[${event.awayName}]] [[${runevent.awayCount}]]-->
+<!--                </div>-->
+<!--            </div>-->
+
+            <div class="result_graph" id="event_stop_graph">
+                <div class="gray_graph_full">
+                    <div class="flex-center">다음 응원 이벤트를 기다려주세요</div>
                 </div>
+                <div class="away_graph_zero"></div>
+            </div>
 
-
-
-                <div class="result_graph" id="event_start_graph">
-                    <div class="home_graph" th:styleAppend="|background-color: ${homeColor}|"
-                         id="home_graph"></div>
-                    <div class="away_graph" th:styleAppend="|background-color: ${awayColor}|"
-                         id="away_graph"></div>
-                </div>
-
-
+            <div class="result_graph" id="event_start_graph">
+                <div class="home_graph" th:styleAppend="|background-color: ${homeColor}|"
+                     id="home_graph"></div>
+                <div class="away_graph" th:styleAppend="|background-color: ${awayColor}|"
+                     id="away_graph"></div>
+            </div>
         </div>
 
         <div class="event_bg" th:styleAppend="'background-image: url('+${bgimg}+');'">
-<!--        <div class="event_bg" >-->
-        <div style="padding:0px 20px 0px 20px;">
-
-<!--        <div class="event_bg" style="padding:20px;">-->
-
-            <div th:if="${teamtype =='Home'}">
-                <div class="wc_text_02" th:styleAppend="|color:${homeColor}|">
-                    응원할 음원을 투표해 주세요.
-                </div>
-            </div>
-
-            <div th:if="${teamtype =='Away'}">
-                <div class="wc_text_02" th:styleAppend="|color:${awayColor}|">
-                    응원할 음원을 투표해 주세요.
-                </div>
-            </div>
-
-           <!-- <div class="video_container">
-                <video id="videoPlay" width="300" height="200" controls autoplay muted>
-                    <source type="video/mp4"
-                            th:src="@{https://www.dropbox.com/scl/fi/7rjpuv11pgqiqmmtdxpnv/square-30sec1.mp4?rlkey=u5yqxcvw14l2dx8io6qxy6bwk&raw=1}" />
-                </video>
-            </div>-->
-
-            <div class="bt-02">
-                <div th:if="${teamtype == 'Home'}">
-                    <button th:each="home, stat : ${runevent.homeTitles}"
-                            th:onclick="|vote(${team}, ${event.id}, ${stat.index + 1});|"
-                            class="marquee"
-                            th:styleAppend="|background-color: ${homeColor}; color:${homeFont}|">
-                        <span>[[${home}]]</span>
-                    </button>
+            <div style="padding:0px 20px 0px 20px;">
+                <div th:if="${teamtype =='Home'}">
+                    <div class="wc_text_02" th:styleAppend="|color:${homeColor}|">
+                        응원할 음원을 투표해 주세요.
+                    </div>
                 </div>
 
+                <div th:if="${teamtype =='Away'}">
+                    <div class="wc_text_02" th:styleAppend="|color:${awayColor}|">
+                        응원할 음원을 투표해 주세요.
+                    </div>
+                </div>
                 <div class="bt-02">
-                    <div th:if="${teamtype == 'Away'}">
-                        <button th:each="away, stat : ${runevent.awayTitles}"
-                                th:onclick="|vote(${team}, ${event.id}, ${stat.index + 1});|"
-                                class="marquee"
-                                th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|">
-                            <span>[[${away}]]</span>
-                        </button>
+                    <div th:if="${teamtype == 'Home'}">
+<!--                        <button th:each="home, stat : ${runevent.homeTitles}"-->
+<!--                                th:onclick="|vote(event, ${team}, ${event.id}, ${stat.index + 1});|"-->
+<!--                                class="marquee"-->
+<!--                                th:styleAppend="|background-color: ${homeColor}; color:${homeFont}|">-->
+<!--                            <span>[[${home}]]</span>-->
+<!--                        </button>-->
+
+                        <div class="button-row"
+                             th:each="home, stat : ${runevent.homeTitles}">
+
+                            <!-- home 제목 출력 -->
+                            <div class="button-wrapper">
+                                <button class="btn-wide"
+                                        th:onclick="|vote(event, ${team}, ${event.id}, ${stat.index + 1});|"
+                                        th:styleAppend="|background-color: ${homeColor}; color:${homeFont}|">
+                                    <span>[[${home}]]</span>
+                                </button>
+
+                                <!-- homeYoutube 값이 있을 경우 +, 없으면 - 출력 -->
+                                <button class="btn-narrow"
+                                        th:if="${stat.index} < ${#lists.size(runevent.homeYoutube)}"
+                                        th:attr="data-youtube=${runevent.homeYoutube[stat.index]}"
+                                        onclick="loadVideo(this.getAttribute('data-youtube'))">
+                                    <img th:if="${runevent.homeYoutube[stat.index] != null and !#strings.isEmpty(runevent.homeYoutube[stat.index])}"
+                                         src="/asset/play_circle.svg"
+                                         alt="Play" width="36" height="36"/>
+
+                                    <!-- ❌ 값이 없거나 null: stop_circle -->
+                                    <img th:unless="${runevent.homeYoutube[stat.index] != null and !#strings.isEmpty(runevent.homeYoutube[stat.index])}"
+                                         src="/asset/stop_circle.svg"
+                                         alt="Stop" width="36" height="36"/>
+
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
-<!--                <div th:if="${teamtype =='Home'}">-->
-<!--                    <button th:onclick="|vote(${team}, ${event.id}, 1);|" class="marquee"-->
-<!--                            th:styleAppend="|background-color: ${homeColor}; color:${homeFont}|">-->
-<!--                        <span>[[${runevent.home1Name}]]</span>-->
-<!--                    </button>-->
-<!--                    <button th:onclick="|vote(${team}, ${event.id}, 2);|" class="marquee"-->
-<!--                            th:styleAppend="|background-color: ${homeColor}; color:${homeFont}|">-->
-<!--                        <span>[[${runevent.home2Name}]]</span>-->
-<!--                    </button>-->
-<!--                    <button th:onclick="|vote(${team}, ${event.id}, 3);|" class="marquee"-->
-<!--                            th:styleAppend="|background-color: ${homeColor}; color:${homeFont}|">-->
-<!--                        <span>[[${runevent.home3Name}]]</span>-->
-<!--                    </button>-->
-<!--                    <button th:onclick="|vote(${team}, ${event.id}, 4);|" class="marquee"-->
-<!--                            th:styleAppend="|background-color: ${homeColor}; color:${homeFont}|">-->
-<!--                        <span>[[${runevent.home4Name}]]</span>-->
-<!--                    </button>-->
-<!--                    <button th:onclick="|vote(${team}, ${event.id}, 5);|" class="marquee"-->
-<!--                            th:styleAppend="|background-color: ${homeColor}; color:${homeFont}|">-->
-<!--                        <span>[[${runevent.home5Name}]]</span>-->
-<!--                    </button>-->
-<!--                </div>-->
-
-<!--                <div th:if="${teamtype =='Away'}">-->
-<!--                    <button th:onclick="|vote(${team}, ${event.id}, 1);|" class="marquee"-->
-<!--                            th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|">-->
-<!--                        <span>[[${runevent.away1Name}]]</span>-->
-<!--                    </button>-->
-<!--                    <button th:onclick="|vote(${team}, ${event.id}, 2);|" class="marquee"-->
-<!--                            th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|">-->
-<!--                        <span>[[${runevent.away2Name}]]</span>-->
-<!--                    </button>-->
-<!--                    <button th:onclick="|vote(${team}, ${event.id}, 3);|" class="marquee"-->
-<!--                            th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|">-->
-<!--                        <span>[[${runevent.away3Name}]]</span>-->
-<!--                    </button>-->
-<!--                    <button th:onclick="|vote(${team}, ${event.id}, 4);|" class="marquee"-->
-<!--                            th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|">-->
-<!--                        <span>[[${runevent.away4Name}]]</span>-->
-<!--                    </button>-->
-<!--                    <button th:onclick="|vote(${team}, ${event.id}, 5);|" class="marquee"-->
-<!--                            th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|">-->
-<!--                        <span>[[${runevent.away5Name}]]</span>-->
-<!--                    </button>-->
-<!--                </div>-->
-            </div>
-
-            <button class="join_event"
-                    onclick="showActionSheet()">응원태그를 설정하면 +1표</button>
-        </div>
-        </div>
-
-        <p></p>
-
-        <input type="hidden" id="startMin" th:value="${min}" >
-        <input type="hidden" id="startSec" th:value="${sec}" >
-        <input type="hidden" id="startIdVal" th:value="${event.id}" >
-        <input type="hidden" id="eventState" th:value="${state}" >
-
-    </div>
-
-
-<!--    <br>-->
-<!--    <a href='#' class='btn-floating'><div>+</div></a>-->
-<!--    <br><br>-->
-<!--    <a href='#' class='btn-floating'><div>-</div></a>-->
-
-<!--    <div id="bottom_banner">-->
-<!--        <img src="asset/bg_ad.png">-->
-<!--    </div>-->
-
-
-
-
-    <div id="bottom_banner" class="bottom_banner">
-        <a th:href="@{${event.webUrl}}" >
-            <div>
-                <!--                    <img class="profile" src="asset/floating_button.svg">-->
-                <div class="box" style="background: #BDBDBD;">
-<!--                    <img class="profile" src="asset/floating_button.svg">-->
-                    <img class="profile" th:src="${webimg} ?: @{/asset/floating_button.svg}">
-
+                    <div class="bt-02">
+                        <div th:if="${teamtype == 'Away'}">
+                            <button th:each="away, stat : ${runevent.awayTitles}"
+                                    th:onclick="|vote(event, ${team}, ${event.id}, ${stat.index + 1});|"
+                                    class="marquee"
+                                    th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|">
+                                <span>[[${away}]]</span>
+                            </button>
+                        </div>
+                    </div>
+                    <button class="join_event"
+                            onclick="showActionSheet()">응원태그를 설정하면 +1표
+                    </button>
                 </div>
             </div>
-        </a>
-    </div>
 
-    <div id="open_chat" class="open_chat">
-        <a th:href="@{${event.openchatUrl}}" >
-            <div>
-                <!--                    <img class="profile" src="asset/floating_button.svg">-->
-                <div class="box" style="background: #BDBDBD;">
-<!--                    <img class="profile" src="asset/openchat.png">-->
-                    <img class="profile" th:src="${openchatimg} ?: @{/asset/openchat.png}">
-                </div>
-            </div>
-        </a>
-    </div>
+            <p></p>
 
+            <input type="hidden" id="startMin" th:value="${min}">
+            <input type="hidden" id="startSec" th:value="${sec}">
+            <input type="hidden" id="startIdVal" th:value="${event.id}">
+            <input type="hidden" id="eventState" th:value="${state}">
 
-<!--    <div class="action-sheet" id="actionSheet" onclick="hideActionSheet()">-->
-<!--        <div class="action-options">-->
-<!--            <div class="option close" onclick="hideActionSheet()">Close</div>-->
-<!--            &lt;!&ndash; 여러 선택 옵션들 &ndash;&gt;-->
-<!--            -->
-<!--            <div class="option" onclick="handleOption('Option 1')">Option 1</div>-->
-<!--            <div class="option" onclick="handleOption('Option 2')">Option 2</div>-->
-<!--            <div class="option" onclick="handleOption('Option 3')">Option 3</div>-->
-<!--            <div class="option" onclick="handleOption('Option 1')">Option 1</div>-->
-<!--            <div class="option" onclick="handleOption('Option 2')">Option 2</div>-->
-<!--            <div class="option" onclick="handleOption('Option 3')">Option 3</div>-->
-<!--            <div class="option" onclick="handleOption('Option 1')">Option 1</div>-->
-<!--            <div class="option" onclick="handleOption('Option 2')">Option 2</div>-->
-<!--            <div class="option" onclick="handleOption('Option 3')">Option 3</div>-->
-<!--        </div>-->
-<!--    </div>-->
+            <input type="hidden" id="anyCount" th:value="${event.animationCount}">
+            <input type="hidden" id="anyColur" th:value="${event.animationColor}">
+            <input type="hidden" id="emoji" th:value="${event.emoji}">
 
-
-    <div class="action-sheet" id="actionSheet" >
-        <div class="action-options">
-<!--            <div class="container">-->
-            <div class="option close" onclick="hideActionSheet()">닫기</div>
-            <div class="option">응원태그를 설정하시면 투표마다 1표씩 추가로 집계 됩니다.</div>
-
-            <ul class="ks-cboxtags">
-<!--                <li><input type="checkbox" id="checkbox1" ><label for="checkbox1">xxx 팀 화이팅</label></li>-->
-<!--                <li><input type="checkbox" id="checkbox2"  checked><label for="checkbox2">용병 교체</label></li>-->
-<!--                <li><input type="checkbox" id="checkbox3" value="Rarity" ><label for="checkbox3">A 선수 MVP</label></li>-->
-<!--                <li><input type="checkbox" id="checkbox4" value="Rainbow Dash"><label for="checkbox4">응원 Tag1</label></li>-->
-<!--                <li><input type="checkbox" id="checkbox5" value="Cotton Candy" checked><label for="checkbox5">응원 Tag2</label></li>-->
-<!--                <li><input type="checkbox" id="checkbox6" value="Rarity"><label for="checkbox6">응원 Tag3</label></li>-->
-<!--                <li><input type="checkbox" id="checkbox7" value="Rainbow Dash"><label for="checkbox7">응원 Tag4</label></li>-->
-
-
-                <li th:each="tag : ${tags}">
-                    <input type="checkbox"
-                           th:id="${tag.id}"
-                           th:value="${tag.value}"
-                           th:checked="${tag.checked} ? true : false">
-                    <label th:for="${tag.id}" th:text="${tag.label}"></label>
-                </li>
-
-            </ul>
-            <div class="option save" onclick="saveActionSheet()">저장하기</div>
         </div>
-    </div>
+
+        <div id="bottom_banner" class="bottom_banner">
+            <a th:href="@{${event.webUrl}}">
+                <div>
+                    <div class="box" style="background: #BDBDBD;">
+                        <img class="profile" th:src="${webimg} ?: @{/asset/floating_button.svg}">
+
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div id="open_chat" class="open_chat">
+            <a th:href="@{${event.openchatUrl}}">
+                <div>
+                    <div class="box" style="background: #BDBDBD;">
+                        <img class="profile" th:src="${openchatimg} ?: @{/asset/openchat.png}">
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="action-sheet" id="actionSheet">
+            <div class="action-options">
+                <div class="option close" onclick="hideActionSheet()">닫기</div>
+                <div class="option">응원태그를 설정하시면 투표마다 1표씩 추가로 집계 됩니다.</div>
+
+                <ul class="ks-cboxtags">
+                    <li th:each="tag : ${tags}">
+                        <input type="checkbox"
+                               th:id="${tag.id}"
+                               th:value="${tag.value}"
+                               th:checked="${tag.checked} ? true : false">
+                        <label th:for="${tag.id}" th:text="${tag.label}"></label>
+                    </li>
+                </ul>
+                <div class="option save" onclick="saveActionSheet()">저장하기</div>
+            </div>
+        </div>
 
 
+        <div class="modal" id="youtubeModal">
+            <div class="modal-content">
+                <button class="close-btn" onclick="closeModal()">X</button>
+                <div id="youtubePlayer"></div>
+            </div>
+        </div>
 
+        <script th:src="@{jquery/jquery-3.4.1.min.js}"></script>
+        <script th:src="@{js/timer.js}"></script>
 
-<!--    <div class="container">-->
-<!--        <ul class="ks-cboxtags">-->
-<!--            <li><input type="checkbox" id="checkboxOne" value="Rainbow Dash"><label for="checkboxOne">Rainbow Dash</label></li>-->
-<!--            <li><input type="checkbox" id="checkboxTwo" value="Cotton Candy" checked><label for="checkboxTwo">Cotton Candy</label></li>-->
-<!--            <li><input type="checkbox" id="checkboxThree" value="Rarity" checked><label for="checkboxThree">Rarity</label></li>-->
-<!--            <li><input type="checkbox" id="checkboxFour" value="Moondancer"><label for="checkboxFour">Moondancer</label></li>-->
-<!--            <li><input type="checkbox" id="checkboxFive" value="Surprise"><label for="checkboxFive">Surprise</label></li>-->
-<!--            <li><input type="checkbox" id="checkboxSix" value="Twilight Sparkle" checked><label for="checkboxSix">Twilight-->
-<!--                Sparkle</label></li>-->
-<!--            <li><input type="checkbox" id="checkboxSeven" value="Fluttershy"><label for="checkboxSeven">Fluttershy</label></li>-->
-<!--            <li><input type="checkbox" id="checkboxEight" value="Derpy Hooves"><label for="checkboxEight">Derpy Hooves</label></li>-->
-<!--            <li><input type="checkbox" id="checkboxNine" value="Princess Celestia"><label for="checkboxNine">Princess-->
-<!--                Celestia</label></li>-->
-<!--            <li><input type="checkbox" id="checkboxTen" value="Gusty"><label for="checkboxTen">Gusty</label></li>-->
-<!--            <li class="ks-selected"><input type="checkbox" id="checkboxEleven" value="Discord"><label for="checkboxEleven">Discord</label></li>-->
-<!--            <li><input type="checkbox" id="checkboxTwelve" value="Clover"><label for="checkboxTwelve">Clover</label></li>-->
-<!--            <li><input type="checkbox" id="checkboxThirteen" value="Baby Moondancer"><label for="checkboxThirteen">Baby-->
-<!--                Moondancer</label></li>-->
-<!--            <li><input type="checkbox" id="checkboxFourteen" value="Medley"><label for="checkboxFourteen">Medley</label></li>-->
-<!--            <li><input type="checkbox" id="checkboxFifteen" value="Firefly"><label for="checkboxFifteen">Firefly</label></li>-->
-<!--        </ul>-->
+        <script>
+            estate = document.querySelector("#eventState").value;
+            const graph_stop = document.getElementById("event_stop_graph");
+            const graph_start = document.getElementById("event_start_graph");
+            if (estate === "STOP") {
+                graph_stop.style.display = 'flex';
+                graph_start.style.display = 'none';
+            } else {
+                graph_stop.style.display = 'none';
+                graph_start.style.display = 'flex';
+            }
+        </script>
 
-<!--    </div>-->
+        <script>
+            /// vote
+            function vote_(teamType, eventId, eventType) {
+                console.log("vote : ", teamType, eventId, eventType)
+                $.ajax({
+                    url: '/v1/vote/save',
+                    method: 'get',
+                    data: {
+                        teamType: teamType,
+                        eventId: eventId,
+                        eventType: eventType
+                    }
+                }).done(function (res) {
+                    if (res) {
+                        console.log("res", res);
+                        var homeGraph = document.getElementById("home_graph");
+                        homeGraph.style.flexBasis = res.data.home;
+                        if (res.data.home === "100%")
+                            homeGraph.style.borderRadius = "10px";
+                        else {
+                            homeGraph.style.borderTopRightRadius = "0px";
+                            homeGraph.style.borderBottomRightRadius = "0px";
+                        }
+                        var awayGraph = document.getElementById("away_graph");
+                        awayGraph.style.flexBasis = res.data.away;
+                        if (res.data.away === "100%")
+                            awayGraph.style.borderRadius = "10px";
+                        else {
+                            awayGraph.style.borderTopLeftRadius = "0px";
+                            awayGraph.style.borderBottomLeftRadius = "0px";
+                        }
 
-    <script th:src="@{jquery/jquery-3.4.1.min.js}"></script>
-    <script th:src="@{js/timer.js}"></script>
+                        if (res.data.eventState === "START") {
 
-    <script>
-        estate = document.querySelector("#eventState").value;
-        const graph_stop =document.getElementById("event_stop_graph");
-        const graph_start =document.getElementById("event_start_graph");
-        if(estate === "STOP")
-        {
-            graph_stop.style.display = 'flex';
-            graph_start.style.display = 'none';
-        }
-        else
-        {
-            graph_stop.style.display = 'none';
-            graph_start.style.display = 'flex';
-        }
-    </script>
+                            //document.getElementById("home_text").innerText = res.data.homeName + " " +res.data.homeCount;
+                            console.log(res.data.homeName, res.data.homeName.trim().length, res.data.homeName.length, res.data.awayName, res.data.awayName.length);
+                            if (res.data.homeName.trim().length > 0 && res.data.awayName.trim().length > 0)
+                            {
+                                if (res.data.homeCount > 0)
+                                    document.getElementById("home_text").innerText = res.data.homeName + " " + res.data.homeCount;
+                                else
+                                    document.getElementById("home_text").innerText = res.data.homeName;
 
-    <script>
-        /// vote
-        function vote_(teamType, eventId, eventType)
-        {
-            console.log("vote : ",teamType, eventId, eventType)
-            $.ajax({
-                url:  '/v1/vote/save',
-                method: 'get',
-                data: {
-                    teamType: teamType,
-                    eventId: eventId,
-                    eventType: eventType
+                                if (res.data.awayCount > 0)
+                                    document.getElementById("away_text").innerText = res.data.awayCount + " " +res.data.awayName;
+                                else
+                                    document.getElementById("away_text").innerText = res.data.awayName;
+
+                                // document.getElementById("home_text").innerText = "" + res.data.homeName + " " + res.data.homeCount;
+                                // document.getElementById("away_text").innerText = "" + res.data.awayCount + " " + res.data.awayName;
+                            } else if (res.data.homeName.trim().length > 0) {
+                                if (res.data.homeCount > 0)
+                                    document.getElementById("home_text").innerText = res.data.homeName + " " + res.data.homeCount;
+                                else
+                                    document.getElementById("home_text").innerText = res.data.homeName;
+                                // document.getElementById("home_text").innerText = "" + res.data.homeName + " " + res.data.homeCount;
+                            } else if (res.data.awayName.trim().length > 0) {
+                                if (res.data.awayCount > 0)
+                                    document.getElementById("away_text").innerText = res.data.awayCount + " " +res.data.awayName;
+                                else
+                                    document.getElementById("away_text").innerText = res.data.awayName;
+                                // document.getElementById("away_text").innerText = "" + res.data.awayCount + " " + res.data.awayName;
+                            }
+
+                        }
+                    } else {
+
+                    }
+                });
+
+            }
+
+            let totalCount = 0;
+
+            function vote(event, teamType, eventId, eventType) {
+                console.log("vote_tag : ", teamType, eventId, eventType)
+
+                let tagData = {};
+
+                $("input[type='checkbox']").each(function () {
+                    tagData[$(this).attr("id")] = $(this).is(":checked");
+                });
+                console.log("tagData : ", tagData)
+
+                let multiplier = 0;
+                if (teamType == 0 || teamType == 2)
+                    multiplier = 1;
+                else
+                    multiplier = 2;
+
+                if (Object.values(tagData).includes(true)) {
+                    multiplier += 1;
                 }
-            }).done(function(res) {
-                if (res) {
-                    console.log("res", res);
-                    var homeGraph = document.getElementById("home_graph");
-                    homeGraph.style.flexBasis=res.data.home;
-                    if(res.data.home === "100%")
-                        homeGraph.style.borderRadius="10px";
-                    else{
-                        homeGraph.style.borderTopRightRadius="0px";
-                        homeGraph.style.borderBottomRightRadius="0px";
-                    }
-                    var awayGraph = document.getElementById("away_graph");
-                    awayGraph.style.flexBasis=res.data.away;
-                    if(res.data.away === "100%")
-                        awayGraph.style.borderRadius="10px";
-                    else{
-                        awayGraph.style.borderTopLeftRadius="0px";
-                        awayGraph.style.borderBottomLeftRadius="0px";
-                    }
 
-                    // var homeStr = document.querySelector("#home_text").value;
-                    // var awayStr = document.querySelector("#away_text").value;
-                    // if(res.data.eventState === "START")
-                    // {
-                    //     document.getElementById("home_text").innerText = homeStr+" "+res.data.homeCount;
-                    //     document.getElementById("away_text").innerText = ""+res.data.awayCount+" " + awayStr;
-                    // }
+                if (multiplier)
+                {
 
-                    if(res.data.eventState === "START")
-                    {
+                    const homeTextElement = document.getElementById("home_text");
+                    if (homeTextElement) {
+                        updateCounter();
+                        const homeText = homeTextElement.innerText;
+                        try {
+                            totalCount = parseInt(homeText.match(/\d+$/)[0], 10);
 
-                        //document.getElementById("home_text").innerText = res.data.homeName + " " +res.data.homeCount;
-                        console.log(res.data.homeName, res.data.homeName.trim().length,  res.data.homeName.length, res.data.awayName, res.data.awayName.length);
-                        if(res.data.homeName.trim().length > 0 && res.data.awayName.trim().length > 0)
-                        {
-                            document.getElementById("home_text").innerText = ""+res.data.homeName + " " + res.data.homeCount;
-                            document.getElementById("away_text").innerText = ""+res.data.awayCount + " " + res.data.awayName;
+                            const previousCount = totalCount;
+                            totalCount += multiplier;
+                            createHearts(event, multiplier);
+
+                            const triggerCount = parseInt(document.getElementById('anyCount').value, 10) || 10;
+                            console.log("triggerCount : ", previousCount, totalCount, triggerCount)
+                            console.log("triggerCount : ", previousCount, totalCount, triggerCount)
+                            console.log("triggerCount : ", previousCount, totalCount, triggerCount)
+
+                            if (Math.floor(previousCount / triggerCount) < Math.floor(totalCount / triggerCount)) {
+                                console.log("2 multiplier : ", multiplier)
+                                createConfetti();
+                            }
+                        } catch (error) {
+                            createHearts(event, multiplier);
                         }
-                        else if(res.data.homeName.trim().length > 0)
-                        {
-                            document.getElementById("home_text").innerText = ""+res.data.homeName + " " + res.data.homeCount;
-                        }
-                        else if(res.data.awayName.trim().length > 0)
-                        {
-                            document.getElementById("away_text").innerText = ""+res.data.awayCount + " " + res.data.awayName;
-                        }
-
                     }
-                } else {
-
                 }
-            });
 
-        }
 
-        function vote(teamType, eventId, eventType)
-        {
-            console.log("vote_tag : ",teamType, eventId, eventType)
-            let tagData = {};
-
-            $("input[type='checkbox']").each(function() {
-                tagData[$(this).attr("id")] = $(this).is(":checked");
-            });
-            console.log("tagData : ",tagData)
-            $.ajax({
-                url:  '/v1/vote/save-tag',
-                method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({  // 데이터를 JSON 문자열로 변환
-                    teamType: teamType,
-                    eventId: eventId,
-                    eventType: eventType,
-                    tags: tagData  // 체크박스 데이터
-                }),
-                dataType: 'json'
-            }).done(function(res) {
-                if (res) {
-                    console.log("res", res);
-                    var homeGraph = document.getElementById("home_graph");
-                    homeGraph.style.flexBasis=res.data.home;
-                    if(res.data.home === "100%")
-                        homeGraph.style.borderRadius="10px";
-                    else{
-                        homeGraph.style.borderTopRightRadius="0px";
-                        homeGraph.style.borderBottomRightRadius="0px";
-                    }
-                    var awayGraph = document.getElementById("away_graph");
-                    awayGraph.style.flexBasis=res.data.away;
-                    if(res.data.away === "100%")
-                        awayGraph.style.borderRadius="10px";
-                    else{
-                        awayGraph.style.borderTopLeftRadius="0px";
-                        awayGraph.style.borderBottomLeftRadius="0px";
-                    }
-
-                    // var homeStr = document.querySelector("#home_text").value;
-                    // var awayStr = document.querySelector("#away_text").value;
-                    // if(res.data.eventState === "START")
-                    // {
-                    //     document.getElementById("home_text").innerText = homeStr+" "+res.data.homeCount;
-                    //     document.getElementById("away_text").innerText = ""+res.data.awayCount+" " + awayStr;
-                    // }
-
-                    if(res.data.eventState === "START")
-                    {
-
-                        //document.getElementById("home_text").innerText = res.data.homeName + " " +res.data.homeCount;
-                        console.log(res.data.homeName, res.data.homeName.trim().length,  res.data.homeName.length, res.data.awayName, res.data.awayName.length);
-                        if(res.data.homeName.trim().length > 0 && res.data.awayName.trim().length > 0)
-                        {
-                            document.getElementById("home_text").innerText = ""+res.data.homeName + " " + res.data.homeCount;
-                            document.getElementById("away_text").innerText = ""+res.data.awayCount + " " + res.data.awayName;
+                $.ajax({
+                    url: '/v1/vote/save-tag',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({  // 데이터를 JSON 문자열로 변환
+                        teamType: teamType,
+                        eventId: eventId,
+                        eventType: eventType,
+                        tags: tagData  // 체크박스 데이터
+                    }),
+                    dataType: 'json'
+                }).done(function (res) {
+                    if (res) {
+                        console.log("res", res);
+                        var homeGraph = document.getElementById("home_graph");
+                        homeGraph.style.flexBasis = res.data.home;
+                        if (res.data.home === "100%")
+                            homeGraph.style.borderRadius = "10px";
+                        else {
+                            homeGraph.style.borderTopRightRadius = "0px";
+                            homeGraph.style.borderBottomRightRadius = "0px";
                         }
-                        else if(res.data.homeName.trim().length > 0)
-                        {
-                            document.getElementById("home_text").innerText = ""+res.data.homeName + " " + res.data.homeCount;
+                        var awayGraph = document.getElementById("away_graph");
+                        awayGraph.style.flexBasis = res.data.away;
+                        if (res.data.away === "100%")
+                            awayGraph.style.borderRadius = "10px";
+                        else {
+                            awayGraph.style.borderTopLeftRadius = "0px";
+                            awayGraph.style.borderBottomLeftRadius = "0px";
                         }
-                        else if(res.data.awayName.trim().length > 0)
-                        {
-                            document.getElementById("away_text").innerText = ""+res.data.awayCount + " " + res.data.awayName;
+                        if (res.data.eventState === "START") {
+                            //console.log(res.data.homeName, res.data.homeName.trim().length,  res.data.homeName.length, res.data.awayName, res.data.awayName.length);
+                            if (res.data.homeName.trim().length > 0 && res.data.awayName.trim().length > 0)
+                            {
+                                if (res.data.homeCount > 0)
+                                    document.getElementById("home_text").innerText = res.data.homeName + " " + res.data.homeCount;
+                                else
+                                    document.getElementById("home_text").innerText = res.data.homeName;
+
+                                if (res.data.awayCount > 0)
+                                    document.getElementById("away_text").innerText = res.data.awayCount + " " +res.data.awayName;
+                                else
+                                    document.getElementById("away_text").innerText = res.data.awayName;
+
+                                // document.getElementById("home_text").innerText = "" + res.data.homeName + " " + res.data.homeCount;
+                                // document.getElementById("away_text").innerText = "" + res.data.awayCount + " " + res.data.awayName;
+                            } else if (res.data.homeName.trim().length > 0) {
+                                if (res.data.homeCount > 0)
+                                    document.getElementById("home_text").innerText = res.data.homeName + " " + res.data.homeCount;
+                                else
+                                    document.getElementById("home_text").innerText = res.data.homeName;
+                                // document.getElementById("home_text").innerText = "" + res.data.homeName + " " + res.data.homeCount;
+                            } else if (res.data.awayName.trim().length > 0) {
+                                if (res.data.awayCount > 0)
+                                    document.getElementById("away_text").innerText = res.data.awayCount + " " +res.data.awayName;
+                                else
+                                    document.getElementById("away_text").innerText = res.data.awayName;
+                                // document.getElementById("away_text").innerText = "" + res.data.awayCount + " " + res.data.awayName;
+                            }
+
                         }
+                    } else {
 
                     }
-                } else {
+                });
 
-                }
-            });
+            }
 
-        }
+            function updateCounter() {
+                const counter = document.getElementById("home_text");
+                counter.classList.add('grow');
 
-        function showActionSheet() {
-            document.getElementById("actionSheet").classList.add("active");
-        }
+                setTimeout(() => {
+                    counter.classList.remove('grow');
+                }, 200);
+            }
 
-        // Action Sheet 감추기
-        function hideActionSheet() {
-            document.getElementById("actionSheet").classList.remove("active");
-        }
+            function showActionSheet() {
+                document.getElementById("actionSheet").classList.add("active");
+            }
 
-        // Action Sheet 감추기
-        function saveActionSheet() {
-            document.getElementById("actionSheet").classList.remove("active");
-        }
-
-        // 각 옵션 클릭 시 처리
-        function handleOption(option) {
-            // 여기에 옵션 클릭 시 로직 작성
-            alert("Selected Option: " + option);
             // Action Sheet 감추기
-            hideActionSheet();
-        }
-    </script>
+            function hideActionSheet() {
+                document.getElementById("actionSheet").classList.remove("active");
+            }
 
-</div>
+            // Action Sheet 감추기
+            function saveActionSheet() {
+                document.getElementById("actionSheet").classList.remove("active");
+            }
+
+            // 각 옵션 클릭 시 처리
+            function handleOption(option) {
+                // 여기에 옵션 클릭 시 로직 작성
+                alert("Selected Option: " + option);
+                // Action Sheet 감추기
+                hideActionSheet();
+            }
+
+            function handleButtonClick(event, buttonId) {
+                const radios = document.getElementsByName('option');
+                let multiplier = 0;
+                for (const radio of radios) {
+                    if (radio.checked) {
+                        multiplier = parseInt(radio.value, 10);
+                        break;
+                    }
+                }
+
+                if (multiplier) {
+                    const previousCount = totalCount;
+                    totalCount += multiplier;
+                    updateCounter(totalCount);
+                    createHearts(event, multiplier);
+
+                    const triggerCount = parseInt(document.getElementById('triggerCount').value, 10);
+                    if (Math.floor(previousCount / triggerCount) < Math.floor(totalCount / triggerCount)) {
+                        createConfetti();
+                    }
+                }
+            }
+
+            function createHearts(event, number) {
+                const emoji = document.getElementById('emoji').value || '🫰';
+                for (let i = 0; i < number; i++) {
+                    const heart = document.createElement('div');
+                    heart.className = 'emoji';
+                    heart.textContent = emoji;
+                    document.body.appendChild(heart);
+
+                    const offsetX = Math.random() * 50 - 25;
+                    const offsetY = Math.random() * 50 - 25;
+                    heart.style.left = `${event.pageX + offsetX}px`;
+                    heart.style.top = `${event.pageY + offsetY}px`;
+
+                    setTimeout(() => {
+                        heart.remove();
+                    }, 1000);
+                }
+            }
+
+            function createConfetti() {
+                for (let i = 0; i < 100; i++) {
+                    let confetti = document.createElement('div');
+                    confetti.classList.add("confetti");
+                    confetti.style.backgroundColor = getRandomColor();
+                    confetti.style.left = "50vw";
+                    confetti.style.top = "50vh";
+                    confetti.style.setProperty('--x', (Math.random() - 0.5) * 200 + "vw");
+                    confetti.style.setProperty('--y', (Math.random() - 0.5) * 200 + "vh");
+                    document.body.appendChild(confetti);
+
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 2000);
+                }
+            }
+
+            function getRandomColor() {
+                const inputColors = document.getElementById('anyColur').value || 'red,yellow,blue,green,pink,purple,orange,cyan,lime';
+                const colors = inputColors.split(',').map(color => color.trim());
+
+                let col = colors[Math.floor(Math.random() * colors.length)];
+                return colors[Math.floor(Math.random() * colors.length)];
+            }
+
+
+
+            let player;
+            // Open the Modal with the YouTube Video
+            function loadVideo(urlInput) {
+                // const urlInput = document.getElementById(inputId).value;
+                const modal = document.getElementById('youtubeModal');
+
+                // Validate the input URL
+                if (urlInput != null && urlInput.trim() !== '') {
+                    // Transform YouTube share or Shorts link (if necessary)
+                    let videoId = "";
+                    if (urlInput.includes('youtu.be')) {
+                        videoId = urlInput.split('/').pop();
+                    } else if (urlInput.includes('youtube.com/shorts')) {
+                        videoId = urlInput.split('/').pop();
+                    } else if (urlInput.includes('v=')) {
+                        const params = new URLSearchParams(urlInput.split('?')[1]);
+                        videoId = params.get('v');
+                    }
+
+                    if (videoId) {
+                        // Create YouTube Player instance
+                        player = new YT.Player('youtubePlayer', {
+                            height: '600', // Adjusted height for larger player
+                            width: '100%',
+                            videoId: videoId,
+                            playerVars: {
+                                autoplay: 1,
+                                controls: 1,
+                            },
+                            events: {
+                                onReady: function(event) {
+                                    event.target.setPlaybackQuality('hd1080'); // Set the video quality
+                                },
+                                onStateChange: function(event) {
+                                    if (event.data === 0) { // State 0 means the video has ended
+                                        closeModal(); // Automatically close the modal
+                                    }
+                                }
+                            }
+                        });
+
+                        modal.style.display = 'flex'; // Show the modal
+                    } else {
+                        alert('영상 링크 준비중 입니다');
+                    }
+                } else {
+                    alert('영상 링크 준비중 입니다');
+                }
+            }
+
+            // Close the Modal and Stop the Video
+            function closeModal() {
+                const modal = document.getElementById('youtubeModal');
+                if (player) {
+                    player.destroy(); // Destroy the player instance
+                }
+                modal.style.display = 'none'; // Hide the modal
+            }
+
+        </script>
+
+    </div>
 </body>
 </html>

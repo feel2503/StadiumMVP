@@ -18,12 +18,8 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/")
@@ -109,7 +105,9 @@ public class ResultController {
                         .tag7(x.getTag7())
                         .tag8(x.getTag8())
                         .tag9(x.getTag9())
-                        .result(getResultTeam(x))
+                        .result(getResult(x))
+                        .volumeValue(x.getEvent().getVolumeValue())
+                        .volumeSync(x.getEvent().getVolumeSync())
                         .build())
                 .collect(Collectors.toList());
 
@@ -164,7 +162,7 @@ public class ResultController {
                         .tag7(x.getTag7())
                         .tag8(x.getTag8())
                         .tag9(x.getTag9())
-                        .result(getResultTeam(x))
+                        .result(getResult(x))
                         .build())
                 .collect(Collectors.toList());
 
@@ -173,9 +171,61 @@ public class ResultController {
         return "result";
     }
 
+    public String getResult(RunEvent x)
+    {
+        Map<String, Integer> counts = new LinkedHashMap<>();
+        counts.put("home1", x.getHome1Count() != null ? x.getHome1Count() : 0);
+        counts.put("home2", x.getHome2Count() != null ? x.getHome2Count() : 0);
+        counts.put("home3", x.getHome3Count() != null ? x.getHome3Count() : 0);
+        counts.put("home4", x.getHome4Count() != null ? x.getHome4Count() : 0);
+        counts.put("home5", x.getHome5Count() != null ? x.getHome5Count() : 0);
+        counts.put("home6", x.getHome6Count() != null ? x.getHome6Count() : 0);
+        counts.put("home7", x.getHome7Count() != null ? x.getHome7Count() : 0);
+        counts.put("home8", x.getHome8Count() != null ? x.getHome8Count() : 0);
+        counts.put("home9", x.getHome9Count() != null ? x.getHome9Count() : 0);
+        counts.put("home10", x.getHome10Count() != null ? x.getHome10Count() : 0);
+        counts.put("home11", x.getHome11Count() != null ? x.getHome11Count() : 0);
+        counts.put("home12", x.getHome12Count() != null ? x.getHome12Count() : 0);
+        counts.put("home13", x.getHome13Count() != null ? x.getHome13Count() : 0);
+        counts.put("home14", x.getHome14Count() != null ? x.getHome14Count() : 0);
+        counts.put("home15", x.getHome15Count() != null ? x.getHome15Count() : 0);
+        counts.put("home16", x.getHome16Count() != null ? x.getHome16Count() : 0);
+        counts.put("home17", x.getHome17Count() != null ? x.getHome17Count() : 0);
+        counts.put("home18", x.getHome18Count() != null ? x.getHome18Count() : 0);
+        counts.put("home19", x.getHome19Count() != null ? x.getHome19Count() : 0);
+        counts.put("home20", x.getHome20Count() != null ? x.getHome20Count() : 0);
+        counts.put("away1", x.getAway1Count() != null ? x.getAway1Count() : 0);
+        counts.put("away2", x.getAway2Count() != null ? x.getAway2Count() : 0);
+        counts.put("away3", x.getAway3Count() != null ? x.getAway3Count() : 0);
+        counts.put("away4", x.getAway4Count() != null ? x.getAway4Count() : 0);
+        counts.put("away5", x.getAway5Count() != null ? x.getAway5Count() : 0);
+        counts.put("away6", x.getAway6Count() != null ? x.getAway6Count() : 0);
+        counts.put("away7", x.getAway7Count() != null ? x.getAway7Count() : 0);
+        counts.put("away8", x.getAway8Count() != null ? x.getAway8Count() : 0);
+        counts.put("away9", x.getAway9Count() != null ? x.getAway9Count() : 0);
+        counts.put("away10", x.getAway10Count() != null ? x.getAway10Count() : 0);
+        counts.put("away11", x.getAway11Count() != null ? x.getAway11Count() : 0);
+        counts.put("away12", x.getAway12Count() != null ? x.getAway12Count() : 0);
+        counts.put("away13", x.getAway13Count() != null ? x.getAway13Count() : 0);
+        counts.put("away14", x.getAway14Count() != null ? x.getAway14Count() : 0);
+        counts.put("away15", x.getAway15Count() != null ? x.getAway15Count() : 0);
+        counts.put("away16", x.getAway16Count() != null ? x.getAway16Count() : 0);
+        counts.put("away17", x.getAway17Count() != null ? x.getAway17Count() : 0);
+        counts.put("away18", x.getAway18Count() != null ? x.getAway18Count() : 0);
+        counts.put("away19", x.getAway19Count() != null ? x.getAway19Count() : 0);
+        counts.put("away20", x.getAway20Count() != null ? x.getAway20Count() : 0);
+
+
+        Map.Entry<String, Integer> resultMap =  counts.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .orElseThrow(() -> new NoSuchElementException("No max value found"));
+
+        String result = resultMap.getKey();
+        return result;
+    }
+
     public String getResultTeam(RunEvent x)
     {
-
         int home1 = x.getHome1Count() == null ? 0 : x.getHome1Count();
         int home2 = x.getHome2Count() == null ? 0 : x.getHome2Count();
         int home3 = x.getHome3Count() == null ? 0 : x.getHome3Count();
@@ -302,7 +352,7 @@ public class ResultController {
                 .tag7(x.getTag7())
                 .tag8(x.getTag8())
                 .tag9(x.getTag9())
-                .result(getResultTeam(x))
+                .result(getResult(x))
                 .build();
 
         Map<String, Object> eventMap = new HashMap<>();

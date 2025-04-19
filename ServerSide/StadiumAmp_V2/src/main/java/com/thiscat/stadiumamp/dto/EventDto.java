@@ -49,10 +49,12 @@ public class EventDto {
 
     String openchatUrl;
 
-    int volumeValue = 5;
+    int volumeValue = -1;
 
     String eventBkcolor;
 
     String cheerUrl1;
     String cheerUrl2;
+
+    Boolean volumeSync;
 }

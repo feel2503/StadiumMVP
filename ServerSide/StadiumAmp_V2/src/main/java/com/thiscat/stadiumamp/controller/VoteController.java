@@ -65,6 +65,8 @@ public class VoteController {
                 .triggerType(runevent.getEvent().getTriggerType())
                 .triggerTime(runevent.getEvent().getTriggerTime())
                 .triggerVote(runevent.getEvent().getTriggerVote())
+                .homeCount(runevent.getHomeCount())
+                .awayCount(runevent.getAwayCount())
                 .webUrl(event.getWebUrl())
                 .openchatUrl(event.getOpenchatUrl())
                 .build();
@@ -364,25 +366,32 @@ public class VoteController {
         List<Object[]> objects = eventMusicRepository.findAllEventMusic(eventId);
         List<EventMusicDto> eventMusicDtos = objects.stream()
                 .map(x -> new EventMusicDto(((BigInteger)(x[0])).longValue(), ((BigInteger)(x[1])).longValue(),
-                        (String)x[2], (Integer)x[3], (String)x[4],(String)x[5]))
+                        (String)x[2], (Integer)x[3], (String)x[4],(String)x[5], (String)x[6]))
                 .collect(Collectors.toList());
 
         ArrayList<String> homeList = new ArrayList<>();
+        ArrayList<String> homeYoutube = new ArrayList<>();
         ArrayList<String> awayList = new ArrayList<>();
+        ArrayList<String> awayYoutube = new ArrayList<>();
         for(EventMusicDto music : eventMusicDtos){
             if(music.getTeamType() == TeamType.TEAM_HOME)
             {
                 homeList.add(removeExtension(music.getMusicName()));
+                homeYoutube.add(music.getMusicYoutube());
 
             }
             else if(music.getTeamType() == TeamType.TEAM_AWAY)
             {
                 awayList.add(removeExtension(music.getMusicName()));
+                awayYoutube.add(music.getMusicYoutube());
             }
         }
 
         runEventDto.setHomeTitles(homeList);
+        runEventDto.setHomeYoutube(homeYoutube);
         runEventDto.setAwayTitles(awayList);
+        runEventDto.setAwayYoutube(awayYoutube);
+
 
 //        for(EventMusicDto music : eventMusicDtos){
 //            if(music.getTeamType() == TeamType.TEAM_HOME)

@@ -30,6 +30,7 @@ public class EventMusicDto {
 
     String musicUrl;
     String musicName;
+    String musicYoutube;
 
     public EventMusicDto(EventMusic eventMusic){
         this.eventId = eventMusic.getEvent().getId();
@@ -40,10 +41,13 @@ public class EventMusicDto {
         this.musicId = eventMusic.getMusic().getId();
         this.musicUrl = eventMusic.getMusic().getMusicUrl();
         this.musicName = eventMusic.getMusic().getMusicName();
+
+        this.musicYoutube = eventMusic.getMusic().getYoutubeUrl();
     }
 
     @QueryProjection
-    public EventMusicDto(Long eventId, Long musicId, String teamType, int sequence, String musicName, String musicUrl){
+    public EventMusicDto(Long eventId, Long musicId, String teamType, int sequence,
+                         String musicName, String musicUrl, String youtube){
         this.eventId = eventId;
         this.musicId = musicId;
         this.teamType = TeamType.valueOf(teamType);
@@ -51,5 +55,6 @@ public class EventMusicDto {
 
         this.musicName = musicName;
         this.musicUrl = musicUrl;
+        this.musicYoutube = youtube;
     }
 }

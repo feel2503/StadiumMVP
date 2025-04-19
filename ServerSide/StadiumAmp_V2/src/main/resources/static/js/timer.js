@@ -95,8 +95,15 @@ function countTimer() {
                 // document.getElementById("event_stop_graph").style.display ='none';
                 // document.getElementById("event_start_graph").style.display ='flex';
 
-                document.getElementById("home_text").innerText = res.data.homeName + " " + res.data.homeCount;
-                document.getElementById("away_text").innerText = res.data.awayName + " " + res.data.awayCount;
+                if (res.data.homeCount > 0)
+                    document.getElementById("home_text").innerText = res.data.homeName + " " + res.data.homeCount;
+                else
+                    document.getElementById("home_text").innerText = res.data.homeName;
+
+                if (res.data.awayCount > 0)
+                    document.getElementById("away_text").innerText = res.data.awayCount + " " +res.data.awayName;
+                else
+                    document.getElementById("away_text").innerText = res.data.awayName;
                 //window.navigator.vibrate(200);
                 console.log("res.data.isStart ", res.data.isStart);
                 if(res.data.isStart)

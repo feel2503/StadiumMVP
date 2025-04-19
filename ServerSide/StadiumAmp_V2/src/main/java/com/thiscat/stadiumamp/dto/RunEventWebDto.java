@@ -64,5 +64,7 @@ public class RunEventWebDto {
     int continuityTime;
 
     List<String> homeTitles;
+    List<String> homeYoutube;
     List<String> awayTitles;
+    List<String> awayYoutube;
 }

@@ -63,7 +63,7 @@ public class VoteResultController {
         List<Object[]> objects = eventMusicRepository.findAllEventMusic(event.getId());
         List<EventMusicDto> eventMusicDtos = objects.stream()
                 .map(x -> new EventMusicDto(((BigInteger)(x[0])).longValue(), ((BigInteger)(x[1])).longValue(),
-                        (String)x[2], (Integer)x[3], (String)x[4],(String)x[5]))
+                        (String)x[2], (Integer)x[3], (String)x[4],(String)x[5], (String)x[6]))
                 .collect(Collectors.toList());
 
         for(EventMusicDto music : eventMusicDtos){

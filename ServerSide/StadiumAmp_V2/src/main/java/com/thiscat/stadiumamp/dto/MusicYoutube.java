@@ -15,16 +15,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class MusicDto {
+public class MusicYoutube {
     long id;
-    String musicUrl;
-    String musicName;
     String youtubeUrl;
 
-    public MusicDto(Music music){
+    public MusicYoutube(Music music){
         this.id = music.getId();
-        this.musicUrl = music.getMusicUrl();
-        this.musicName = music.getMusicName();
         this.youtubeUrl = music.getYoutubeUrl();
     }
 }

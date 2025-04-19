@@ -68,4 +68,13 @@ public class Event extends BaseEntity {
     String cheerUrl1;
     @Column(columnDefinition = "TEXT")
     String cheerUrl2;
+
+    @Column(columnDefinition = "TEXT")
+    Integer animationCount;
+    @Column(columnDefinition = "TEXT")
+    String emoji;
+    @Column(columnDefinition = "TEXT")
+    String animationColor;
+
+    Boolean volumeSync;
 }
