@@ -11,6 +11,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -46,6 +47,8 @@ import com.google.android.exoplayer2.ui.StyledPlayerView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -55,10 +58,12 @@ import kr.co.thiscat.stadiumampsetting.server.ServerManager;
 import kr.co.thiscat.stadiumampsetting.server.entity.RunEvent;
 import kr.co.thiscat.stadiumampsetting.server.entity.RunEventResult;
 import kr.co.thiscat.stadiumampsetting.server.entity.result.EventResult;
+import kr.co.thiscat.stadiumampsetting.server.entity.result.VolumeResult;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventDto;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventImageDto;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventMusicDto;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventStartReqDto;
+import kr.co.thiscat.stadiumampsetting.server.entity.v2.VolumeDto;
 import retrofit2.Response;
 
 /**
@@ -159,6 +164,9 @@ public class FullPortVideoActivity extends AppCompatActivity {
     private WebSettings mWebSettings1;
     private WebSettings mWebSettings2;
 
+    private PreferenceUtil mPreferenceUtil;
+    private AudioManager mAudioManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -177,6 +185,8 @@ public class FullPortVideoActivity extends AppCompatActivity {
         mVolume = getIntent().getIntExtra("VideoVolume", 0);
 
         mServer = ServerManager.getInstance(FullPortVideoActivity.this);
+        mPreferenceUtil = new PreferenceUtil(FullPortVideoActivity.this);
+        mAudioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
 
         initUi();
         setWebView();
@@ -359,6 +369,28 @@ public class FullPortVideoActivity extends AppCompatActivity {
 
         if(exoPlayer.isPlaying()){
             exoPlayer.stop();
+        }
+    }
+
+    public void updateVolume(RunEvent runEvent)
+    {
+        boolean isSync = mPreferenceUtil.getBooleanPreference(PreferenceUtil.VOLUME_SYNC);
+        if(isSync)
+        {
+            int volume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+            if(volume != runEvent.getVolumeValue())
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, runEvent.getVolumeValue(), AudioManager.FLAG_SHOW_UI);
+        }
+    }
+
+    public void updateVolume(int value)
+    {
+        boolean isSync = mPreferenceUtil.getBooleanPreference(PreferenceUtil.VOLUME_SYNC);
+        if(isSync)
+        {
+            int volume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+            if(volume != value)
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, value, AudioManager.FLAG_SHOW_UI);
         }
     }
 
@@ -655,7 +687,10 @@ public class FullPortVideoActivity extends AppCompatActivity {
             @Override
             public void run() {
                 if(runEvent.getHomeCount() >= runEvent.getAwayCount()){
-                    int[] nums = {runEvent.getHome1Count(), runEvent.getHome2Count(), runEvent.getHome3Count(), runEvent.getHome4Count(), runEvent.getHome5Count()};
+                    int[] nums = {runEvent.getHome1Count(), runEvent.getHome2Count(), runEvent.getHome3Count(), runEvent.getHome4Count(), runEvent.getHome5Count(),
+                            runEvent.getHome6Count(), runEvent.getHome7Count(), runEvent.getHome8Count(), runEvent.getHome9Count(), runEvent.getHome10Count(),
+                            runEvent.getHome11Count(), runEvent.getHome12Count(), runEvent.getHome13Count(), runEvent.getHome14Count(), runEvent.getHome15Count(),
+                            runEvent.getHome16Count(), runEvent.getHome17Count(), runEvent.getHome18Count(), runEvent.getHome19Count(), runEvent.getHome20Count()};
                     int[] ranks = getRank(nums);
 
                     mTextResult1.setText(getHomeRankMusic(ranks, 1));
@@ -664,7 +699,11 @@ public class FullPortVideoActivity extends AppCompatActivity {
                 }
                 else
                 {
-                    int[] nums = {runEvent.getAway1Count(), runEvent.getAway2Count(), runEvent.getAway3Count(), runEvent.getAway4Count(), runEvent.getAway5Count()};
+                    int[] nums = {runEvent.getAway1Count(), runEvent.getAway2Count(), runEvent.getAway3Count(), runEvent.getAway4Count(), runEvent.getAway5Count(),
+                            runEvent.getAway6Count(), runEvent.getAway7Count(), runEvent.getAway8Count(), runEvent.getAway9Count(), runEvent.getAway10Count(),
+                            runEvent.getAway11Count(), runEvent.getAway12Count(), runEvent.getAway13Count(), runEvent.getAway14Count(), runEvent.getAway15Count(),
+                            runEvent.getAway16Count(), runEvent.getAway17Count(), runEvent.getAway18Count(), runEvent.getAway19Count(), runEvent.getAway20Count(),
+                    };
                     int[] ranks = getRank(nums);
 
                     mTextResult1.setText(getAwayRankMusic(ranks, 1));
@@ -678,19 +717,37 @@ public class FullPortVideoActivity extends AppCompatActivity {
 
     private int[] getRank(int[] nums)
     {
-        int[] ranks = new int[5];
-        for (int i = 0; i < 5; i++) {
-            int rank = 1;
-            for (int j = 0; j < 5; j++) {
-                if (nums[i] < nums[j]) {
-                    rank++;
-                }
-            }
-            ranks[i] = rank;
+//        int[] ranks = new int[nums.length];
+//        for (int i = 0; i < nums.length; i++) {
+//            int rank = 1;
+//            for (int j = 0; j < nums.length; j++) {
+//                if (nums[i] < nums[j]) {
+//                    rank++;
+//                }
+//            }
+//            ranks[i] = rank;
+//        }
+//
+//        return ranks;
+
+        int[] rank = new int[nums.length];
+        List<Pair> list = new ArrayList<>();
+        for (int i = 0; i < nums.length; i++) {
+            list.add(new Pair(nums[i], i));
         }
 
-        return ranks;
+        // 내림차순 정렬, 값이 같으면 index가 작은 순으로
+        list.sort(Comparator
+                .comparingInt((Pair p) -> -p.value)
+                .thenComparingInt(p -> p.index));
+
+        for (int i = 0; i < list.size(); i++) {
+            rank[list.get(i).index] = i + 1;
+        }
+
+        return rank;
     }
+
 
     private String getHomeRankMusic(int[] arrRank, int rank)
     {
@@ -818,6 +875,9 @@ public class FullPortVideoActivity extends AppCompatActivity {
             exoPlayer.prepare();
             exoPlayer.play(); //자동으로 로딩완료까지 기다렸다가 재생함
 
+            AsyncCheckVolume async = new AsyncCheckVolume();
+            async.execute();
+
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -848,133 +908,23 @@ public class FullPortVideoActivity extends AppCompatActivity {
     }
 
     public String getHomeMusic(RunEvent runEvent){
-        int max = runEvent.getHome1Count();
-        String name = mTextHome1;
-        if(max < runEvent.getHome2Count()){
-            max = runEvent.getHome2Count(); name = mTextHome2;
-        }
-        if(max < runEvent.getHome3Count()){
-            max = runEvent.getHome3Count(); name = mTextHome3;
-        }
-        if(max < runEvent.getHome4Count()){
-            max = runEvent.getHome4Count(); name = mTextHome4;
-        }
-        if(max < runEvent.getHome5Count()){
-            max = runEvent.getHome5Count(); name = mTextHome5;
-        }
-        if(max < runEvent.getHome6Count()){
-            max = runEvent.getHome6Count(); name = mTextHome6;
-        }
-        if(max < runEvent.getHome7Count()){
-            max = runEvent.getHome7Count(); name = mTextHome7;
-        }
-        if(max < runEvent.getHome8Count()){
-            max = runEvent.getHome8Count(); name = mTextHome8;
-        }
-        if(max < runEvent.getHome9Count()){
-            max = runEvent.getHome9Count(); name = mTextHome9;
-        }
-        if(max < runEvent.getHome10Count()){
-            max = runEvent.getHome10Count(); name = mTextHome10;
-        }
-        if(max < runEvent.getHome11Count()){
-            max = runEvent.getHome11Count(); name = mTextHome11;
-        }
-        if(max < runEvent.getHome12Count()){
-            max = runEvent.getHome12Count(); name = mTextHome12;
-        }
-        if(max < runEvent.getHome13Count()){
-            max = runEvent.getHome13Count(); name = mTextHome13;
-        }
-        if(max < runEvent.getHome14Count()){
-            max = runEvent.getHome14Count(); name = mTextHome14;
-        }
-        if(max < runEvent.getHome15Count()){
-            max = runEvent.getHome15Count(); name = mTextHome15;
-        }
-        if(max < runEvent.getHome16Count()){
-            max = runEvent.getHome16Count(); name = mTextHome16;
-        }
-        if(max < runEvent.getHome17Count()){
-            max = runEvent.getHome17Count(); name = mTextHome17;
-        }
-        if(max < runEvent.getHome18Count()){
-            max = runEvent.getHome18Count(); name = mTextHome18;
-        }
-        if(max < runEvent.getHome19Count()){
-            max = runEvent.getHome19Count(); name = mTextHome19;
-        }
-        if(max < runEvent.getHome20Count()){
-            max = runEvent.getHome20Count(); name = mTextHome20;
-        }
+        int[] nums = {runEvent.getHome1Count(), runEvent.getHome2Count(), runEvent.getHome3Count(), runEvent.getHome4Count(), runEvent.getHome5Count(),
+                runEvent.getHome6Count(), runEvent.getHome7Count(), runEvent.getHome8Count(), runEvent.getHome9Count(), runEvent.getHome10Count(),
+                runEvent.getHome11Count(), runEvent.getHome12Count(), runEvent.getHome13Count(), runEvent.getHome14Count(), runEvent.getHome15Count(),
+                runEvent.getHome16Count(), runEvent.getHome17Count(), runEvent.getHome18Count(), runEvent.getHome19Count(), runEvent.getHome20Count()};
+        int[] ranks = getRank(nums);
 
-        return name;
+        return getHomeRankMusic(ranks, 1);
     }
 
     public String getAwayMusic(RunEvent runEvent){
-        int max = runEvent.getAway1Count();
-        String name = mTextAway1;
-        if(max < runEvent.getAway2Count()){
-            max = runEvent.getAway2Count(); name = mTextAway2;
-        }
-        if(max < runEvent.getAway3Count()){
-            max = runEvent.getAway3Count();
-            name = mTextAway3;
-        }
-        if(max < runEvent.getAway4Count()){
-            max = runEvent.getAway4Count();
-            name = mTextAway4;
-        }
-        if(max < runEvent.getAway5Count()){
-            max = runEvent.getAway5Count();
-            name = mTextAway5;
-        }
-        if(max < runEvent.getAway6Count()){
-            max = runEvent.getAway6Count(); name = mTextAway6;
-        }
-        if(max < runEvent.getAway7Count()){
-            max = runEvent.getAway7Count(); name = mTextAway7;
-        }
-        if(max < runEvent.getAway8Count()){
-            max = runEvent.getAway8Count(); name = mTextAway8;
-        }
-        if(max < runEvent.getAway9Count()){
-            max = runEvent.getAway9Count(); name = mTextAway9;
-        }
-        if(max < runEvent.getAway10Count()){
-            max = runEvent.getAway10Count(); name = mTextAway10;
-        }
-        if(max < runEvent.getAway11Count()){
-            max = runEvent.getAway11Count(); name = mTextAway11;
-        }
-        if(max < runEvent.getAway12Count()){
-            max = runEvent.getAway12Count(); name = mTextAway12;
-        }
-        if(max < runEvent.getAway13Count()){
-            max = runEvent.getAway13Count(); name = mTextAway13;
-        }
-        if(max < runEvent.getAway14Count()){
-            max = runEvent.getAway14Count(); name = mTextAway14;
-        }
-        if(max < runEvent.getAway15Count()){
-            max = runEvent.getAway15Count(); name = mTextAway15;
-        }
-        if(max < runEvent.getAway16Count()){
-            max = runEvent.getAway16Count(); name = mTextAway16;
-        }
-        if(max < runEvent.getAway17Count()){
-            max = runEvent.getAway17Count(); name = mTextAway17;
-        }
-        if(max < runEvent.getAway18Count()){
-            max = runEvent.getAway18Count(); name = mTextAway18;
-        }
-        if(max < runEvent.getAway19Count()){
-            max = runEvent.getAway19Count(); name = mTextAway19;
-        }
-        if(max < runEvent.getAway20Count()){
-            max = runEvent.getAway20Count(); name = mTextAway20;
-        }
-        return name;
+        int[] nums = {runEvent.getAway1Count(), runEvent.getAway2Count(), runEvent.getAway3Count(), runEvent.getAway4Count(), runEvent.getAway5Count(),
+                runEvent.getAway6Count(), runEvent.getAway7Count(), runEvent.getAway8Count(), runEvent.getAway9Count(), runEvent.getAway10Count(),
+                runEvent.getAway11Count(), runEvent.getAway12Count(), runEvent.getAway13Count(), runEvent.getAway14Count(), runEvent.getAway15Count(),
+                runEvent.getAway16Count(), runEvent.getAway17Count(), runEvent.getAway18Count(), runEvent.getAway19Count(), runEvent.getAway20Count(),
+        };
+        int[] ranks = getRank(nums);
+        return getAwayRankMusic(ranks, 1);
     }
 
     public void setEventInfo(ArrayList<EventMusicDto> musicDtos){
@@ -1138,11 +1088,16 @@ public class FullPortVideoActivity extends AppCompatActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if(keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN
-                || keyCode == KeyEvent.KEYCODE_HOME || keyCode == KeyEvent.KEYCODE_BACK)
+        if(keyCode == KeyEvent.KEYCODE_HOME || keyCode == KeyEvent.KEYCODE_BACK)
             return super.onKeyDown(keyCode, event);
 
-        Log.d("BBBB", "onKeyDown : " + mRunEvent.getEventState()+ " id: "+mRunEvent.getId());
+        if(keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_MUTE)
+        {
+            Log.d("AAAA", "onKeyDown: "+keyCode);
+
+            return super.onKeyDown(keyCode, event);
+        }
+
         if(exoPlayer.isPlaying()) {
             stopEvent();
         } if(mRunEvent.getEventState().equalsIgnoreCase("START")){
@@ -1403,6 +1358,7 @@ public class FullPortVideoActivity extends AppCompatActivity {
             {
                 try{
                     mRunEvent = response.body().getData();
+                    updateVolume(mRunEvent);
                     Log.d("AAAA", "mEventStateCallBack : " + mRunEvent.getEventState());
                     if(mRunEvent.getEventState().equalsIgnoreCase("START"))
                     {
@@ -1502,6 +1458,7 @@ public class FullPortVideoActivity extends AppCompatActivity {
                     if(mRunEvent.getEventState().equalsIgnoreCase("STOP"))
                     {
                         updateScore(mRunEvent);
+                        updateVolume(mRunEvent);
 
                         int home = mRunEvent.getHomeCount();
                         int away = mRunEvent.getAwayCount();
@@ -1588,7 +1545,6 @@ public class FullPortVideoActivity extends AppCompatActivity {
         }
     }
 
-
     private SECallBack<RunEventResult> mEventStartCallBack = new SECallBack<RunEventResult>()
     {
         @Override
@@ -1605,5 +1561,43 @@ public class FullPortVideoActivity extends AppCompatActivity {
         }
     };
 
+    private class AsyncCheckVolume extends AsyncTask<String, Void, Boolean>
+    {
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            try{
+                Thread.sleep(1000);
+            }catch (Exception e){}
+
+            if(mRunEventId < 0) {
+                mServer.getSyncVolume(mGetVolumeCallBack, mServerId);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+            if(exoPlayer.isPlaying()){
+                AsyncCheckVolume async = new AsyncCheckVolume();
+                async.execute();
+            }
+
+        }
+    }
+
+    private SECallBack<VolumeResult> mGetVolumeCallBack = new SECallBack<VolumeResult>()
+    {
+        @Override
+        public void onResponseResult(Response<VolumeResult> response)
+        {
+            if (response.isSuccessful())
+            {
+                VolumeDto volumeDto = response.body().getData();
+                updateVolume(volumeDto.getValue());
+            }
+        }
+    };
 
 }

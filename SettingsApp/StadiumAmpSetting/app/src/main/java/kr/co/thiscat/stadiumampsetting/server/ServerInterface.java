@@ -5,6 +5,7 @@ import kr.co.thiscat.stadiumampsetting.server.entity.Entertainment;
 import kr.co.thiscat.stadiumampsetting.server.entity.EventInfoResult;
 import kr.co.thiscat.stadiumampsetting.server.entity.result.EventListResult;
 import kr.co.thiscat.stadiumampsetting.server.entity.result.EventResult;
+import kr.co.thiscat.stadiumampsetting.server.entity.result.VolumeResult;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventContents;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventDto;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventRequestDto;
@@ -14,6 +15,7 @@ import kr.co.thiscat.stadiumampsetting.server.entity.StadiumServerResult;
 import kr.co.thiscat.stadiumampsetting.server.entity.StartEvent;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventStartReqDto;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventcontinuityTypeDto;
+import kr.co.thiscat.stadiumampsetting.server.entity.v2.VolumeDto;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -76,4 +78,10 @@ public interface ServerInterface {
 
     @GET("v1/event/stop-lastevent")
     Call<RunEventResult> stopLastEvent(@Query("eventId")long eventId);
+
+    @POST("/v2/server/sync-volume")
+    Call<EventResult> setSyncVolume(@Body VolumeDto volumeDto);
+
+    @GET("/v2/server/get-volume")
+    Call<VolumeResult> getSyncVolume(@Query("eventId")long eventId);
 }

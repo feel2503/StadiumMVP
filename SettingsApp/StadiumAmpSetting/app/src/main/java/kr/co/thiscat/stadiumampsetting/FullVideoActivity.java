@@ -14,6 +14,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -48,6 +49,8 @@ import com.google.android.exoplayer2.ui.StyledPlayerView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -57,10 +60,12 @@ import kr.co.thiscat.stadiumampsetting.server.ServerManager;
 import kr.co.thiscat.stadiumampsetting.server.entity.RunEvent;
 import kr.co.thiscat.stadiumampsetting.server.entity.RunEventResult;
 import kr.co.thiscat.stadiumampsetting.server.entity.result.EventResult;
+import kr.co.thiscat.stadiumampsetting.server.entity.result.VolumeResult;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventDto;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventImageDto;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventMusicDto;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventStartReqDto;
+import kr.co.thiscat.stadiumampsetting.server.entity.v2.VolumeDto;
 import retrofit2.Response;
 
 /**
@@ -161,6 +166,9 @@ public class FullVideoActivity extends AppCompatActivity {
     private WebSettings mWebSettings1;
     private WebSettings mWebSettings2;
 
+    private PreferenceUtil mPreferenceUtil;
+    private AudioManager mAudioManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -180,6 +188,8 @@ public class FullVideoActivity extends AppCompatActivity {
         mVolume = getIntent().getIntExtra("VideoVolume", 0);
 
         mServer = ServerManager.getInstance(FullVideoActivity.this);
+        mPreferenceUtil = new PreferenceUtil(FullVideoActivity.this);
+        mAudioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
 
         initUi();
         setWebView();
@@ -336,6 +346,28 @@ public class FullVideoActivity extends AppCompatActivity {
         super.onDestroy();
         if(exoPlayer.isPlaying()){
             exoPlayer.stop();
+        }
+    }
+
+    public void updateVolume(RunEvent runEvent)
+    {
+        boolean isSync = mPreferenceUtil.getBooleanPreference(PreferenceUtil.VOLUME_SYNC);
+        if(isSync)
+        {
+            int volume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+            if(volume != runEvent.getVolumeValue())
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, runEvent.getVolumeValue(), 0);
+        }
+    }
+
+    public void updateVolume(int value)
+    {
+        boolean isSync = mPreferenceUtil.getBooleanPreference(PreferenceUtil.VOLUME_SYNC);
+        if(isSync)
+        {
+            int volume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+            if(volume != value)
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, value, AudioManager.FLAG_SHOW_UI);
         }
     }
 
@@ -631,7 +663,10 @@ public class FullVideoActivity extends AppCompatActivity {
             @Override
             public void run() {
                 if(runEvent.getHomeCount() >= runEvent.getAwayCount()){
-                    int[] nums = {runEvent.getHome1Count(), runEvent.getHome2Count(), runEvent.getHome3Count(), runEvent.getHome4Count(), runEvent.getHome5Count()};
+                    int[] nums = {runEvent.getHome1Count(), runEvent.getHome2Count(), runEvent.getHome3Count(), runEvent.getHome4Count(), runEvent.getHome5Count(),
+                            runEvent.getHome6Count(), runEvent.getHome7Count(), runEvent.getHome8Count(), runEvent.getHome9Count(), runEvent.getHome10Count(),
+                            runEvent.getHome11Count(), runEvent.getHome12Count(), runEvent.getHome13Count(), runEvent.getHome14Count(), runEvent.getHome15Count(),
+                            runEvent.getHome16Count(), runEvent.getHome17Count(), runEvent.getHome18Count(), runEvent.getHome19Count(), runEvent.getHome20Count()};
                     int[] ranks = getRank(nums);
 
                     mTextResult1.setText(getHomeRankMusic(ranks, 1));
@@ -640,7 +675,11 @@ public class FullVideoActivity extends AppCompatActivity {
                 }
                 else
                 {
-                    int[] nums = {runEvent.getAway1Count(), runEvent.getAway2Count(), runEvent.getAway3Count(), runEvent.getAway4Count(), runEvent.getAway5Count()};
+                    int[] nums = {runEvent.getAway1Count(), runEvent.getAway2Count(), runEvent.getAway3Count(), runEvent.getAway4Count(), runEvent.getAway5Count(),
+                            runEvent.getAway6Count(), runEvent.getAway7Count(), runEvent.getAway8Count(), runEvent.getAway9Count(), runEvent.getAway10Count(),
+                            runEvent.getAway11Count(), runEvent.getAway12Count(), runEvent.getAway13Count(), runEvent.getAway14Count(), runEvent.getAway15Count(),
+                            runEvent.getAway16Count(), runEvent.getAway17Count(), runEvent.getAway18Count(), runEvent.getAway19Count(), runEvent.getAway20Count(),
+                    };
                     int[] ranks = getRank(nums);
 
                     mTextResult1.setText(getAwayRankMusic(ranks, 1));
@@ -654,18 +693,35 @@ public class FullVideoActivity extends AppCompatActivity {
 
     private int[] getRank(int[] nums)
     {
-        int[] ranks = new int[nums.length];
+//        int[] ranks = new int[nums.length];
+//        for (int i = 0; i < nums.length; i++) {
+//            int rank = 1;
+//            for (int j = 0; j < nums.length; j++) {
+//                if (nums[i] < nums[j]) {
+//                    rank++;
+//                }
+//            }
+//            ranks[i] = rank;
+//        }
+//
+//        return ranks;
+
+        int[] rank = new int[nums.length];
+        List<Pair> list = new ArrayList<>();
         for (int i = 0; i < nums.length; i++) {
-            int rank = 1;
-            for (int j = 0; j < nums.length; j++) {
-                if (nums[i] < nums[j]) {
-                    rank++;
-                }
-            }
-            ranks[i] = rank;
+            list.add(new Pair(nums[i], i));
         }
 
-        return ranks;
+        // 내림차순 정렬, 값이 같으면 index가 작은 순으로
+        list.sort(Comparator
+                .comparingInt((Pair p) -> -p.value)
+                .thenComparingInt(p -> p.index));
+
+        for (int i = 0; i < list.size(); i++) {
+            rank[list.get(i).index] = i + 1;
+        }
+
+        return rank;
     }
 
     private String getHomeRankMusic(int[] arrRank, int rank)
@@ -812,6 +868,9 @@ public class FullVideoActivity extends AppCompatActivity {
             exoPlayer.setVolume(mVolume * 0.1f);
             exoPlayer.prepare();
             exoPlayer.play(); //자동으로 로딩완료까지 기다렸다가 재생함
+
+            AsyncCheckVolume async = new AsyncCheckVolume();
+            async.execute();
 
         }catch (Exception e){
             e.printStackTrace();
@@ -1440,6 +1499,7 @@ public class FullVideoActivity extends AppCompatActivity {
             {
                 try{
                     mRunEvent = response.body().getData();
+                    updateVolume(mRunEvent);
                     Log.d("AAAA", "mEventStateCallBack : " + mRunEvent.getEventState());
                     if(mRunEvent.getEventState().equalsIgnoreCase("START"))
                     {
@@ -1539,6 +1599,7 @@ public class FullVideoActivity extends AppCompatActivity {
                     if(mRunEvent.getEventState().equalsIgnoreCase("STOP"))
                     {
                         updateScore(mRunEvent);
+                        updateVolume(mRunEvent);
 
                         int home = mRunEvent.getHomeCount();
                         int away = mRunEvent.getAwayCount();
@@ -1642,5 +1703,42 @@ public class FullVideoActivity extends AppCompatActivity {
         }
     };
 
+    private class AsyncCheckVolume extends AsyncTask<String, Void, Boolean>
+    {
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            try{
+                Thread.sleep(1000);
+            }catch (Exception e){}
 
+            if(mRunEventId < 0) {
+                mServer.getSyncVolume(mGetVolumeCallBack, mServerId);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+            if(exoPlayer.isPlaying()){
+                AsyncCheckVolume async = new AsyncCheckVolume();
+                async.execute();
+            }
+
+        }
+    }
+
+    private SECallBack<VolumeResult> mGetVolumeCallBack = new SECallBack<VolumeResult>()
+    {
+        @Override
+        public void onResponseResult(Response<VolumeResult> response)
+        {
+            if (response.isSuccessful())
+            {
+                VolumeDto volumeDto = response.body().getData();
+                updateVolume(volumeDto.getValue());
+            }
+        }
+    };
 }

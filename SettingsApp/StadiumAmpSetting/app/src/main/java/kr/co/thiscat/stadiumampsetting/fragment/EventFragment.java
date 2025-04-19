@@ -2,15 +2,22 @@ package kr.co.thiscat.stadiumampsetting.fragment;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.os.Handler;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,12 +25,15 @@ import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.exoplayer2.ExoPlayer;
@@ -41,6 +51,7 @@ import kr.co.thiscat.stadiumampsetting.FullPortVideoActivity;
 import kr.co.thiscat.stadiumampsetting.FullVideoActivity;
 import kr.co.thiscat.stadiumampsetting.FullsImageActivity;
 import kr.co.thiscat.stadiumampsetting.MainActivity;
+import kr.co.thiscat.stadiumampsetting.MusicPlayService;
 import kr.co.thiscat.stadiumampsetting.PreferenceUtil;
 import kr.co.thiscat.stadiumampsetting.R;
 import kr.co.thiscat.stadiumampsetting.server.SECallBack;
@@ -114,6 +125,7 @@ public class EventFragment extends Fragment {
     private SharedPreferences mPref;
     private SharedPreferences.Editor mEditor;
 
+    private CheckBox mCheckSoundSync;
 
     public EventFragment() {
         // Required empty public constructor
@@ -159,6 +171,9 @@ public class EventFragment extends Fragment {
 
         mPref = mainActivity.getSharedPreferences("pref", Activity.MODE_PRIVATE);
         mEditor = mPref.edit();
+
+
+
     }
 
     @Override
@@ -176,8 +191,8 @@ public class EventFragment extends Fragment {
         mTextAwayCount = view.findViewById(R.id.text_result_away_count);
 
         mLinearEvent = view.findViewById(R.id.linear_event);
-        mWebView = view.findViewById(R.id.web_view);
-        initWebView();
+//        mWebView = view.findViewById(R.id.web_view);
+//        initWebView();
 
         mFab = view.findViewById(R.id.fab_web);
         mFab.setOnClickListener(mOnClickListener);
@@ -212,13 +227,15 @@ public class EventFragment extends Fragment {
         //mSeekBarTime.setEnabled(false);
 
         mSeekVolume = view.findViewById(R.id.seekBar_volume);
-        mSeekVolume.setMax(10);
+        mSeekVolume.setMax(15);
         mSeekVolume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 updateVolumeValue(progress);
                 mainActivity.volumeValue = progress;
+                mainActivity.setVolume(progress);
                 //mServer.setEventVolume(mSetVolumeCallBack, mainActivity.mServerId, progress);
+
             }
 
             @Override
@@ -276,10 +293,19 @@ public class EventFragment extends Fragment {
                 break;
         }
 
+        mCheckSoundSync = view.findViewById(R.id.check_sound_sync);
+        mCheckSoundSync.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mPreferenceUtil.putBooleanPreference(PreferenceUtil.VOLUME_SYNC, isChecked);
+            }
+        });
 
 
         return view;
     }
+
+
 
     private void initWebView()
     {
@@ -308,6 +334,13 @@ public class EventFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        AudioManager audioManager = (AudioManager)getContext().getSystemService(Context.AUDIO_SERVICE);
+        int volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        mSeekVolume.setProgress(volume);
+
+        boolean isChecked = mPreferenceUtil.getBooleanPreference(PreferenceUtil.VOLUME_SYNC);
+        mCheckSoundSync.setChecked(isChecked);
+
         if(mainActivity.mRunEvent != null){
             updateScore(mainActivity.mRunEvent);
             updateTimer(mainActivity.mRunEvent);
@@ -363,6 +396,14 @@ public class EventFragment extends Fragment {
         });
     }
 
+    public void updateVolumeSeekbar(final int volume) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mSeekVolume.setProgress(volume);
+            }
+        });
+    }
 
     public void updateEventState(RunEvent runEvent) {
         if( getActivity() != null) {
@@ -534,6 +575,15 @@ public class EventFragment extends Fragment {
 //                int playPosition = (mediaPlayer.getDuration() / 100) * seekBar.getProgress();
 //                mediaPlayer.seekTo(playPosition);
 //                textCurrentTime.setText(milliSecondsToTimer(mediaPlayer.getCurrentPosition()));
+            return false;
+        }
+    };
+
+
+
+    View.OnKeyListener mOnKeyListener = new View.OnKeyListener() {
+        @Override
+        public boolean onKey(View v, int keyCode, KeyEvent event) {
             return false;
         }
     };
@@ -1048,4 +1098,6 @@ public class EventFragment extends Fragment {
         }
 
     };
+
+
 }

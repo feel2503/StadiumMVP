@@ -13,14 +13,17 @@ import kr.co.thiscat.stadiumampsetting.server.entity.StadiumServerResult;
 import kr.co.thiscat.stadiumampsetting.server.entity.StartEvent;
 import kr.co.thiscat.stadiumampsetting.server.entity.result.EventListResult;
 import kr.co.thiscat.stadiumampsetting.server.entity.result.EventResult;
+import kr.co.thiscat.stadiumampsetting.server.entity.result.VolumeResult;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventDto;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventRequestDto;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventStartReqDto;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventcontinuityTypeDto;
+import kr.co.thiscat.stadiumampsetting.server.entity.v2.VolumeDto;
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Body;
 import retrofit2.http.Query;
 
 public class ServerManager {
@@ -178,4 +181,17 @@ public class ServerManager {
         Call<RunEventResult> call = mServerInterface.stopLastEvent(eventId);
         call.enqueue(callBack);
     }
+
+    public void setSyncVolume(SECallBack<EventResult> callBack, VolumeDto volumeDto)
+    {
+        Call<EventResult> call = mServerInterface.setSyncVolume(volumeDto);
+        call.enqueue(callBack);
+    }
+
+    public void getSyncVolume(SECallBack<VolumeResult> callBack, long eventId)
+    {
+        Call<VolumeResult> call = mServerInterface.getSyncVolume(eventId);
+        call.enqueue(callBack);
+    }
+
 }

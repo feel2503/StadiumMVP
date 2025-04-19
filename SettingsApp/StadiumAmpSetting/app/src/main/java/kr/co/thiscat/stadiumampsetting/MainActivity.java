@@ -10,9 +10,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -62,6 +64,8 @@ import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventDto;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventImageDto;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventMusicDto;
 import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventStartReqDto;
+import kr.co.thiscat.stadiumampsetting.server.entity.v2.EventcontinuityTypeDto;
+import kr.co.thiscat.stadiumampsetting.server.entity.v2.VolumeDto;
 import retrofit2.Response;
 
 
@@ -122,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
     public int currentTriggerType = 0;
     public int currentContType = 0;
 
+    private AudioManager mAudioManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -187,6 +192,14 @@ public class MainActivity extends AppCompatActivity {
         getApplicationContext().startService(servIntent);
 
 
+        mAudioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("android.media.VOLUME_CHANGED_ACTION");
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            registerReceiver(mVolumeChangeListener, filter, Context.RECEIVER_EXPORTED);
+        else
+            registerReceiver(mVolumeChangeListener, filter);
     }
 
     public String getSSAID()
@@ -255,6 +268,8 @@ public class MainActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
 
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
+
+        unregisterReceiver(mVolumeChangeListener);
     }
 
     @Override
@@ -282,6 +297,7 @@ public class MainActivity extends AppCompatActivity {
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
     }
+
 
     public Uri getContentUri(String name){
         File outputFile = new File(contentDirPath+name);
@@ -335,14 +351,90 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+//    @Override
+//    public boolean onKeyDown(int keyCode, KeyEvent event) {
+//        if(keyCode == KeyEvent.KEYCODE_HOME || keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT
+//                || keyCode == KeyEvent.KEYCODE_DPAD_UP  || keyCode == KeyEvent.KEYCODE_DPAD_DOWN || keyCode == KeyEvent.KEYCODE_DPAD_CENTER
+//                || keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_HOME || keyCode == KeyEvent.KEYCODE_RECENT_APPS
+//        )
+//            return super.onKeyDown(keyCode, event);
+//
+//        boolean isVolumeSync = mPreferenceUtil.getBooleanPreference(PreferenceUtil.VOLUME_SYNC);
+//        if(isVolumeSync)
+//        {
+//            int volume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+//            if(keyCode == KeyEvent.KEYCODE_M || keyCode == KeyEvent.KEYCODE_MUTE)
+//            {
+//                if(volume > 0)
+//                {
+//                    volume = 0;
+//                }
+//                else
+//                {
+//                    volume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) / 2;
+//                }
+//                VolumeDto volumeDto = new VolumeDto(mServerId, volume);
+//                mServer.setSyncVolume(mVolumeCallBack, volumeDto);
+//                return super.onKeyDown(keyCode, event);
+//            }
+//            else if(keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN )
+//            {
+//                VolumeDto volumeDto = new VolumeDto(mServerId, volume);
+//                mServer.setSyncVolume(mVolumeCallBack, volumeDto);
+//
+//                eventFragment.updateVolumeSeekbar(volume);
+//                return super.onKeyDown(keyCode, event);
+//            }
+//        }
+//
+//        if(settingFragment.mEventIsRunning){
+//            settingFragment.eventStop();
+//        }
+//        else{
+//            settingFragment.eventStart();
+//        }
+//        return super.onKeyDown(keyCode, event);
+//    }
+
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if(keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN
-        || keyCode == KeyEvent.KEYCODE_HOME || keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_HOME || keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT
                 || keyCode == KeyEvent.KEYCODE_DPAD_UP  || keyCode == KeyEvent.KEYCODE_DPAD_DOWN || keyCode == KeyEvent.KEYCODE_DPAD_CENTER
                 || keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_HOME || keyCode == KeyEvent.KEYCODE_RECENT_APPS
         )
-            return super.onKeyDown(keyCode, event);
+            return super.onKeyUp(keyCode, event);
+
+        try{Thread.sleep(100);}catch (Exception e){}
+        boolean isVolumeSync = mPreferenceUtil.getBooleanPreference(PreferenceUtil.VOLUME_SYNC);
+        if(isVolumeSync)
+        {
+            int volume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+            if(keyCode == KeyEvent.KEYCODE_M || keyCode == KeyEvent.KEYCODE_MUTE)
+            {
+                if(volume > 0)
+                {
+                    volume = 0;
+                }
+                else
+                {
+                    volume = 7;
+                }
+                eventFragment.updateVolumeSeekbar(volume);
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, AudioManager.FLAG_SHOW_UI);
+//                VolumeDto volumeDto = new VolumeDto(mServerId, volume);
+//                mServer.setSyncVolume(mVolumeCallBack, volumeDto);
+                return super.onKeyUp(keyCode, event);
+            }
+            else if(keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN )
+            {
+//                VolumeDto volumeDto = new VolumeDto(mServerId, volume);
+//                mServer.setSyncVolume(mVolumeCallBack, volumeDto);
+
+                eventFragment.updateVolumeSeekbar(volume);
+
+                return super.onKeyUp(keyCode, event);
+            }
+        }
 
         if(settingFragment.mEventIsRunning){
             settingFragment.eventStop();
@@ -350,7 +442,7 @@ public class MainActivity extends AppCompatActivity {
         else{
             settingFragment.eventStart();
         }
-        return super.onKeyDown(keyCode, event);
+        return super.onKeyUp(keyCode, event);
     }
 
     public void initEventInfo()
@@ -668,6 +760,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void updateVolume(RunEvent runEvent)
+    {
+        boolean isSync = mPreferenceUtil.getBooleanPreference(PreferenceUtil.VOLUME_SYNC);
+        if(isSync)
+        {
+            mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, runEvent.getVolumeValue(), 0);
+        }
+    }
+
+    public void setVolume(int value)
+    {
+        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, value, AudioManager.FLAG_SHOW_UI);
+    }
+
     public void showProgress(final Activity act, final boolean bShow)
     {
         if(act == null)
@@ -713,6 +819,7 @@ public class MainActivity extends AppCompatActivity {
 
                     settingFragment.updateEventState(mRunEvent);
                     eventFragment.updateEventState(mRunEvent);
+                    //updateVolume(mRunEvent);
 
                     if(mRunEvent.getEventState().equalsIgnoreCase("STOP")){
                         //playMusic(mRunEvent);
@@ -784,6 +891,8 @@ public class MainActivity extends AppCompatActivity {
 
                     settingFragment.updateEventState(mRunEvent);
                     eventFragment.updateEventState(mRunEvent);
+                    //updateVolume(mRunEvent);
+
                     if(mRunEvent.getEventState().equalsIgnoreCase("START")){
                         startEventStateCheck(mRunEvent.getId());
                     }else{
@@ -929,6 +1038,28 @@ public class MainActivity extends AppCompatActivity {
                 eventDto.getAwayColor(), eventDto.getAwayFont());
     }
 
+    private BroadcastReceiver mVolumeChangeListener = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            intent.getExtras();
+            if(action.equalsIgnoreCase("android.media.VOLUME_CHANGED_ACTION"))
+            {
+                boolean isVolumeSync = mPreferenceUtil.getBooleanPreference(PreferenceUtil.VOLUME_SYNC);
+                int streamType = intent.getIntExtra("android.media.EXTRA_VOLUME_STREAM_TYPE", -1);
+                int newVolume = intent.getIntExtra("android.media.EXTRA_VOLUME_STREAM_VALUE", -1);
+                int oldVolume = intent.getIntExtra("android.media.EXTRA_PREV_VOLUME_STREAM_VALUE", -1);
+                if(streamType == AudioManager.STREAM_MUSIC && newVolume != oldVolume && isVolumeSync)
+                {
+                    VolumeDto volumeDto = new VolumeDto(mServerId, newVolume);
+                    mServer.setSyncVolume(mVolumeCallBack, volumeDto);
+                    //eventFragment.updateVolumeSeekbar(newVolume);
+                }
+                //Toast.makeText(context, "볼륨 변경: " + oldVolume + " → " + newVolume, Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
     private SECallBack<EventResult> mEventCallBack = new SECallBack<EventResult>()
     {
         @Override
@@ -991,6 +1122,15 @@ public class MainActivity extends AppCompatActivity {
             else{
                 Log.d("AAAA", "----- Start Event fail : " );
             }
+        }
+    };
+
+    private SECallBack<EventResult> mVolumeCallBack = new SECallBack<EventResult>()
+    {
+        @Override
+        public void onResponseResult(Response<EventResult> response)
+        {
+
         }
     };
 

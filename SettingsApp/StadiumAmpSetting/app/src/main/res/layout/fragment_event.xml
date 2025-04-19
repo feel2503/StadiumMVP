@@ -14,11 +14,11 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <WebView
-                android:id="@+id/web_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="gone"/>
+<!--            <WebView-->
+<!--                android:id="@+id/web_view"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:visibility="gone"/>-->
 
             <LinearLayout
                 android:id="@+id/linear_event"
@@ -283,11 +283,32 @@
                         android:layout_marginTop="10dp" />
 
 
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="vertical">
+                        <CheckBox
+                            android:id="@+id/check_sound_sync"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_round_white"
+                            android:text="Sound Server Sync" />
+                    </LinearLayout>
+
+
+                    <TextView
+                        style="@style/black_14_font"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:text="Chromakey" />
                     <RadioGroup
                         android:id="@+id/radio_chromakey"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
+                        android:layout_marginTop="10dp"
                         android:layout_marginLeft="10dp"
                         android:orientation="horizontal">
                         <RadioButton
@@ -331,6 +352,7 @@
                 android:layout_marginBottom="16dp"
                 android:contentDescription="Event"
                 android:background="@drawable/bg_round_white"
+                android:visibility="gone"
                 app:fabSize="auto"
                 style="@style/floating2"
                  />

@@ -12,6 +12,7 @@ public class PreferenceUtil
     public static final String KEY_SERVER_ID = "Server ID";
     public static final String KEY_SERVER_NAME = "Server Name";
     public static final String KEY_EVENT_ID = "Event ID";
+    public static final String VOLUME_SYNC = "Volume Sync";
 
     public PreferenceUtil(Context context)
     {
