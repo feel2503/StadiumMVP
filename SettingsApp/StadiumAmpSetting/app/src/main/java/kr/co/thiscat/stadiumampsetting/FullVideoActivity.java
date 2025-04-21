@@ -371,7 +371,7 @@ public class FullVideoActivity extends AppCompatActivity {
         }
     }
 
-    Player.Listener mPlayerListener = new Player.Listener() {
+    private Player.Listener mPlayerListener = new Player.Listener() {
         @Override
         public void onEvents(Player player, Player.Events events) {
             Player.Listener.super.onEvents(player, events);
@@ -1365,25 +1365,6 @@ public class FullVideoActivity extends AppCompatActivity {
                     }
                     else if(mRunEvent.getEventState().equalsIgnoreCase("STOP"))
                     {
-                        if(mRunEventId > 0)
-                        {
-                            mRunEventId = -1;
-
-                            if(!exoPlayer.isPlaying()){
-                                updateScore(mRunEvent);
-
-                                int home = mRunEvent.getHomeCount();
-                                int away = mRunEvent.getAwayCount();
-                                if (home == away) {
-                                    viewImageType = "IMAGE_DEFAULT";
-                                } else if (home > away) {
-                                    viewImageType = "IMAGE_HOME";
-                                } else if (home < away) {
-                                    viewImageType = "IMAGE_AWAY";
-                                }
-                            }
-                            //setImageView01();
-                        }
                         AsyncRestartCheck async = new AsyncRestartCheck();
                         async.execute();
                     }
@@ -1415,6 +1396,7 @@ public class FullVideoActivity extends AppCompatActivity {
                     {
                         try{
                             mRunEvent = response.body().getData();
+                            setEventInfo(mRunEvent.getEventMusicList());
                             Log.d("BBBB", "mNextEventCallBack : " + mRunEvent.getId());
                             if(mRunEvent.getEventState().equalsIgnoreCase("START"))
                             {
@@ -1428,12 +1410,9 @@ public class FullVideoActivity extends AppCompatActivity {
                             }
                             else if(mRunEvent.getEventState().equalsIgnoreCase("STOP") )
                             {
-                                mRunEventId = -1;
                                 updateScore(mRunEvent);
                                 setImageView01();
                                 playVideo(mRunEvent);
-//                                AsyncCheckState async = new AsyncCheckState();
-//                                async.execute();
                             }
                         }catch (Exception e)
                         {
@@ -1500,7 +1479,6 @@ public class FullVideoActivity extends AppCompatActivity {
                 try{
                     mRunEvent = response.body().getData();
                     updateVolume(mRunEvent);
-                    Log.d("AAAA", "mEventStateCallBack : " + mRunEvent.getEventState());
                     if(mRunEvent.getEventState().equalsIgnoreCase("START"))
                     {
                         if(!exoPlayer.isPlaying()) {
@@ -1508,21 +1486,12 @@ public class FullVideoActivity extends AppCompatActivity {
                             updateScore(mRunEvent);
                         }
                     }
-                    else if(mRunEvent.getEventState().equalsIgnoreCase("STOP") && mRunEventId != -1)
+                    else if(mRunEvent.getEventState().equalsIgnoreCase("STOP"))
                     {
-                        mRunEventId = -1;
-
                         updateScore(mRunEvent);
 
                         setImageView01();
                         playVideo(mRunEvent);
-                        //playMusic(mRunEvent);
-
-
-                        //mServer.getRunEventState(mEndEventStateCallBack, mEventDto.getRunEvent());
-
-//                        AsyncCheckState async = new AsyncCheckState();
-//                        async.execute();
                     }
                     //setImageView01();
 
@@ -1627,66 +1596,6 @@ public class FullVideoActivity extends AppCompatActivity {
         }
     };
 
-    private SECallBack<RunEventResult> mRunEventStateCallBack = new SECallBack<RunEventResult>()
-    {
-        @Override
-        public void onResponseResult(Response<RunEventResult> response)
-        {
-            if (response.isSuccessful())
-            {
-                try{
-                    mRunEvent = response.body().getData();
-                    Log.d("AAAA", "111 mRunEventStateCallBack : " + mRunEvent.getEventState());
-                    if(mRunEvent.getEventState().equalsIgnoreCase("START"))
-                    {
-                        startEventStateCheck(mRunEvent.getId());
-                    }
-                    else if(mRunEvent.getEventState().equalsIgnoreCase("STOP"))
-                    {
-                        AsyncCheckState async = new AsyncCheckState();
-                        async.execute();
-                    }
-
-                }catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-
-            }
-            else
-            {
-                // no event
-            }
-
-            //showProgress(FullsImageActivity.this, false);
-        }
-    };
-
-    private class AsyncCheckState extends AsyncTask<String, Void, Boolean>
-    {
-        @Override
-        protected Boolean doInBackground(String... strings) {
-            try{
-                Thread.sleep(MainActivity.CHECK_DELAY);
-            }catch (Exception e){}
-
-            if(mRunEventId < 0)
-            {
-                //mServer.getRunEventState(mFirstEventStateCallBack, mRunEventId);
-                mServer.getLastEvent(mRunEventStateCallBack, mServerId);
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean aBoolean) {
-            super.onPostExecute(aBoolean);
-
-        }
-    }
-
-
     private SECallBack<RunEventResult> mEventStartCallBack = new SECallBack<RunEventResult>()
     {
         @Override
@@ -1711,9 +1620,7 @@ public class FullVideoActivity extends AppCompatActivity {
                 Thread.sleep(1000);
             }catch (Exception e){}
 
-            if(mRunEventId < 0) {
-                mServer.getSyncVolume(mGetVolumeCallBack, mServerId);
-            }
+            mServer.getSyncVolume(mGetVolumeCallBack, mServerId);
 
             return null;
         }
