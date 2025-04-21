@@ -50,9 +50,13 @@ public class RestControllerLoggingAspect {
 
     @AfterReturning(pointcut = "restControllerMethods()", returning = "result")
     public void logAfter(JoinPoint joinPoint, Object result) {
-        logger.info("◀ Exiting: {} with result={}",
-                joinPoint.getSignature().toShortString(),
-                result);
+        logger.info(
+                "\n============== Result Info ==============\n" +
+                        "time           : " +getCurrentTime()+"\n"+
+                        "param          : "+ joinPoint.getSignature().toShortString()+ "\n"+
+                        "body           : "+ getParams(joinPoint)+ "\n"+
+                        "============================================="
+        );
     }
 
     @AfterThrowing(pointcut = "restControllerMethods()", throwing = "ex")

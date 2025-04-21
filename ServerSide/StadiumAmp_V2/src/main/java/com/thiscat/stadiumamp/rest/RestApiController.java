@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -665,6 +666,13 @@ public class RestApiController extends BaseController{
         if(runEvent != null)
         {
             RunEventDto result = getRunEventDto(runEvent);
+
+            List<Object[]> objects = eventMusicRepository.findAllEventMusic(event.getId());
+            List<EventMusicDto> eventMusicDtos = objects.stream()
+                    .map(x -> new EventMusicDto(((BigInteger)(x[0])).longValue(), ((BigInteger)(x[1])).longValue(),
+                            (String)x[2], (Integer)x[3], (String)x[4],(String)x[5], (String)x[6]))
+                    .collect(Collectors.toList());
+            result.setEventMusicList(new ArrayList<>(eventMusicDtos));
 
             return getResponseEntity( result, "success", HttpStatus.OK);
         }
