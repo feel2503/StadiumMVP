@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>Welcome to Stadium AMP</title>
+    <title>Welcome to stadiumAMP</title>
 
     <link rel="stylesheet"
           th:href="@{css/style.css}"/>
@@ -79,13 +79,6 @@
                 </div>
                 <div class="bt-02">
                     <div th:if="${teamtype == 'Home'}">
-<!--                        <button th:each="home, stat : ${runevent.homeTitles}"-->
-<!--                                th:onclick="|vote(event, ${team}, ${event.id}, ${stat.index + 1});|"-->
-<!--                                class="marquee"-->
-<!--                                th:styleAppend="|background-color: ${homeColor}; color:${homeFont}|">-->
-<!--                            <span>[[${home}]]</span>-->
-<!--                        </button>-->
-
                         <div class="button-row"
                              th:each="home, stat : ${runevent.homeTitles}">
 
@@ -101,6 +94,7 @@
                                 <button class="btn-narrow"
                                         th:if="${stat.index} < ${#lists.size(runevent.homeYoutube)}"
                                         th:attr="data-youtube=${runevent.homeYoutube[stat.index]}"
+                                        th:styleAppend="|background-color: ${homeFont}; color:${homeColor}|"
                                         onclick="loadVideo(this.getAttribute('data-youtube'))">
                                     <img th:if="${runevent.homeYoutube[stat.index] != null and !#strings.isEmpty(runevent.homeYoutube[stat.index])}"
                                          src="/asset/play_circle.svg"
@@ -118,14 +112,45 @@
 
                     <div class="bt-02">
                         <div th:if="${teamtype == 'Away'}">
-                            <button th:each="away, stat : ${runevent.awayTitles}"
-                                    th:onclick="|vote(event, ${team}, ${event.id}, ${stat.index + 1});|"
-                                    class="marquee"
-                                    th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|">
-                                <span>[[${away}]]</span>
-                            </button>
+<!--                            <button th:each="away, stat : ${runevent.awayTitles}"-->
+<!--                                    th:onclick="|vote(event, ${team}, ${event.id}, ${stat.index + 1});|"-->
+<!--                                    class="marquee"-->
+<!--                                    th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|">-->
+<!--                                <span>[[${away}]]</span>-->
+<!--                            </button>-->
+                            <div class="button-row"
+                                 th:each="away, stat : ${runevent.awayTitles}">
+
+                                <!-- home 제목 출력 -->
+                                <div class="button-wrapper">
+                                    <button class="btn-wide"
+                                            th:onclick="|vote(event, ${team}, ${event.id}, ${stat.index + 1});|"
+                                            th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|">
+                                        <span>[[${away}]]</span>
+                                    </button>
+
+                                    <!-- homeYoutube 값이 있을 경우 +, 없으면 - 출력 -->
+                                    <button class="btn-narrow"
+                                            th:if="${stat.index} < ${#lists.size(runevent.awayYoutube)}"
+                                            th:attr="data-youtube=${runevent.awayYoutube[stat.index]}"
+                                            th:styleAppend="|background-color: ${awayFont}; color:${awayColor}|"
+                                            onclick="loadVideo(this.getAttribute('data-youtube'))">
+                                        <img th:if="${runevent.awayYoutube[stat.index] != null and !#strings.isEmpty(runevent.awayYoutube[stat.index])}"
+                                             src="/asset/play_circle.svg"
+                                             alt="Play" width="36" height="36"/>
+
+                                        <!-- ❌ 값이 없거나 null: stop_circle -->
+                                        <img th:unless="${runevent.awayYoutube[stat.index] != null and !#strings.isEmpty(runevent.awayYoutube[stat.index])}"
+                                             src="/asset/stop_circle.svg"
+                                             alt="Stop" width="36" height="36"/>
+
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
+
                     <button class="join_event"
                             onclick="showActionSheet()">응원태그를 설정하면 +1표
                     </button>
@@ -304,10 +329,9 @@
 
                 if (multiplier)
                 {
-
                     const homeTextElement = document.getElementById("home_text");
                     if (homeTextElement) {
-                        updateCounter();
+                        //updateCounter();
                         const homeText = homeTextElement.innerText;
                         try {
                             totalCount = parseInt(homeText.match(/\d+$/)[0], 10);
@@ -317,12 +341,8 @@
                             createHearts(event, multiplier);
 
                             const triggerCount = parseInt(document.getElementById('anyCount').value, 10) || 10;
-                            console.log("triggerCount : ", previousCount, totalCount, triggerCount)
-                            console.log("triggerCount : ", previousCount, totalCount, triggerCount)
-                            console.log("triggerCount : ", previousCount, totalCount, triggerCount)
 
                             if (Math.floor(previousCount / triggerCount) < Math.floor(totalCount / triggerCount)) {
-                                console.log("2 multiplier : ", multiplier)
                                 createConfetti();
                             }
                         } catch (error) {

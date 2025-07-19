@@ -49,7 +49,8 @@ public class RestApiController extends BaseController{
     private RunEventRepository runEventRepository;
     @Autowired
     private CheertagRepository cheertagRepository;
-
+    @Autowired
+    private DefeventRepository defeventRepository;
 
 
     Logger logger = LoggerFactory.getLogger(RestApiController.class);

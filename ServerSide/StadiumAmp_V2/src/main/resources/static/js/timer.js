@@ -95,19 +95,65 @@ function countTimer() {
                 // document.getElementById("event_stop_graph").style.display ='none';
                 // document.getElementById("event_start_graph").style.display ='flex';
 
+                const homeTextElement = document.getElementById("home_text");
                 if (res.data.homeCount > 0)
-                    document.getElementById("home_text").innerText = res.data.homeName + " " + res.data.homeCount;
-                else
-                    document.getElementById("home_text").innerText = res.data.homeName;
+                {
+                    const homeText = homeTextElement.innerText;
+                    const match = homeText.match(/\d+$/);
+                    if(match)
+                    {
+                        prevCount = parseInt(match[0], 10);
+                        if(prevCount != res.data.homeCount){
+                            homeTextElement.classList.add('grow');
+                            setTimeout(() => {
+                                homeTextElement.classList.remove('grow');
+                            }, 200);
+                        }
+                    }
+                    else {
+                        homeTextElement.classList.add('grow');
+                        setTimeout(() => {
+                            homeTextElement.classList.remove('grow');
+                        }, 200);
+                    }
 
-                if (res.data.awayCount > 0)
-                    document.getElementById("away_text").innerText = res.data.awayCount + " " +res.data.awayName;
-                else
-                    document.getElementById("away_text").innerText = res.data.awayName;
+                    homeTextElement.innerText = res.data.homeName + " " + res.data.homeCount;
+                }
+                else {
+                    homeTextElement.innerText = res.data.homeName;
+                }
+
+                const awayTextElement = document.getElementById("away_text");
+                if (res.data.awayCount > 0){
+                    const awayText = awayTextElement.innerText;
+                    const match = awayText.match(/\d+$/);
+                    if(match)
+                    {
+                        prevCount = parseInt(match[0], 10);
+                        if(prevCount != res.data.awayCount){
+                            awayTextElement.classList.add('grow');
+                            setTimeout(() => {
+                                awayTextElement.classList.remove('grow');
+                            }, 200);
+                        }
+                    }
+                    else {
+                        awayTextElement.classList.add('grow');
+                        setTimeout(() => {
+                            awayTextElement.classList.remove('grow');
+                        }, 200);
+                    }
+
+                    awayTextElement.innerText = res.data.awayCount + " " +res.data.awayName;
+                }
+                else{
+                    awayTextElement.innerText = res.data.awayName;
+                }
                 //window.navigator.vibrate(200);
                 console.log("res.data.isStart ", res.data.isStart);
                 if(res.data.isStart)
                     window.navigator.vibrate(500);
+
 
             }
         }
@@ -130,6 +176,24 @@ function countTimer() {
     //     }
     // }
 }
+
+function createConfetti() {
+    for (let i = 0; i < 100; i++) {
+        let confetti = document.createElement('div');
+        confetti.classList.add("confetti");
+        confetti.style.backgroundColor = getRandomColor();
+        confetti.style.left = "50vw";
+        confetti.style.top = "50vh";
+        confetti.style.setProperty('--x', (Math.random() - 0.5) * 200 + "vw");
+        confetti.style.setProperty('--y', (Math.random() - 0.5) * 200 + "vh");
+        document.body.appendChild(confetti);
+
+        setTimeout(() => {
+            confetti.remove();
+        }, 2000);
+    }
+}
+
 
 function countTimer2() {
     console.log("countTimer : ")

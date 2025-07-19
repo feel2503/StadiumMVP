@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>이벤트 상세 정보</title>
+    <title>Welcome to stadiumAMP</title>
     <style>
         .container {
             width: 80%;
@@ -100,6 +100,12 @@
             <th>총 카운트</th>
             <th colspan="20">세부 카운트</th>
         </tr>
+        <tr>
+            <th> </th>
+            <th>응원</th>
+            <td th:each="i : ${#numbers.sequence(1, 20)}"
+                th:text="${i}"></td>
+        </tr>
         </thead>
         <tbody>
         <!-- 홈 팀 -->
@@ -123,11 +129,24 @@
     <!-- 태그 정보 -->
     <h2 class="section-title">🏷️ 태그 정보</h2>
     <table>
-        <tr><th>Tag 0</th><td th:text="${event.tag0 ?: 0}">30</td></tr>
-        <tr th:each="i : ${#numbers.sequence(1, 9)}">
-            <th th:text="'Tag ' + ${i}"></th>
-            <td th:text="${#maps.containsKey(eventMap, 'tag' + i) ? eventMap['tag' + i] : 0}"></td>
+        <thead>
+        <tr>
+            <td th:each="i : ${#numbers.sequence(1, 10)}"
+                th:text="${'Tag ' + i}"></td>
         </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td th:each="i : ${#numbers.sequence(0, 9)}"
+                th:text="${#maps.containsKey(eventMap, 'tag' + i) ? eventMap['tag' + i] : 0}"></td>
+        </tr>
+        </tbody>
+
+<!--        <tr><th>Tag 0</th><td th:text="${event.tag0 ?: 0}">30</td></tr>-->
+<!--        <tr th:each="i : ${#numbers.sequence(1, 9)}">-->
+<!--            <th th:text="'Tag ' + ${i}"></th>-->
+<!--            <td th:text="${#maps.containsKey(eventMap, 'tag' + i) ? eventMap['tag' + i] : 0}"></td>-->
+<!--        </tr>-->
     </table>
 
 </div>
