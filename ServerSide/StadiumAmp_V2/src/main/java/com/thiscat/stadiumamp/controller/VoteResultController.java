@@ -34,7 +34,7 @@ public class VoteResultController {
     @Autowired
     EventMusicRepository eventMusicRepository;
 
-    @GetMapping("/voteresult")
+    @GetMapping("/voteresult_old")
     public String home(Model model,  @RequestParam Integer team, @RequestParam Long event_id,
         @RequestParam ( required = false) Integer move){
         if((team == 1 || team == 3) && (move == null)) {

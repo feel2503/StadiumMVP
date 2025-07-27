@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org"  >
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -9,168 +9,395 @@
     <meta name="author" content="">
     <title>Welcome to stadiumAMP</title>
 
-    <!-- Global CSS -->
-<!--    <link rel="stylesheet" href="css/style.css">-->
     <link rel="stylesheet"
           th:href="@{css/style.css}"/>
 
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <style>
+        /* Custom styles to override or extend Tailwind for the flip effect */
+
+
+        .flip-container {
+            perspective: 1000px; /* For 3D effect */
+            margin: 10px 0; /* Reduced margin between clocks */
+            width: 90%; /* Responsive width */
+            max-width: 700px; /* Max width for larger screens */
+        }
+
+        .flip-card {
+            position: relative;
+            width: 100%;
+            height: 90px; /* Height of the flip card */
+            transform-style: preserve-3d;
+            transition: transform 0.8s ease-in-out; /* Flip animation speed */
+        }
+
+        .flip-card.flipped {
+            transform: rotateX(180deg);
+        }
+
+        .flip-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden; /* Hide back face when flipped */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5em; /* Large font size */
+            font-weight: 700;
+            border-radius: 12px; /* Rounded corners */
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4); /* Soft shadow */
+            color: #e2e8f0; /* Light text color */
+            overflow: hidden; /* Ensure text doesn't overflow during flip */
+            border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle border */
+        }
+
+        .flip-face-front {
+            /*background: linear-gradient(145deg, #2d3748, #1a202c);  Gradient background */
+            opacity: .7;
+            z-index: 2;
+        }
+
+        .flip-face-back {
+            /*background: linear-gradient(145deg, #1a202c, #2d3748);  Inverted gradient for back */
+            opacity: .7;
+            transform: rotateX(180deg);
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 768px) {
+            .flip-card {
+                height: 70px; /* Smaller height on tablets */
+            }
+            .flip-face {
+                font-size: 2em; /* Smaller font size on tablets */
+            }
+            body {
+                padding-bottom: 20px; /* Adjust padding for smaller screens */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .flip-card {
+                height: 60px; /* Even smaller height on mobile */
+            }
+            .flip-face {
+                font-size: 1.5em; /* Smaller font size on mobile */
+            }
+            body {
+                padding-bottom: 15px; /* Adjust padding for mobile */
+            }
+        }
+    </style>
+
 </head>
-<body >
+<body class="sample" onload="startTimer()">
+<div th:styleAppend="|background-color: ${bgcolor}|">
+
     <div class="remain_text_02" id="display">
         현재 응원 이벤트 남은 시간 0분 0초
     </div>
-    <div  >
 
-        <div style="padding:20px;">
-            <div class="wc_text_02">
-                이벤트 서버 <b>[[${event.name}]]</b> 실시간 응원 결과
+    <div class="sample">
+
+        <div style="padding-left: 20px; padding-right:20px; padding-top:0px; padding-bottom: 0px;"
+             onclick="location.href='https://sites.google.com/view/introduce-stadiumamp/';">
+            <div class="wc_text_01">
+                <b>[[${event.name}]]</b>
             </div>
 
             <div class="result_text">
-                <div class="home_text" id="home_text">[[${event.homeName}]] [[${runevent.homeCount}]]</div>
-                <div class="away_text" id="away_text">[[${event.awayName}]] [[${runevent.awayCount}]]</div>
+                <div class="home_text" th:styleAppend="|color: ${homeColor}|"
+                     id="home_text">[[${event.homeName}]] [[${runevent.homeCount}]]</div>
+                <div class="away_text" th:styleAppend="|color: ${awayColor}|"
+                     id="away_text">[[${event.awayName}]] [[${runevent.awayCount}]]</div>
             </div>
 
-            <div class="result_graph">
-                <div class="home_graph" id="home_graph"></div>
-                <div class="away_graph" id="away_graph"></div>
+
+            <div class="result_graph" id="event_stop_graph">
+                <div class="gray_graph_full">
+                    <div class="flex-center">다음 응원 이벤트를 기다려주세요</div>
+                </div>
+                <div class="away_graph_zero"></div>
+            </div>
+
+            <div class="result_graph" id="event_start_graph">
+                <div class="home_graph" th:styleAppend="|background-color: ${homeColor}|"
+                     id="home_graph"></div>
+                <div class="away_graph" th:styleAppend="|background-color: ${awayColor}|"
+                     id="away_graph"></div>
             </div>
         </div>
 
-        <div class="event_bg" style="padding:20px;">
 
-            <div class="wc_text_02">
-                응원할 음원을 투표해 주세요.
+
+        <div class="event_bg" th:styleAppend="'background-image: url('+${bgimg}+');'">
+            <div style="padding:12.5vh 20px 0px 20px;">
+
+                <div th:if="${runevent.homeCount >= runevent.awayCount}">
+                    <!-- First line container -->
+                    <div class="flip-container" >
+                        <div class="flip-card"
+                             id="line1">
+                            <div class="flip-face flip-face-front"
+                                 th:styleAppend="|background-color: ${homeColor}; color:${homeFont}|">[[${eventTopDtos[0].count}]] 표</div>
+                            <div class="flip-face flip-face-back"
+                                 th:styleAppend="|background-color: ${homeColor}; color:${homeFont}|">[[${eventTopDtos[0].name}]]</div>
+                        </div>
+                    </div>
+
+                    <!-- Second line container -->
+                    <div class="flip-container">
+                        <div class="flip-card" id="line2">
+                            <div class="flip-face flip-face-front"
+                                 th:styleAppend="|background-color: ${homeColor}; color:${homeFont}|">[[${eventTopDtos[1].count}]] 표</div>
+                            <div class="flip-face flip-face-back"
+                                 th:styleAppend="|background-color: ${homeColor}; color:${homeFont}|">[[${eventTopDtos[1].name}]]</div>
+                        </div>
+                    </div>
+
+                    <!-- Third line container -->
+                    <div class="flip-container">
+                        <div class="flip-card" id="line3">
+                            <div class="flip-face flip-face-front"
+                                 th:styleAppend="|background-color: ${homeColor}; color:${homeFont}|">[[${eventTopDtos[2].count}]] 표</div>
+                            <div class="flip-face flip-face-back"
+                                 th:styleAppend="|background-color: ${homeColor}; color:${homeFont}|">[[${eventTopDtos[2].name}]]</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:if="${runevent.homeCount < runevent.awayCount}">
+                    <!-- First line container -->
+                    <div class="flip-container" >
+                        <div class="flip-card"
+                             id="line1">
+                            <div class="flip-face flip-face-front"
+                                 th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|"></div>
+                            <div class="flip-face flip-face-back"
+                                 th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|"></div>
+                        </div>
+                    </div>
+
+                    <!-- Second line container -->
+                    <div class="flip-container">
+                        <div class="flip-card" id="line2">
+                            <div class="flip-face flip-face-front"
+                                 th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|"></div>
+                            <div class="flip-face flip-face-back"
+                                 th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|"></div>
+                        </div>
+                    </div>
+
+                    <!-- Third line container -->
+                    <div class="flip-container">
+                        <div class="flip-card" id="line3">
+                            <div class="flip-face flip-face-front"
+                                 th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|"></div>
+                            <div class="flip-face flip-face-back"
+                                 th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|"></div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
-           <!-- <div class="video_container">
-                <video id="videoPlay" width="300" height="200" controls autoplay muted>
-                    <source type="video/mp4"
-                            th:src="@{https://www.dropbox.com/scl/fi/7rjpuv11pgqiqmmtdxpnv/square-30sec1.mp4?rlkey=u5yqxcvw14l2dx8io6qxy6bwk&raw=1}" />
-                </video>
-            </div>-->
+            <p></p>
 
-            <div class="bt-02">
-                <div th:if="${teamtype =='Home'}">
-                    <button th:onclick="|vote(${team}, ${runevent.id}, 1);|" class="marquee" style="background-color: #ec0f32;">
-                            <span>[[${runevent.home1Name}]]</span>
-                    </button>
-                    <button th:onclick="|vote(${team}, ${runevent.id}, 2);|" class="marquee" style="background-color: #ec0f32;">
-                            <span>[[${runevent.home2Name}]]</span>
-                    </button>
-                    <button th:onclick="|vote(${team}, ${runevent.id}, 3);|" class="marquee" style="background-color: #ec0f32;">
-                        <span>[[${runevent.home3Name}]]</span>
-                    </button>
-                    <button th:onclick="|vote(${team}, ${runevent.id}, 4);|" class="marquee" style="background-color: #ec0f32;">
-                        <span>[[${runevent.home4Name}]]</span>
-                    </button>
-                    <button th:onclick="|vote(${team}, ${runevent.id}, 5);|" class="marquee" style="background-color: #ec0f32;">
-                        <span>[[${runevent.home5Name}]]</span>
-                    </button>
+            <input type="hidden" id="startMin" th:value="${min}">
+            <input type="hidden" id="startSec" th:value="${sec}">
+            <input type="hidden" id="startIdVal" th:value="${event.id}">
+            <input type="hidden" id="eventState" th:value="${state}">
 
-                </div>
-                <div th:if="${teamtype =='Away'}">
-                    <button th:onclick="|vote(${team}, ${runevent.id}, 1);|" class="marquee" style="background-color: #326295;">
-                        <span>[[${runevent.away1Name}]]</span>
-                    </button>
-                    <button th:onclick="|vote(${team}, ${runevent.id}, 2);|" class="marquee" style="background-color: #326295;">
-                        <span>[[${runevent.away2Name}]]</span>
-                    </button>
-                    <button th:onclick="|vote(${team}, ${runevent.id}, 3);|" class="marquee" style="background-color: #326295;">
-                        <span>[[${runevent.away3Name}]]</span>
-                    </button>
-                    <button th:onclick="|vote(${team}, ${runevent.id}, 4);|" class="marquee" style="background-color: #326295;">
-                        <span>[[${runevent.away4Name}]]</span>
-                    </button>
-                    <button th:onclick="|vote(${team}, ${runevent.id}, 5);|" class="marquee" style="background-color: #326295;">
-                        <span>[[${runevent.away5Name}]]</span>
-                    </button>
+        </div>
 
-                </div>
+
+        <div class="modal" id="youtubeModal">
+            <div class="modal-content">
+                <button class="close-btn" onclick="closeModal()">X</button>
+                <div id="youtubePlayer"></div>
             </div>
         </div>
 
-        <p></p>
+        <script th:src="@{jquery/jquery-3.4.1.min.js}"></script>
+        <script th:src="@{js/timer.js}"></script>
 
-        <input type="hidden" id="startMin" th:value="${min}" >
-        <input type="hidden" id="startSec" th:value="${sec}" >
-        <input type="hidden" id="startIdVal" th:value="${event.id}" >
+        <script>
+            estate = document.querySelector("#eventState").value;
+            const graph_stop = document.getElementById("event_stop_graph");
+            const graph_start = document.getElementById("event_start_graph");
+            if (estate === "STOP") {
+                graph_stop.style.display = 'flex';
+                graph_start.style.display = 'none';
+            } else {
+                graph_stop.style.display = 'none';
+                graph_start.style.display = 'flex';
+            }
+        </script>
+
+        <script>
+            // Array to hold the text for each line.
+            // You can change these strings to your desired text.
+            const lines = [
+                "새로운 첫 번째 줄 텍스트",
+                "새로운 두 번째 줄 텍스트",
+                "새로운 세 번째 줄 텍스트"
+            ];
 
 
+            function flipText()
+            {
+                console.log("flipText")
+                // setTimeout(() => {
+                //     const card1 = document.getElementById('line1');
+                //     card1.classList.remove('flipped');
+                //     const card2 = document.getElementById('line2');
+                //     card2.classList.remove('flipped');
+                //     const card3 = document.getElementById('line3');
+                //     card3.classList.remove('flipped');
+                // });
+                const card1 = document.getElementById('line1');
+                card1.classList.remove('flipped');
+                const card2 = document.getElementById('line2');
+                card2.classList.remove('flipped');
+                const card3 = document.getElementById('line3');
+                card3.classList.remove('flipped');
+
+                // const card = document.getElementById('line1');
+                // card.classList.remove('flipped');
+
+                setTimeout(() => {
+                    setFlipText('line1', lines[0]);
+                }, 700); // Delay of 700ms after the first line starts
 
 
-    </div>
+                // Apply text and flip for the second line after a delay
+                setTimeout(() => {
+                    setFlipText('line2', lines[1]);
+                }, 1400); // Delay of 700ms after the first line starts
 
+                // Apply text and flip for the third line after another delay
+                setTimeout(() => {
+                    setFlipText('line3', lines[2]);
+                }, 2100); // Delay of 1400ms after the first line starts (700ms after the second)
+            }
 
-<!--    <br>-->
-<!--    <a href='#' class='btn-floating'><div>+</div></a>-->
-<!--    <br><br>-->
-<!--    <a href='#' class='btn-floating'><div>-</div></a>-->
-
-<!--    <div id="bottom_banner">-->
-<!--        <img src="asset/bg_ad.png">-->
-<!--    </div>-->
-
-    <div id="bottom_banner" class="bottom_banner">
-        <a th:href="@{${event.webUrl}}" >
-            <div>
-                <!--                    <img class="profile" src="asset/floating_button.svg">-->
-                <div class="box" style="background: #BDBDBD;">
-                    <img class="profile" src="asset/floating_button.svg">
-                </div>
-            </div>
-        </a>
-    </div>
-
-    <script th:src="@{jquery/jquery-3.4.1.min.js}"></script>
-    <script th:src="@{js/timer.js}"></script>
-
-    <script>
-
-        /// vote
-        function vote(teamType, eventId, eventType)
-        {
-            console.log("vote : ",teamType, eventId, eventType)
-            $.ajax({
-                url:  '/v1/vote/save',
-                method: 'get',
-                data: {
-                    teamType: teamType,
-                    eventId: eventId,
-                    eventType: eventType
+            /**
+             * Sets the text for a flip card and triggers the flip animation.
+             * @param {string} elementId - The ID of the flip card element (e.g., 'line1').
+             * @param {string} text - The text content to display.
+             */
+            function setFlipText(elementId, text) {
+                const card = document.getElementById(elementId);
+                if (!card) {
+                    console.error(`Element with ID "${elementId}" not found.`);
+                    return;
                 }
-            }).done(function(res) {
-                if (res) {
-                    console.log("res", res);
-                    var homeGraph = document.getElementById("home_graph");
-                    homeGraph.style.flexBasis=res.data.home;
-                    if(res.data.home === "100%")
-                        homeGraph.style.borderRadius="10px";
-                    else{
-                        homeGraph.style.borderTopRightRadius="0px";
-                        homeGraph.style.borderBottomRightRadius="0px";
-                    }
-                    var awayGraph = document.getElementById("away_graph");
-                    awayGraph.style.flexBasis=res.data.away;
-                    if(res.data.away === "100%")
-                        awayGraph.style.borderRadius="10px";
-                    else{
-                        awayGraph.style.borderTopLeftRadius="0px";
-                        awayGraph.style.borderBottomLeftRadius="0px";
+                const front = card.querySelector('.flip-face-front');
+                const back = card.querySelector('.flip-face-back');
+
+                // Set the text for both front and back faces
+                // front.textContent = text;
+                // back.textContent = text;
+
+                // Trigger the flip animation by adding the 'flipped' class
+                // The CSS transition handles the animation smoothly
+                card.classList.add('flipped');
+
+                // Optional: If you want the card to flip back after some time,
+                // you can add another setTimeout here to remove the 'flipped' class.
+                // For this request, we assume it stays flipped.
+            }
+
+            // When the window loads, apply the text and start the flip animations
+            window.onload = () => {
+                // Apply text and flip for the first line
+                // setFlipText('line1', lines[0]);
+                //
+                // // Apply text and flip for the second line after a delay
+                // setTimeout(() => {
+                //     setFlipText('line2', lines[1]);
+                // }, 700); // Delay of 700ms after the first line starts
+                //
+                // // Apply text and flip for the third line after another delay
+                // setTimeout(() => {
+                //     setFlipText('line3', lines[2]);
+                // }, 1400); // Delay of 1400ms after the first line starts (700ms after the second)
+
+                setInterval(flipText, 3000);
+            };
+        </script>
+
+        <script>
+            /// vote
+
+
+
+
+
+            let player;
+            // Open the Modal with the YouTube Video
+            function loadVideo(urlInput) {
+                // const urlInput = document.getElementById(inputId).value;
+                const modal = document.getElementById('youtubeModal');
+
+                // Validate the input URL
+                if (urlInput != null && urlInput.trim() !== '') {
+                    // Transform YouTube share or Shorts link (if necessary)
+                    let videoId = "";
+                    if (urlInput.includes('youtu.be')) {
+                        videoId = urlInput.split('/').pop();
+                    } else if (urlInput.includes('youtube.com/shorts')) {
+                        videoId = urlInput.split('/').pop();
+                    } else if (urlInput.includes('v=')) {
+                        const params = new URLSearchParams(urlInput.split('?')[1]);
+                        videoId = params.get('v');
                     }
 
-                    document.getElementById("home_text").innerText = "홈팀 "+res.data.homeCount;
-                    document.getElementById("away_text").innerText = ""+res.data.awayCount+" 원정팀";
+                    if (videoId) {
+                        // Create YouTube Player instance
+                        player = new YT.Player('youtubePlayer', {
+                            height: '600', // Adjusted height for larger player
+                            width: '100%',
+                            videoId: videoId,
+                            playerVars: {
+                                autoplay: 1,
+                                controls: 1,
+                            },
+                            events: {
+                                onReady: function(event) {
+                                    event.target.setPlaybackQuality('hd1080'); // Set the video quality
+                                },
+                                onStateChange: function(event) {
+                                    if (event.data === 0) { // State 0 means the video has ended
+                                        closeModal(); // Automatically close the modal
+                                    }
+                                }
+                            }
+                        });
 
+                        modal.style.display = 'flex'; // Show the modal
+                    } else {
+                        alert('영상 링크 준비중 입니다');
+                    }
                 } else {
-
+                    alert('영상 링크 준비중 입니다');
                 }
-            });
+            }
 
-        }
+            // Close the Modal and Stop the Video
+            function closeModal() {
+                const modal = document.getElementById('youtubeModal');
+                if (player) {
+                    player.destroy(); // Destroy the player instance
+                }
+                modal.style.display = 'none'; // Hide the modal
+            }
 
-    </script>
+        </script>
 
-
+    </div>
 </body>
 </html>

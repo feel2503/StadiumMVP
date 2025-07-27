@@ -2,10 +2,7 @@ package com.thiscat.stadiumamp.controller;
 
 import com.thiscat.stadiumamp.dao.EventMusicDao;
 import com.thiscat.stadiumamp.dao.TagDao;
-import com.thiscat.stadiumamp.dto.EventMusicDto;
-import com.thiscat.stadiumamp.dto.RunEventDto;
-import com.thiscat.stadiumamp.dto.RunEventWebDto;
-import com.thiscat.stadiumamp.dto.TagDto;
+import com.thiscat.stadiumamp.dto.*;
 import com.thiscat.stadiumamp.entity.Cheertag;
 import com.thiscat.stadiumamp.entity.Event;
 import com.thiscat.stadiumamp.entity.EventMusic;
@@ -447,5 +444,96 @@ public class VoteController {
             fileName = fileName.substring(0, lastIndex);
         }
         return fileName;
+    }
+
+
+
+
+    @GetMapping("/voteresult")
+    public String voteresult(Model model,  @RequestParam Long event_id,
+                       @RequestParam ( required = false) Integer move){
+        Event event = eventRepository.findById(event_id).orElseThrow(EntityNotFoundException::new);
+        RunEvent runevent = runEventRepository.findFirstByEventOrderByIdDesc(event).orElseThrow(EntityNotFoundException::new);
+
+        RunEventWebDto runEventDto = RunEventWebDto.builder()
+                .id(runevent.getId())
+                .eventId(runevent.getEvent().getId())
+                .eventState(runevent.getEventState())
+                .startDateTime(runevent.getStartDateTime())
+                .triggerType(runevent.getEvent().getTriggerType())
+                .triggerTime(runevent.getEvent().getTriggerTime())
+                .triggerVote(runevent.getEvent().getTriggerVote())
+                .homeCount(runevent.getHomeCount())
+                .awayCount(runevent.getAwayCount())
+                .webUrl(event.getWebUrl())
+                .openchatUrl(event.getOpenchatUrl())
+                .build();
+
+//        List<EventMusic> eventMusicList =  eventMusicRepository.findAllByEventOrderBySequenceAsc(event);
+
+        runEventDto = updateRunEventMusic(runEventDto, event.getId());
+
+        String bgImage = "";
+        List<Object[]> tops = null;
+        if(getIntValue(runevent.getHomeCount()) >= getIntValue(runevent.getAwayCount()))
+        {
+            bgImage = eventImageRepository.findTypeEventImage(event_id, "IMAGE_HOME");
+            tops = runEventRepository.findHomeTopCounts(runevent.getId(), runevent.getEvent().getId());
+        }
+        else
+        {
+            bgImage = eventImageRepository.findTypeEventImage(event_id, "IMAGE_AWAY");
+            tops = runEventRepository.findAwayTopCounts(runevent.getId(), runevent.getEvent().getId());
+        }
+
+        List<EventTopDto> eventTopDtos = tops.stream()
+                .map(x -> new EventTopDto(((Integer)(x[0])).intValue(), (String)x[1], ((Integer)(x[2])).intValue()))
+                .collect(Collectors.toList());
+
+
+        LocalDateTime startTime = runevent.getStartDateTime();
+        int vTime = runEventDto.getTriggerTime();
+        LocalDateTime endTime = startTime.plusSeconds(vTime);
+
+        LocalDateTime nowTime = LocalDateTime.now();
+        if(nowTime.isAfter(endTime))
+        {
+            model.addAttribute("state", "STOP");
+        }
+        else {
+            Duration duration = Duration.between(nowTime, endTime);
+            long sec = duration.getSeconds();
+            long minV = sec / 60;
+            long secV = sec % 60;
+            String tVal = ""+minV+"분"+secV+"초";
+            model.addAttribute("state", tVal);
+            model.addAttribute("min", minV);
+            model.addAttribute("sec", secV);
+
+        }
+
+
+        //bgImage = "https://lh3.googleusercontent.com/drive-viewer/AKGpihYYrUREeok3BOYgpR_kdlLX4MhYkeEVIjVM6UlDkhWlY86tCtknoo_2bgBWHnQ5DiyBGAnnuYdJN9uZ7LLCRw0rw06fsPWdwg=s2560";
+        model.addAttribute("event", event);
+        model.addAttribute("runevent", runEventDto);
+        model.addAttribute("homeColor", "#"+event.getHomeColor());
+        model.addAttribute("homeFont", "#"+event.getHomeFont());
+        model.addAttribute("awayColor", "#"+event.getAwayColor());
+        model.addAttribute("awayFont", "#"+event.getAwayFont());
+        model.addAttribute("bgimg", bgImage);
+        model.addAttribute("bgcolor", "#"+event.getEventBkcolor());
+        model.addAttribute("openchatimg", event.getOpenchatImg());
+        model.addAttribute("webimg", event.getWebImg());
+        model.addAttribute("eventTopDtos", eventTopDtos);
+
+
+        return "voteresult";
+    }
+
+    private int getIntValue(Integer obj){
+        if(obj == null)
+            return 0;
+        else
+            return obj.intValue();
     }
 }
