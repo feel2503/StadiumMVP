@@ -14,7 +14,7 @@ public interface RunEventRepository extends JpaRepository<RunEvent, Long> {
 
     Optional<RunEvent> findById(Long id);
 
-    Optional<RunEvent> findByEvent(Event event);
+    List<RunEvent> findByEvent(Event event);
 
     @Query(
             value = " SELECT * FROM run_event " +
