@@ -855,13 +855,14 @@ public class RestApiController extends BaseController{
     }
 
     @GetMapping("/v2/eventResult")
-    public List<RunEventDto> eventResult(@RequestParam Long eventId){
+    public HashMap<String, Object> eventResult(@RequestParam Long eventId){
+
         // 데이터를 담아 페이지로 보내기 위해 Model 자료형을 인자로
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NoSuchElementException("No value present"));
         List<RunEvent> runEventList = runEventRepository.findByEvent(event);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-        return runEventList
+        List<RunEventDto> runEventDtoList= runEventList
             .stream()
             .map(x->RunEventDto.builder()
                 .id(x.getId())
@@ -927,6 +928,27 @@ public class RestApiController extends BaseController{
                 .volumeSync(x.getEvent().getVolumeSync())
                 .build())
             .collect(Collectors.toList());
+
+
+        //HashMap<String,Object> result = new HashMap<>();
+        HashMap<String,Object> gameInfoMap = new HashMap<>();
+
+        gameInfoMap.put("id", event.getId());
+        gameInfoMap.put("name", event.getName());
+        gameInfoMap.put("homeName", event.getName());
+        gameInfoMap.put("awayName", event.getAwayName());
+        gameInfoMap.put("triggerType", event.getTriggerType());
+        gameInfoMap.put("triggerTime", event.getTriggerTime());
+        gameInfoMap.put("triggerVote", event.getTriggerVote());
+        gameInfoMap.put("continuityType", event.getContinuityType());
+        gameInfoMap.put("continuityTime", event.getContinuityTime());
+        gameInfoMap.put("eventList", runEventDtoList);
+
+
+        //result.put("gameInfo", gameInfoMap);
+        //result.put("eventList", runEventDtoList);
+
+       return gameInfoMap;
     }
 
 
