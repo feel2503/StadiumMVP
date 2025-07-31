@@ -20,8 +20,8 @@ database : stadiumamp
 
 
 Stadium Git
- thiscat.dev1@gmail.com
- =Devcat2sid2=
+https://github.com/feel2503/StadiumMVP.git
+ServerSie/StadiumAmp_V2 
 
  google
  thiscat.dev1@gmail.com
