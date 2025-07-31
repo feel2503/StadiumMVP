@@ -475,15 +475,21 @@ public class VoteController {
 
         String bgImage = "";
         List<Object[]> tops = null;
+        String btColor;
+        String fontColor;
         if(getIntValue(runevent.getHomeCount()) >= getIntValue(runevent.getAwayCount()))
         {
             bgImage = eventImageRepository.findTypeEventImage(event_id, "IMAGE_HOME");
             tops = runEventRepository.findHomeTopCounts(runevent.getId(), runevent.getEvent().getId());
+            btColor = event.getHomeColor();
+            fontColor = event.getHomeFont();
         }
         else
         {
             bgImage = eventImageRepository.findTypeEventImage(event_id, "IMAGE_AWAY");
             tops = runEventRepository.findAwayTopCounts(runevent.getId(), runevent.getEvent().getId());
+            btColor = event.getAwayColor();
+            fontColor = event.getAwayFont();
         }
 
         List<EventTopDto> eventTopDtos = tops.stream()
@@ -516,10 +522,8 @@ public class VoteController {
         //bgImage = "https://lh3.googleusercontent.com/drive-viewer/AKGpihYYrUREeok3BOYgpR_kdlLX4MhYkeEVIjVM6UlDkhWlY86tCtknoo_2bgBWHnQ5DiyBGAnnuYdJN9uZ7LLCRw0rw06fsPWdwg=s2560";
         model.addAttribute("event", event);
         model.addAttribute("runevent", runEventDto);
-        model.addAttribute("homeColor", "#"+event.getHomeColor());
-        model.addAttribute("homeFont", "#"+event.getHomeFont());
-        model.addAttribute("awayColor", "#"+event.getAwayColor());
-        model.addAttribute("awayFont", "#"+event.getAwayFont());
+        model.addAttribute("btColor", "#"+btColor);
+        model.addAttribute("fontColor", "#"+fontColor);
         model.addAttribute("bgimg", bgImage);
         model.addAttribute("bgcolor", "#"+event.getEventBkcolor());
         model.addAttribute("openchatimg", event.getOpenchatImg());

@@ -951,6 +951,47 @@ public class RestApiController extends BaseController{
        return gameInfoMap;
     }
 
+    @ApiOperation(value = "Add Event Server")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @GetMapping(value = "/v2/event/vote-result", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultWithValue> getVoteResult(@RequestParam Long serverId) throws Exception {
+        Event event = eventRepository.findById(serverId).orElseThrow(() -> new Exception("event-not-found"));
+        RunEvent runevent = runEventRepository.findFirstByEventOrderByIdDesc(event).orElseThrow(EntityNotFoundException::new);
+
+        String bgImage = "";
+        List<Object[]> tops = null;
+        String btColor;
+        String fontColor;
+        if(getIntValue(runevent.getHomeCount()) >= getIntValue(runevent.getAwayCount()))
+        {
+            bgImage = eventImageRepository.findTypeEventImage(serverId, "IMAGE_HOME");
+            tops = runEventRepository.findHomeTopCounts(runevent.getId(), runevent.getEvent().getId());
+            btColor = event.getHomeColor();
+            fontColor = event.getHomeFont();
+        }
+        else
+        {
+            bgImage = eventImageRepository.findTypeEventImage(serverId, "IMAGE_AWAY");
+            tops = runEventRepository.findAwayTopCounts(runevent.getId(), runevent.getEvent().getId());
+            btColor = event.getAwayColor();
+            fontColor = event.getAwayFont();
+        }
+
+        List<EventTopDto> eventTopDtos = tops.stream()
+                .map(x -> new EventTopDto(((Integer)(x[0])).intValue(), (String)x[1], ((Integer)(x[2])).intValue()))
+                .collect(Collectors.toList());
+
+        RunEventResultDto resultDto = RunEventResultDto.builder()
+                .eventId(runevent.getId())
+                .serverId(serverId)
+                .bgImage(bgImage)
+                .btColor(btColor)
+                .fontColor(fontColor)
+                .eventTopDtos(eventTopDtos)
+                .build();
+
+        return getResponseEntity( resultDto, "success", HttpStatus.OK);
+    }
 
     private VoteResultDto getVoteResult(RunEvent runevent)
     {
@@ -1113,5 +1154,12 @@ public class RestApiController extends BaseController{
 
         String result = resultMap.getKey();
         return result;
+    }
+
+    private int getIntValue(Integer obj){
+        if(obj == null)
+            return 0;
+        else
+            return obj.intValue();
     }
 }

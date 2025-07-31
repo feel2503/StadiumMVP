@@ -58,7 +58,7 @@ public interface RunEventRepository extends JpaRepository<RunEvent, Long> {
             "        COALESCE(home13count, 0), COALESCE(home14count, 0), COALESCE(home15count, 0), " +
             "        COALESCE(home16count, 0), COALESCE(home17count, 0), COALESCE(home18count, 0), " +
             "        COALESCE(home19count, 0), COALESCE(home20count, 0) " +
-            "    ]) AS count_value, generate_series(1, 20) AS sequence " +
+            "    ]) AS count_value, generate_series(0, 19) AS sequence " +
             "    FROM run_event " +
             "    WHERE run_event_id = :runEventId and event_id = :eventId  " +
             ") " +
@@ -82,7 +82,7 @@ public interface RunEventRepository extends JpaRepository<RunEvent, Long> {
             "        COALESCE(away13count, 0), COALESCE(away14count, 0), COALESCE(away15count, 0), " +
             "        COALESCE(away16count, 0), COALESCE(away17count, 0), COALESCE(away18count, 0), " +
             "        COALESCE(away19count, 0), COALESCE(away20count, 0) " +
-            "    ]) AS count_value, generate_series(1, 20) AS sequence " +
+            "    ]) AS count_value, generate_series(0, 19) AS sequence " +
             "    FROM run_event " +
             "    WHERE run_event_id = :runEventId and event_id = :eventId  " +
             ") " +
