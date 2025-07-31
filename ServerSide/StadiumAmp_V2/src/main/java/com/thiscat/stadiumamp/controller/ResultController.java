@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -407,4 +408,106 @@ public class ResultController {
         String result = "" + hours + "h " + minutes + "m " + seconds + "s";
         return result;
     }
+
+
+    @GetMapping("/eventResult")
+    public String eventResult(Model model,  Long eventId, int page, int size){
+        
+        // 데이터를 담아 페이지로 보내기 위해 Model 자료형을 인자로
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new NoSuchElementException("No value present"));
+
+//        Pageable pageable = PageRequest.of(page, 500, Sort.Direction.DESC, "id");
+        PageRequest pageable = PageRequest.of(page, size);
+
+
+        List<RunEvent> runEventList = runEventRepository.findByEvent(eventId, pageable);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        List<RunEventDto> runEventDtoList= runEventList
+            .stream()
+            .map(x->RunEventDto.builder()
+                .id(x.getId())
+                .eventId(x.getEvent().getId())
+                .strStartDateTime(x.getStartDateTime() != null ? x.getStartDateTime().format(formatter) : "")
+                .strEndDateTime(x.getEndDateTime() != null ? x.getEndDateTime().format(formatter): "")
+                .duration(duration(x.getStartDateTime(), x.getEndDateTime()))
+                .eventState(x.getEventState())
+                .homeCount(x.getHomeCount())
+                .home1Count(x.getHome1Count())
+                .home2Count(x.getHome2Count())
+                .home3Count(x.getHome3Count())
+                .home4Count(x.getHome4Count())
+                .home5Count(x.getHome5Count())
+                .home6Count(x.getHome6Count())
+                .home7Count(x.getHome7Count())
+                .home8Count(x.getHome8Count())
+                .home9Count(x.getHome9Count())
+                .home10Count(x.getHome10Count())
+                .home11Count(x.getHome11Count())
+                .home12Count(x.getHome12Count())
+                .home13Count(x.getHome13Count())
+                .home14Count(x.getHome14Count())
+                .home15Count(x.getHome15Count())
+                .home16Count(x.getHome16Count())
+                .home17Count(x.getHome17Count())
+                .home18Count(x.getHome18Count())
+                .home19Count(x.getHome19Count())
+                .home20Count(x.getHome20Count())
+                .awayCount(x.getAwayCount())
+                .away1Count(x.getAway1Count())
+                .away2Count(x.getAway2Count())
+                .away3Count(x.getAway3Count())
+                .away4Count(x.getAway4Count())
+                .away5Count(x.getAway5Count())
+                .away6Count(x.getAway6Count())
+                .away7Count(x.getAway7Count())
+                .away8Count(x.getAway8Count())
+                .away9Count(x.getAway9Count())
+                .away10Count(x.getAway10Count())
+                .away11Count(x.getAway11Count())
+                .away12Count(x.getAway12Count())
+                .away13Count(x.getAway13Count())
+                .away14Count(x.getAway14Count())
+                .away15Count(x.getAway15Count())
+                .away16Count(x.getAway16Count())
+                .away17Count(x.getAway17Count())
+                .away18Count(x.getAway18Count())
+                .away19Count(x.getAway19Count())
+                .away20Count(x.getAway20Count())
+                .tag0(x.getTag0())
+                .tag1(x.getTag1())
+                .tag2(x.getTag2())
+                .tag3(x.getTag3())
+                .tag4(x.getTag4())
+                .tag5(x.getTag5())
+                .tag6(x.getTag6())
+                .tag7(x.getTag7())
+                .tag8(x.getTag8())
+                .tag9(x.getTag9())
+                .result(getResult(x))
+                .volumeValue(x.getEvent().getVolumeValue())
+                .volumeSync(x.getEvent().getVolumeSync())
+                .build())
+            .collect(Collectors.toList());
+
+
+
+
+
+        model.addAttribute("id", event.getId());
+        model.addAttribute("name", event.getName());
+        model.addAttribute("homeName", event.getName());
+        model.addAttribute("awayName", event.getAwayName());
+        model.addAttribute("triggerType", event.getTriggerType());
+        model.addAttribute("triggerTime", event.getTriggerTime());
+        model.addAttribute("triggerVote", event.getTriggerVote());
+        model.addAttribute("continuityType", event.getContinuityType());
+        model.addAttribute("continuityTime", event.getContinuityTime());
+        model.addAttribute("eventList", runEventDtoList);
+
+
+        return "eventResult";
+    }
+
+
 }

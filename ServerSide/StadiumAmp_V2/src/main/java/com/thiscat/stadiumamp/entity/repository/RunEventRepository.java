@@ -3,9 +3,11 @@ package com.thiscat.stadiumamp.entity.repository;
 import com.thiscat.stadiumamp.entity.Event;
 import com.thiscat.stadiumamp.entity.RunEvent;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,8 +15,8 @@ import java.util.Optional;
 public interface RunEventRepository extends JpaRepository<RunEvent, Long> {
 
     Optional<RunEvent> findById(Long id);
-
-    List<RunEvent> findByEvent(Event event);
+    @Query("select a from RunEvent a where a.event.id=:eventId order by a.startDateTime desc ")
+    List<RunEvent> findByEvent(@Param("eventId") Long eventId, Pageable page );
 
     @Query(
             value = " SELECT * FROM run_event " +

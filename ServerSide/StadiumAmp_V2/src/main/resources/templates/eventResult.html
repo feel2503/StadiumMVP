@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to stadiumAMP</title>
+</head>
+<body>
+    <section>
+        <label>경기 정보</label>
+        <ul>
+            <li>경기 ID:<span th:text="${id ?: '-'}"></span></li>
+            <li>경기 이름:<span th:text="${name ?: '-'}">-</span></li>
+            <li>홈 팀:><span th:text="${homeName ?: '-'}"></span></li>
+            <li>원정 팀:<span th:text="${awayName ?: '-'}">-</span></li>
+            <li>트리거 타입:<span th:text="${triggerType} ?: '-'"></span></li>
+            <li>트리거 시간:<span th:text="${triggerTime ?: '-'}"></span></li>
+            <li>트리거 투표:<span th:text="${triggerVote ?: '-'}"></span></li>
+            <li>연속성 타입:<span th:text="${continuityType ?: '-'}"></span></li>
+            <li>연속성 시간:<span th:text="${continuityTime ?: '-'}"></span></li>
+        </ul>
+    </section>
+
+    <label>경기중 이벤트 진행결과</label>
+    <section>
+        <ol th:each="event : ${eventList}">
+        <label>이벤트 상태 및 시간</label>
+        <ul>
+            <li>이벤트ID: <span th:text="${event.id?: '-'}"></span></li>
+            <li>결과: <span th:text="${event.result?: '-'}"></span></li>
+            <li>이벤트 상태:<span th:text="${event.eventState?: '-'}"></span></li>
+            <li>시작 시간:<span th:text="${event.strStartDateTime?: '-'}"></span></li>
+            <li>종료 시간:<span th:text="${event.strEndDateTime?: '-'}"></span></li>
+            <li>진행 시간:<span th:text="${event.duration?: '0h 0m 0s'}"></span></li>
+        </ul>
+        <p>홈 & 원정 팀 카운트</p>
+        <table >
+            <thead>
+            <tr>
+                <th>구분</th>
+                <th>총 카운트</th>
+                <th colspan="20">세부 카운트</th>
+            </tr>
+            <tr>
+                <th> </th>
+                <th>응원</th>
+                <td th:each="i : ${#numbers.sequence(1, 20)}"
+                    th:text="${i}"></td>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- 홈 팀 -->
+            <tr>
+                <th>Home</th>
+                <td th:text="${event.homeCount}">30</td>
+                <td th:text="${event.home1Count?: '0'}"></td>
+                <td th:text="${event.home2Count?: '0'}"></td>
+                <td th:text="${event.home3Count?: '0'}"></td>
+                <td th:text="${event.home4Count?: '0'}"></td>
+                <td th:text="${event.home5Count?: '0'}"></td>
+                <td th:text="${event.home6Count?: '0'}"></td>
+                <td th:text="${event.home7Count?: '0'}"></td>
+                <td th:text="${event.home8Count?: '0'}"></td>
+                <td th:text="${event.home9Count?: '0'}"></td>
+                <td th:text="${event.home10Count?: '0'}"></td>
+                <td th:text="${event.home11Count?: '0'}"></td>
+                <td th:text="${event.home12Count?: '0'}"></td>
+                <td th:text="${event.home13Count?: '0'}"></td>
+                <td th:text="${event.home14Count?: '0'}"></td>
+                <td th:text="${event.home15Count?: '0'}"></td>
+                <td th:text="${event.home16Count?: '0'}"></td>
+                <td th:text="${event.home17Count?: '0'}"></td>
+                <td th:text="${event.home18Count?: '0'}"></td>
+                <td th:text="${event.home19Count?: '0'}"></td>
+                <td th:text="${event.home20Count?: '0'}"></td>
+            </tr>
+
+            <!-- 원정 팀 -->
+            <tr>
+                <th>Away</th>
+                <td th:text="${event.awayCount}">30</td>
+                <td th:text="${event.away1Count?: '0'}"></td>
+                <td th:text="${event.away2Count?: '0'}"></td>
+                <td th:text="${event.away3Count?: '0'}"></td>
+                <td th:text="${event.away4Count?: '0'}"></td>
+                <td th:text="${event.away5Count?: '0'}"></td>
+                <td th:text="${event.away6Count?: '0'}"></td>
+                <td th:text="${event.away7Count?: '0'}"></td>
+                <td th:text="${event.away8Count?: '0'}"></td>
+                <td th:text="${event.away9Count?: '0'}"></td>
+                <td th:text="${event.away10Count?: '0'}"></td>
+                <td th:text="${event.away11Count?: '0'}"></td>
+                <td th:text="${event.away12Count?: '0'}"></td>
+                <td th:text="${event.away13Count?: '0'}"></td>
+                <td th:text="${event.away14Count?: '0'}"></td>
+                <td th:text="${event.away15Count?: '0'}"></td>
+                <td th:text="${event.away16Count?: '0'}"></td>
+                <td th:text="${event.away17Count?: '0'}"></td>
+                <td th:text="${event.away18Count?: '0'}"></td>
+                <td th:text="${event.away19Count?: '0'}"></td>
+                <td th:text="${event.away20Count?: '0'}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <p> 태그 정보</p>
+        <table>
+            <thead>
+            <tr>
+                <td th:each="i : ${#numbers.sequence(1, 10)}"
+                    th:text="${'Tag ' + i}"></td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td th:text="${event.tag0?: '0'}"></td>
+                <td th:text="${event.tag1?: '0'}"></td>
+                <td th:text="${event.tag2?: '0'}"></td>
+                <td th:text="${event.tag3?: '0'}"></td>
+                <td th:text="${event.tag4?: '0'}"></td>
+                <td th:text="${event.tag5?: '0'}"></td>
+                <td th:text="${event.tag6?: '0'}"></td>
+                <td th:text="${event.tag7?: '0'}"></td>
+                <td th:text="${event.tag8?: '0'}"></td>
+                <td th:text="${event.tag9?: '0'}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </ol>
+    </section>
+
+
+</body>
+</html>

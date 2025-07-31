@@ -859,7 +859,7 @@ public class RestApiController extends BaseController{
 
         // 데이터를 담아 페이지로 보내기 위해 Model 자료형을 인자로
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NoSuchElementException("No value present"));
-        List<RunEvent> runEventList = runEventRepository.findByEvent(event);
+        List<RunEvent> runEventList = runEventRepository.findByEvent(eventId, null);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         List<RunEventDto> runEventDtoList= runEventList
