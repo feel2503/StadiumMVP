@@ -522,6 +522,11 @@ public class VoteController {
         //bgImage = "https://lh3.googleusercontent.com/drive-viewer/AKGpihYYrUREeok3BOYgpR_kdlLX4MhYkeEVIjVM6UlDkhWlY86tCtknoo_2bgBWHnQ5DiyBGAnnuYdJN9uZ7LLCRw0rw06fsPWdwg=s2560";
         model.addAttribute("event", event);
         model.addAttribute("runevent", runEventDto);
+        model.addAttribute("homeColor", "#"+event.getHomeColor());
+        model.addAttribute("homeFont", "#"+event.getHomeFont());
+        model.addAttribute("awayColor", "#"+event.getAwayColor());
+        model.addAttribute("awayFont", "#"+event.getAwayFont());
+
         model.addAttribute("btColor", "#"+btColor);
         model.addAttribute("fontColor", "#"+fontColor);
         model.addAttribute("bgimg", bgImage);

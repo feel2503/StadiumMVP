@@ -90,6 +90,63 @@
                 padding-bottom: 15px; /* Adjust padding for mobile */
             }
         }
+
+        /* --- 투명 레이어 관련 CSS 시작 --- */
+        .overlay {
+            display: none; /* 초기에는 숨김 */
+            position: fixed; /* 뷰포트에 고정 */
+            top: 0;
+            left: 0;
+            width: 100vw; /* 뷰포트 너비의 100% */
+            height: 100vh; /* 뷰포트 높이의 100% */
+            background-color: rgba(0, 0, 0, 0); /* 더 투명하게 변경 (alpha 값을 낮춤) */
+            /* z-index는 각 레이어에 개별적으로 설정 */
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 첫 번째 레이어 (뒤에 위치) */
+        #overlay1 {
+            z-index: 1000;
+        }
+
+        /* 두 번째 레이어 (앞에 위치) */
+        #overlay2 {
+            z-index: 1001; /* 더 높은 z-index로 두 번째 레이어가 첫 번째 레이어 위에 보이도록 */
+        }
+
+
+        .overlay-content {
+            position: relative;
+            background-color: transparent; /* 투명 배경 */
+            border: none; /* 테두리 없음 */
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* iframe 스크롤 방지 */
+        }
+
+        .overlay-content iframe {
+            width: 100vw; /* iframe이 뷰포트 너비의 100%를 차지하도록 함 */
+            height: 100vh; /* iframe이 뷰포트 높이의 100%를 차지하도록 함 */
+            border: none; /* iframe 테두리 제거 */
+            background-color: transparent; /* iframe 배경 투명 */
+        }
+
+        .close-button {
+            position: absolute;
+            bottom: 5px; /* 우측 하단으로 이동 */
+            right: 5px; /* 우측 하단으로 이동 */
+            background-color: #E5007F; /*레이어 닫기 버튼 색상 */
+            border: none;
+            font-size: 16px; /* 더 작게 변경 */
+            cursor: pointer;
+            padding: 5px 8px; /* padding 조정 */
+            border-radius: 5px; /* 둥근 모양 유지 */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 1002; /* 닫기 버튼은 모든 레이어 위에 있어야 하므로 더 높은 z-index */
+        }
+        /* --- 투명 레이어 관련 CSS 끝 --- */
     </style>
 
 </head>
@@ -186,7 +243,84 @@
                 </div>
             </div>
 
+
+
+            <div class="overlay" id="overlay1">
+                <div class="overlay-content">
+                    <button class="close-button" onclick="closeLayer('overlay1')">×</button>
+                    <iframe id="layerIframe1" src="" allowfullscreen></iframe>
+                </div>
+            </div>
+            <div class="overlay" id="overlay2">
+                <div class="overlay-content">
+                    <button class="close-button" onclick="closeLayer('overlay2')">×</button>
+                    <iframe id="layerIframe2" src="" allowfullscreen></iframe>
+                </div>
+            </div>
+
+
         </div>
+
+        <script th:inline="javascript">
+            // 여기에 페이지 로드 시 자동으로 로드될 첫 번째 URL을 입력하세요.
+            // **이 부분을 원하는 URL로 변경해주세요.**
+            const URL_TO_LOAD_AUTOMATICALLY_1 = [[${event.cheerUrl1}]]; //"https://weflab.com/page/guPK2ODAlGJpaGo";
+
+            // 여기에 페이지 로드 시 자동으로 로드될 두 번째 URL을 입력하세요.
+            // **이 부분을 원하는 URL로 변경해주세요.**
+            const URL_TO_LOAD_AUTOMATICALLY_2 = [[${event.cheerUrl2}]]; //"https://weflab.com/page/guPK2ODAlGJpaGo"; // (참고: 구글은 iframe 임베딩을 차단합니다.)
+
+            // 특정 레이어를 로드하는 함수 (어떤 overlay를 사용할지 ID를 인자로 받음)
+            function loadLayer(overlayId, url) {
+                const overlay = document.getElementById(overlayId);
+                const layerIframe = overlay.querySelector('iframe'); // 해당 overlay 안의 iframe 선택
+
+                if (url) {
+                    layerIframe.src = url;
+                    overlay.style.display = 'flex'; // 레이어 표시
+                } else {
+                    console.warn(`로드할 URL이 지정되지 않았습니다. (레이어: ${overlayId})`);
+                }
+            }
+
+            // 특정 레이어를 닫는 함수 (어떤 overlay를 닫을지 ID를 인자로 받음)
+            function closeLayer(overlayId) {
+                const overlay = document.getElementById(overlayId);
+                const layerIframe = overlay.querySelector('iframe');
+
+                overlay.style.display = 'none'; // 레이어 숨김
+                layerIframe.src = ''; // iframe src 초기화
+            }
+
+            // overlay 외부 클릭 시 닫기
+            // 각 오버레이에 대해 개별적으로 이벤트 리스너를 추가
+            document.getElementById('overlay1').addEventListener('click', function(event) {
+                if (event.target === this) {
+                    closeLayer('overlay1');
+                }
+            });
+            document.getElementById('overlay2').addEventListener('click', function(event) {
+                if (event.target === this) {
+                    closeLayer('overlay2');
+                }
+            });
+
+
+            // DOMContentLoaded 이벤트 리스너를 사용하여 스크립트 실행 시점 안정화
+            document.addEventListener('DOMContentLoaded', function() {
+                // flipText 관련: DOM이 완전히 준비된 후 실행되도록 합니다.
+                // 기존 <script> 태그 내의 setInterval(flipText, 3000)을 여기서 시작합니다.
+                // 이렇게 하면 기존 onload="startTimer()"와도 충돌하지 않습니다.
+
+
+                // 첫 번째 레이어를 페이지 로드 시 자동으로 로드
+                loadLayer('overlay1', URL_TO_LOAD_AUTOMATICALLY_1);
+
+                // 두 번째 레이어를 페이지 로드 시 자동으로 로드
+                // 첫 번째 레이어 위에 나타나게 됩니다 (z-index 때문에)
+                loadLayer('overlay2', URL_TO_LOAD_AUTOMATICALLY_2);
+            });
+        </script>
 
         <script th:src="@{jquery/jquery-3.4.1.min.js}"></script>
 
@@ -487,7 +621,6 @@
 
                             document.getElementById("home_text").innerText = res.data.homeName;
                             document.getElementById("away_text").innerText = res.data.awayName;
-                            console.log("--- cstate ", cstate);
                             if(cstate == "START"){
                                 console.log("cstate == START");
                                 const modal = document.getElementById('youtubeModal');
