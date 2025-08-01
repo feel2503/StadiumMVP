@@ -96,4 +96,6 @@ public interface RunEventRepository extends JpaRepository<RunEvent, Long> {
             nativeQuery = true)
     List<Object[]> findAwayTopCounts(Long runEventId, Long eventId);
 
+    @Query("select a from RunEvent a where a.event.id=:eventId and a.id between :fromId and :toId order by a.startDateTime desc ")
+    List<RunEvent> findByEventAndId(Long eventId, Long fromId, Long toId);
 }

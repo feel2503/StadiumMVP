@@ -409,27 +409,49 @@ public class ResultController {
         return result;
     }
 
-
     @GetMapping("/eventResult")
-    public String eventResult(Model model,  Long eventId, int page, int size){
-        
-        // 데이터를 담아 페이지로 보내기 위해 Model 자료형을 인자로
-        Event event = eventRepository.findById(eventId).orElseThrow(() -> new NoSuchElementException("No value present"));
+    public String eventResult(Model model, Long eventId, int page, int size) {
+        Event event = eventRepository.findById(eventId)
+            .orElseThrow(() -> new NoSuchElementException("No value present"));
 
-//        Pageable pageable = PageRequest.of(page, 500, Sort.Direction.DESC, "id");
         PageRequest pageable = PageRequest.of(page, size);
-
-
         List<RunEvent> runEventList = runEventRepository.findByEvent(eventId, pageable);
+
+        return processEventResult(model, event, runEventList);
+    }
+
+    @GetMapping("/eventResultById")
+    public String eventResultById(Model model, Long eventId, Long fromId, Long toId) {
+        Event event = eventRepository.findById(eventId)
+            .orElseThrow(() -> new NoSuchElementException("No value present"));
+
+        List<RunEvent> runEventList = runEventRepository.findByEventAndId(eventId, fromId, toId);
+
+        return processEventResult(model, event, runEventList);
+    }
+
+    /**
+     * 이벤트 결과 처리를 위한 공통 메소드
+     */
+    private String processEventResult(Model model, Event event, List<RunEvent> runEventList) {
+        List<RunEventDto> runEventDtoList = convertToRunEventDtoList(runEventList);
+        addEventAttributesToModel(model, event, runEventDtoList);
+
+        return "eventResult";
+    }
+
+    /**
+     * RunEvent 목록을 RunEventDto 목록으로 변환
+     */
+    private List<RunEventDto> convertToRunEventDtoList(List<RunEvent> runEventList) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-        List<RunEventDto> runEventDtoList= runEventList
-            .stream()
-            .map(x->RunEventDto.builder()
+        return runEventList.stream()
+            .map(x -> RunEventDto.builder()
                 .id(x.getId())
                 .eventId(x.getEvent().getId())
                 .strStartDateTime(x.getStartDateTime() != null ? x.getStartDateTime().format(formatter) : "")
-                .strEndDateTime(x.getEndDateTime() != null ? x.getEndDateTime().format(formatter): "")
+                .strEndDateTime(x.getEndDateTime() != null ? x.getEndDateTime().format(formatter) : "")
                 .duration(duration(x.getStartDateTime(), x.getEndDateTime()))
                 .eventState(x.getEventState())
                 .homeCount(x.getHomeCount())
@@ -489,11 +511,12 @@ public class ResultController {
                 .volumeSync(x.getEvent().getVolumeSync())
                 .build())
             .collect(Collectors.toList());
+    }
 
-
-
-
-
+    /**
+     * 모델에 이벤트 속성 추가
+     */
+    private void addEventAttributesToModel(Model model, Event event, List<RunEventDto> runEventDtoList) {
         model.addAttribute("id", event.getId());
         model.addAttribute("name", event.getName());
         model.addAttribute("homeName", event.getName());
@@ -504,10 +527,6 @@ public class ResultController {
         model.addAttribute("continuityType", event.getContinuityType());
         model.addAttribute("continuityTime", event.getContinuityTime());
         model.addAttribute("eventList", runEventDtoList);
-
-
-        return "eventResult";
     }
-
 
 }
