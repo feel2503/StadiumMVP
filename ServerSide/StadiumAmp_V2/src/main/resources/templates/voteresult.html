@@ -94,286 +94,270 @@
 
 </head>
 <body class="sample" >
-<div th:styleAppend="|background-color: ${bgcolor}|">
+    <div th:styleAppend="|background-color: ${bgcolor}|">
 
-    <div class="remain_text_02" id="display">
-        현재 응원 이벤트 남은 시간 0분 0초
-    </div>
-
-    <div class="sample">
-
-        <div style="padding-left: 20px; padding-right:20px; padding-top:0px; padding-bottom: 0px;"
-             onclick="location.href='https://sites.google.com/view/introduce-stadiumamp/';">
-            <div class="wc_text_01">
-                <b>[[${event.name}]]</b>
-            </div>
-
-            <div class="result_text">
-                <div class="home_text" th:styleAppend="|color: ${homeColor}|"
-                     id="home_text">[[${event.homeName}]] [[${runevent.homeCount}]]</div>
-                <div class="away_text" th:styleAppend="|color: ${awayColor}|"
-                     id="away_text">[[${event.awayName}]] [[${runevent.awayCount}]]</div>
-            </div>
-
-
-            <div class="result_graph" id="event_stop_graph">
-                <div class="gray_graph_full">
-                    <div class="flex-center">다음 응원 이벤트를 기다려주세요</div>
-                </div>
-                <div class="away_graph_zero"></div>
-            </div>
-
-            <div class="result_graph" id="event_start_graph">
-                <div class="home_graph" th:styleAppend="|background-color: ${homeColor}|"
-                     id="home_graph"></div>
-                <div class="away_graph" th:styleAppend="|background-color: ${awayColor}|"
-                     id="away_graph"></div>
-            </div>
+        <div class="remain_text_02" id="display">
+            현재 응원 이벤트 남은 시간 0분 0초
         </div>
 
+        <div class="sample">
+
+            <div style="padding-left: 20px; padding-right:20px; padding-top:0px; padding-bottom: 0px;"
+                 onclick="location.href='https://sites.google.com/view/introduce-stadiumamp/';">
+                <div class="wc_text_01">
+                    <b>[[${event.name}]]</b>
+                </div>
+
+                <div class="result_text">
+                    <div class="home_text" th:styleAppend="|color: ${homeColor}|"
+                         id="home_text">[[${event.homeName}]] [[${runevent.homeCount}]]</div>
+                    <div class="away_text" th:styleAppend="|color: ${awayColor}|"
+                         id="away_text">[[${event.awayName}]] [[${runevent.awayCount}]]</div>
+                </div>
 
 
-        <div class="event_bg" th:styleAppend="'background-image: url('+${bgimg}+');'">
-            <div style="padding:12.5vh 20px 0px 20px;">
-                <!-- First line container -->
-                <div class="flip-container" >
-                    <div class="flip-card"
-                         id="line1">
-                        <div class="flip-face flip-face-front"
-                             th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">[[${eventTopDtos[0].count}]] 표</div>
-                        <div class="flip-face flip-face-back"
-                             th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">[[${eventTopDtos[0].name}]]</div>
+                <div class="result_graph" id="event_stop_graph">
+                    <div class="gray_graph_full">
+                        <div class="flex-center">다음 응원 이벤트를 기다려주세요</div>
+                    </div>
+                    <div class="away_graph_zero"></div>
+                </div>
+
+                <div class="result_graph" id="event_start_graph">
+                    <div class="home_graph" th:styleAppend="|background-color: ${homeColor}|"
+                         id="home_graph"></div>
+                    <div class="away_graph" th:styleAppend="|background-color: ${awayColor}|"
+                         id="away_graph"></div>
+                </div>
+            </div>
+
+
+
+            <div class="event_bg" th:styleAppend="'background-image: url('+${bgimg}+');'">
+                <div style="padding:12.5vh 20px 0px 20px;">
+                    <!-- First line container -->
+                    <div class="flip-container" >
+                        <div class="flip-card"
+                             id="line1">
+                            <div class="flip-face flip-face-front"
+                                 th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">[[${eventTopDtos[0].count}]] 표</div>
+                            <div class="flip-face flip-face-back"
+                                 th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">[[${eventTopDtos[0].name}]]</div>
+                        </div>
+                    </div>
+
+                    <!-- Second line container -->
+                    <div class="flip-container">
+                        <div class="flip-card" id="line2">
+                            <div class="flip-face flip-face-front"
+                                 th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">[[${eventTopDtos[1].count}]] 표</div>
+                            <div class="flip-face flip-face-back"
+                                 th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">[[${eventTopDtos[1].name}]]</div>
+                        </div>
+                    </div>
+
+                    <!-- Third line container -->
+                    <div class="flip-container">
+                        <div class="flip-card" id="line3">
+                            <div class="flip-face flip-face-front"
+                                 th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">[[${eventTopDtos[2].count}]] 표</div>
+                            <div class="flip-face flip-face-back"
+                                 th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">[[${eventTopDtos[2].name}]]</div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Second line container -->
-                <div class="flip-container">
-                    <div class="flip-card" id="line2">
-                        <div class="flip-face flip-face-front"
-                             th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">[[${eventTopDtos[1].count}]] 표</div>
-                        <div class="flip-face flip-face-back"
-                             th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">[[${eventTopDtos[1].name}]]</div>
-                    </div>
-                </div>
+                <p></p>
 
-                <!-- Third line container -->
-                <div class="flip-container">
-                    <div class="flip-card" id="line3">
-                        <div class="flip-face flip-face-front"
-                             th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">[[${eventTopDtos[2].count}]] 표</div>
-                        <div class="flip-face flip-face-back"
-                             th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">[[${eventTopDtos[2].name}]]</div>
-                    </div>
+                <input type="hidden" id="startMin" th:value="${min}">
+                <input type="hidden" id="startSec" th:value="${sec}">
+                <input type="hidden" id="startIdVal" th:value="${event.id}">
+                <input type="hidden" id="eventState" th:value="${state}">
+
+            </div>
+
+
+            <div class="modal" id="youtubeModal">
+                <div class="modal-content">
+                    <button class="close-btn" onclick="closeModal()">X</button>
+                    <div id="youtubePlayer"></div>
                 </div>
             </div>
 
-            <p></p>
-
-            <input type="hidden" id="startMin" th:value="${min}">
-            <input type="hidden" id="startSec" th:value="${sec}">
-            <input type="hidden" id="startIdVal" th:value="${event.id}">
-            <input type="hidden" id="eventState" th:value="${state}">
-
         </div>
 
+        <script th:src="@{jquery/jquery-3.4.1.min.js}"></script>
+        <script th:src="@{js/timer.js}"></script>
 
-        <div class="modal" id="youtubeModal">
-            <div class="modal-content">
-                <button class="close-btn" onclick="closeModal()">X</button>
-                <div id="youtubePlayer"></div>
-            </div>
-        </div>
-
-    </div>
-
-    <script th:src="@{jquery/jquery-3.4.1.min.js}"></script>
-    <script th:src="@{js/timer.js}"></script>
-
-    <script>
-        estate = document.querySelector("#eventState").value;
-        const graph_stop = document.getElementById("event_stop_graph");
-        const graph_start = document.getElementById("event_start_graph");
-        if (estate === "STOP") {
-            graph_stop.style.display = 'flex';
-            graph_start.style.display = 'none';
-        } else {
-            graph_stop.style.display = 'none';
-            graph_start.style.display = 'flex';
-        }
-
-        function flipText()
-        {
-            console.log("flipText")
-            $.ajax({
-                url:  '/v2/event/vote-result',
-                method: 'get',
-                data: {
-                    serverId: serverId,
-                }
-            }).done(function(res) {
-                if (res) {
-                    console.log("vote-result", res);
-
-                    removeFlipText('line1', res.data.eventTopDtos[0].count+'표', res.data.eventTopDtos[0].name);
-                    removeFlipText('line2', res.data.eventTopDtos[1].count+'표', res.data.eventTopDtos[1].name);
-                    removeFlipText('line3', res.data.eventTopDtos[2].count+'표', res.data.eventTopDtos[2].name);
-
-                    // const card1 = document.getElementById('line1');
-                    // card1.classList.remove('flipped');
-                    // const card2 = document.getElementById('line2');
-                    // card2.classList.remove('flipped');
-                    // const card3 = document.getElementById('line3');
-                    // card3.classList.remove('flipped');
-
-                    setTimeout(() => {
-                        setFlipText('line1');
-                    }, 700); // Delay of 700ms after the first line starts
-
-
-                    // Apply text and flip for the second line after a delay
-                    setTimeout(() => {
-                        setFlipText('line2');
-                    }, 1400); // Delay of 700ms after the first line starts
-
-                    // Apply text and flip for the third line after another delay
-                    setTimeout(() => {
-                        setFlipText('line3');
-                    }, 2100); // Delay of 1400ms after the first line starts (700ms after the second)
-
-                } else {
-
-                }
-            });
-
-
-
-
-
-            // const card = document.getElementById('line1');
-            // card.classList.remove('flipped');
-
-
-        }
-
-        function removeFlipText(elementId, fText, bText) {
-            const card = document.getElementById(elementId);
-
-            const front = card.querySelector('.flip-face-front');
-            const back = card.querySelector('.flip-face-back');
-
-            // Set the text for both front and back faces
-            front.textContent = fText;
-            back.textContent = bText;
-
-            card.classList.remove('flipped');
-        }
-
-        /**
-         * Sets the text for a flip card and triggers the flip animation.
-         * @param {string} elementId - The ID of the flip card element (e.g., 'line1').
-         * @param {string} text - The text content to display.
-         */
-        function setFlipText(elementId) {
-            const card = document.getElementById(elementId);
-            if (!card) {
-                console.error(`Element with ID "${elementId}" not found.`);
-                return;
+        <script>
+            estate = document.querySelector("#eventState").value;
+            const graph_stop = document.getElementById("event_stop_graph");
+            const graph_start = document.getElementById("event_start_graph");
+            if (estate === "STOP") {
+                graph_stop.style.display = 'flex';
+                graph_start.style.display = 'none';
+            } else {
+                graph_stop.style.display = 'none';
+                graph_start.style.display = 'flex';
             }
-            const front = card.querySelector('.flip-face-front');
-            const back = card.querySelector('.flip-face-back');
 
-            // Set the text for both front and back faces
-            // front.textContent = text;
-            // back.textContent = text;
+            function flipText()
+            {
+                console.log("flipText")
+                $.ajax({
+                    url:  '/v2/event/vote-result',
+                    method: 'get',
+                    data: {
+                        serverId: serverId,
+                    }
+                }).done(function(res) {
+                    if (res) {
+                        console.log("vote-result", res);
+                        $('.event_bg').css('background-image', 'url(' + res.data.bgImage + ')');
 
-            // Trigger the flip animation by adding the 'flipped' class
-            // The CSS transition handles the animation smoothly
-            card.classList.add('flipped');
+                        $('#line1 .flip-face').css({
+                            'background-color': res.data.btColor,
+                            'color': res.data.fontColor
+                        });
+                        $('#line2 .flip-face').css({
+                            'background-color': res.data.btColor,
+                            'color': res.data.fontColor
+                        });
+                        $('#line3 .flip-face').css({
+                            'background-color': res.data.btColor,
+                            'color': res.data.fontColor
+                        });
 
-            // Optional: If you want the card to flip back after some time,
-            // you can add another setTimeout here to remove the 'flipped' class.
-            // For this request, we assume it stays flipped.
-        }
-
-        // When the window loads, apply the text and start the flip animations
-        window.onload = () => {
-            // Apply text and flip for the first line
-            // setFlipText('line1', lines[0]);
-            //
-            // // Apply text and flip for the second line after a delay
-            // setTimeout(() => {
-            //     setFlipText('line2', lines[1]);
-            // }, 700); // Delay of 700ms after the first line starts
-            //
-            // // Apply text and flip for the third line after another delay
-            // setTimeout(() => {
-            //     setFlipText('line3', lines[2]);
-            // }, 1400); // Delay of 1400ms after the first line starts (700ms after the second)
-            startTimer();
-            setInterval(flipText, 3000);
-        };
+                        removeFlipText('line1', res.data.eventTopDtos[0].count+'표', res.data.eventTopDtos[0].name);
+                        removeFlipText('line2', res.data.eventTopDtos[1].count+'표', res.data.eventTopDtos[1].name);
+                        removeFlipText('line3', res.data.eventTopDtos[2].count+'표', res.data.eventTopDtos[2].name);
 
 
-        let player;
-        // Open the Modal with the YouTube Video
-        function loadVideo(urlInput) {
-            // const urlInput = document.getElementById(inputId).value;
-            const modal = document.getElementById('youtubeModal');
+                        setTimeout(() => {
+                            setFlipText('line1');
+                        }, 700); // Delay of 700ms after the first line starts
 
-            // Validate the input URL
-            if (urlInput != null && urlInput.trim() !== '') {
-                // Transform YouTube share or Shorts link (if necessary)
-                let videoId = "";
-                if (urlInput.includes('youtu.be')) {
-                    videoId = urlInput.split('/').pop();
-                } else if (urlInput.includes('youtube.com/shorts')) {
-                    videoId = urlInput.split('/').pop();
-                } else if (urlInput.includes('v=')) {
-                    const params = new URLSearchParams(urlInput.split('?')[1]);
-                    videoId = params.get('v');
+
+                        // Apply text and flip for the second line after a delay
+                        setTimeout(() => {
+                            setFlipText('line2');
+                        }, 1400); // Delay of 700ms after the first line starts
+
+                        // Apply text and flip for the third line after another delay
+                        setTimeout(() => {
+                            setFlipText('line3');
+                        }, 2100); // Delay of 1400ms after the first line starts (700ms after the second)
+
+                    } else {
+
+                    }
+                });
+            }
+
+            function removeFlipText(elementId, fText, bText) {
+                const card = document.getElementById(elementId);
+
+                const front = card.querySelector('.flip-face-front');
+                const back = card.querySelector('.flip-face-back');
+
+                // Set the text for both front and back faces
+                front.textContent = fText;
+
+                back.textContent = bText;
+
+                card.classList.remove('flipped');
+            }
+
+            /**
+             * Sets the text for a flip card and triggers the flip animation.
+             * @param {string} elementId - The ID of the flip card element (e.g., 'line1').
+             * @param {string} text - The text content to display.
+             */
+            function setFlipText(elementId) {
+                const card = document.getElementById(elementId);
+                if (!card) {
+                    console.error(`Element with ID "${elementId}" not found.`);
+                    return;
                 }
+                // Trigger the flip animation by adding the 'flipped' class
+                // The CSS transition handles the animation smoothly
+                card.classList.add('flipped');
 
-                if (videoId) {
-                    // Create YouTube Player instance
-                    player = new YT.Player('youtubePlayer', {
-                        height: '600', // Adjusted height for larger player
-                        width: '100%',
-                        videoId: videoId,
-                        playerVars: {
-                            autoplay: 1,
-                            controls: 1,
-                        },
-                        events: {
-                            onReady: function(event) {
-                                event.target.setPlaybackQuality('hd1080'); // Set the video quality
+                // Optional: If you want the card to flip back after some time,
+                // you can add another setTimeout here to remove the 'flipped' class.
+                // For this request, we assume it stays flipped.
+            }
+
+            // When the window loads, apply the text and start the flip animations
+            window.onload = () => {
+                // Apply text and flip for the first line
+                // setFlipText('line1', lines[0]);
+                //
+                startTimer();
+                setInterval(flipText, 3000);
+            };
+
+
+            let player;
+            // Open the Modal with the YouTube Video
+            function loadVideo(urlInput) {
+                // const urlInput = document.getElementById(inputId).value;
+                const modal = document.getElementById('youtubeModal');
+
+                // Validate the input URL
+                if (urlInput != null && urlInput.trim() !== '') {
+                    // Transform YouTube share or Shorts link (if necessary)
+                    let videoId = "";
+                    if (urlInput.includes('youtu.be')) {
+                        videoId = urlInput.split('/').pop();
+                    } else if (urlInput.includes('youtube.com/shorts')) {
+                        videoId = urlInput.split('/').pop();
+                    } else if (urlInput.includes('v=')) {
+                        const params = new URLSearchParams(urlInput.split('?')[1]);
+                        videoId = params.get('v');
+                    }
+
+                    if (videoId) {
+                        // Create YouTube Player instance
+                        player = new YT.Player('youtubePlayer', {
+                            height: '600', // Adjusted height for larger player
+                            width: '100%',
+                            videoId: videoId,
+                            playerVars: {
+                                autoplay: 1,
+                                controls: 1,
                             },
-                            onStateChange: function(event) {
-                                if (event.data === 0) { // State 0 means the video has ended
-                                    closeModal(); // Automatically close the modal
+                            events: {
+                                onReady: function(event) {
+                                    event.target.setPlaybackQuality('hd1080'); // Set the video quality
+                                },
+                                onStateChange: function(event) {
+                                    if (event.data === 0) { // State 0 means the video has ended
+                                        closeModal(); // Automatically close the modal
+                                    }
                                 }
                             }
-                        }
-                    });
+                        });
 
-                    modal.style.display = 'flex'; // Show the modal
+                        modal.style.display = 'flex'; // Show the modal
+                    } else {
+                        alert('영상 링크 준비중 입니다');
+                    }
                 } else {
                     alert('영상 링크 준비중 입니다');
                 }
-            } else {
-                alert('영상 링크 준비중 입니다');
             }
-        }
 
-        // Close the Modal and Stop the Video
-        function closeModal() {
-            const modal = document.getElementById('youtubeModal');
-            if (player) {
-                player.destroy(); // Destroy the player instance
+            // Close the Modal and Stop the Video
+            function closeModal() {
+                const modal = document.getElementById('youtubeModal');
+                if (player) {
+                    player.destroy(); // Destroy the player instance
+                }
+                modal.style.display = 'none'; // Hide the modal
             }
-            modal.style.display = 'none'; // Hide the modal
-        }
 
-    </script>
-
+        </script>
+    </div>
 </body>
 </html>

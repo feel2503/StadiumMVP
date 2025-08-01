@@ -960,21 +960,21 @@ public class RestApiController extends BaseController{
 
         String bgImage = "";
         List<Object[]> tops = null;
-        String btColor;
-        String fontColor;
+        String btColor = "#";
+        String fontColor = "#";
         if(getIntValue(runevent.getHomeCount()) >= getIntValue(runevent.getAwayCount()))
         {
             bgImage = eventImageRepository.findTypeEventImage(serverId, "IMAGE_HOME");
             tops = runEventRepository.findHomeTopCounts(runevent.getId(), runevent.getEvent().getId());
-            btColor = event.getHomeColor();
-            fontColor = event.getHomeFont();
+            btColor += event.getHomeColor();
+            fontColor += event.getHomeFont();
         }
         else
         {
             bgImage = eventImageRepository.findTypeEventImage(serverId, "IMAGE_AWAY");
             tops = runEventRepository.findAwayTopCounts(runevent.getId(), runevent.getEvent().getId());
-            btColor = event.getAwayColor();
-            fontColor = event.getAwayFont();
+            btColor += event.getAwayColor();
+            fontColor += event.getAwayFont();
         }
 
         List<EventTopDto> eventTopDtos = tops.stream()
