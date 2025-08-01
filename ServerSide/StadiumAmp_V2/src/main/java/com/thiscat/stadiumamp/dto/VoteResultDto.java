@@ -28,6 +28,8 @@ public class VoteResultDto {
     private String homeName;
     private String awayName;
 
+    String youtubeUrl;
+
     public VoteResultDto(String home, String away, int homeCount, int awayCount)
     {
         this.home = home;

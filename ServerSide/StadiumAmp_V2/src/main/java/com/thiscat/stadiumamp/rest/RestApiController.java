@@ -378,6 +378,7 @@ public class RestApiController extends BaseController{
         Event event = eventRepository.findById(serverId).orElseThrow(EntityNotFoundException::new);
         RunEvent runevent = runEventRepository.findFirstByEventOrderByIdDesc(event).orElseThrow(EntityNotFoundException::new);
         VoteResultDto voteResultDto = getVoteResult(runevent);
+        //String youtbueUrl = runEventRepository.findHomeYoutubeUrlByRunEventIdAndEventId(runevent.getId(), event.getId());
         if(event.getTriggerType() == 0)
         {
             LocalDateTime startTime = runevent.getStartDateTime();
@@ -395,6 +396,14 @@ public class RestApiController extends BaseController{
                     voteResultDto.setPlayVideo(false);
                 else
                     voteResultDto.setPlayVideo(true);
+
+                if(isHomeWin(runevent)) {
+                    String url = runEventRepository.findHomeYoutubeUrlByRunEventIdAndEventId(runevent.getId(), event.getId());
+                    voteResultDto.setYoutubeUrl(url);
+                }else{
+                    String url = runEventRepository.findAwayYoutubeUrlByRunEventIdAndEventId(runevent.getId(), event.getId());
+                    voteResultDto.setYoutubeUrl(url);
+                }
             }
             else {
                 Duration duration = Duration.between(nowTime, endTime);
@@ -416,6 +425,15 @@ public class RestApiController extends BaseController{
             if(runevent.getEventState().equalsIgnoreCase("STOP"))
             {
                 voteResultDto.setEventState("이벤트 종료");
+                if(isHomeWin(runevent)) {
+                    String url = runEventRepository.findHomeYoutubeUrlByRunEventIdAndEventId(runevent.getId(), event.getId());
+                    voteResultDto.setYoutubeUrl(url);
+                }else{
+                    String url = runEventRepository.findAwayYoutubeUrlByRunEventIdAndEventId(runevent.getId(), event.getId());
+                    voteResultDto.setYoutubeUrl(url);
+                }
+
+
 //                LocalDateTime finishTime = runevent.getEndDateTime();
 //                Duration duration = Duration.between(finishTime, nowTime);
 //                long sec = duration.getSeconds();
@@ -447,7 +465,6 @@ public class RestApiController extends BaseController{
 
         voteResultDto.setHomeName(event.getHomeName());
         voteResultDto.setAwayName(event.getAwayName());
-
         //VoteResultDto voteResultDto = new VoteResultDto("95%", "5%");
         return getResponseEntity(voteResultDto, "success", HttpStatus.OK);
     }
@@ -1161,5 +1178,15 @@ public class RestApiController extends BaseController{
             return 0;
         else
             return obj.intValue();
+    }
+
+    private boolean isHomeWin(RunEvent runEvent)
+    {
+        boolean result = true;
+        if(runEvent.getAwayCount() == null)
+            return true;
+        else if(runEvent.getHomeCount() == null)
+            return false;
+        return runEvent.getHomeCount() >= runEvent.getAwayCount() ? true : false;
     }
 }

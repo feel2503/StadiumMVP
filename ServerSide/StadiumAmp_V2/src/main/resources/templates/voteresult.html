@@ -173,6 +173,8 @@
                 <input type="hidden" id="startSec" th:value="${sec}">
                 <input type="hidden" id="startIdVal" th:value="${event.id}">
                 <input type="hidden" id="eventState" th:value="${state}">
+                <input type="hidden" id="currentState" th:value="${state}">
+
 
             </div>
 
@@ -187,7 +189,7 @@
         </div>
 
         <script th:src="@{jquery/jquery-3.4.1.min.js}"></script>
-        <script th:src="@{js/timer.js}"></script>
+
 
         <script>
             estate = document.querySelector("#eventState").value;
@@ -203,7 +205,6 @@
 
             function flipText()
             {
-                console.log("flipText")
                 $.ajax({
                     url:  '/v2/event/vote-result',
                     method: 'get',
@@ -212,7 +213,7 @@
                     }
                 }).done(function(res) {
                     if (res) {
-                        console.log("vote-result", res);
+                        // console.log("vote-result", res);
                         $('.event_bg').css('background-image', 'url(' + res.data.bgImage + ')');
 
                         $('#line1 .flip-face').css({
@@ -262,9 +263,7 @@
 
                 // Set the text for both front and back faces
                 front.textContent = fText;
-
                 back.textContent = bText;
-
                 card.classList.remove('flipped');
             }
 
@@ -283,6 +282,8 @@
                 // The CSS transition handles the animation smoothly
                 card.classList.add('flipped');
 
+                card.focus();
+
                 // Optional: If you want the card to flip back after some time,
                 // you can add another setTimeout here to remove the 'flipped' class.
                 // For this request, we assume it stays flipped.
@@ -293,7 +294,7 @@
                 // Apply text and flip for the first line
                 // setFlipText('line1', lines[0]);
                 //
-                startTimer();
+                voteTimer();
                 setInterval(flipText, 3000);
             };
 
@@ -325,7 +326,7 @@
                             videoId: videoId,
                             playerVars: {
                                 autoplay: 1,
-                                controls: 1,
+                                controls: 1
                             },
                             events: {
                                 onReady: function(event) {
@@ -355,6 +356,231 @@
                     player.destroy(); // Destroy the player instance
                 }
                 modal.style.display = 'none'; // Hide the modal
+            }
+
+
+            let min, sec;
+            let timer;
+            let serverId;
+
+            function clearTimer(t, text) {
+                clearInterval(t);
+                document.getElementById("display").innerText = text;
+                document.getElementById("startMin").value = "";
+                document.getElementById("startSec").value = "";
+            }
+
+            function initGraph()
+            {
+                console.log("initGraph : ")
+                $.ajax({
+                    url:  '/v1/event/eventdto',
+                    method: 'get',
+                    data: {
+                        serverId: serverId
+                    }
+                }).done(function(res) {
+                    if (res) {
+                        console.log("res", res);
+
+                        if(res.data.eventState == "이벤트 종료")
+                        {
+                            document.getElementById("event_stop_graph").style.display ='flex';
+                            document.getElementById("event_start_graph").style.display ='none';
+                        }
+                        else
+                        {
+                            document.getElementById("event_stop_graph").style.display ='none';
+                            document.getElementById("event_start_graph").style.display ='flex';
+                        }
+
+                        var homeGraph = document.getElementById("home_graph");
+                        homeGraph.style.flexBasis=res.data.home;
+                        if(res.data.home === "100%")
+                            homeGraph.style.borderRadius="10px";
+                        else{
+                            homeGraph.style.borderTopRightRadius="0px";
+                            homeGraph.style.borderBottomRightRadius="0px";
+                        }
+                        var awayGraph = document.getElementById("away_graph");
+                        awayGraph.style.flexBasis=res.data.away;
+                        if(res.data.away === "100%")
+                            awayGraph.style.borderRadius="10px";
+                        else{
+                            awayGraph.style.borderTopLeftRadius="0px";
+                            awayGraph.style.borderBottomLeftRadius="0px";
+                        }
+                    } else {
+
+                    }
+                });
+            }
+
+            function voteTimer() {
+                min = document.querySelector("#startMin").value;
+                if (min === "") min = 0;
+                sec = document.querySelector("#startSec").value;
+                if (sec === "") sec = 0;
+                // init time text
+                if (sec != 0) {
+                    sec--;
+                    document.querySelector("#display").innerText =
+                        "현재 응원 이벤트 남은 시간 " + min + "분" + sec + "초";
+                } else {
+                    if (min != 0) {
+                        min--;
+                        sec = 59;
+                    } else {
+                        clearTimer(timer, "이벤트 종료");
+                    }
+                }
+
+                // update timer
+                timer = setInterval(countTimer, 1000);
+
+                //serverId = document.querySelector("#startIdVal").value;
+                serverId = document.getElementById("startIdVal").value;
+                initGraph();
+            }
+
+            function countTimer() {
+                //console.log("countTimer : ")
+                //updateGraph();
+                $.ajax({
+                    url:  '/v1/event/eventdto',
+                    method: 'get',
+                    data: {
+                        serverId: serverId
+                    }
+                }).done(function(res) {
+                    if (res)
+                    {
+                        //console.log("event-state ", res);
+                        // graph update
+                        var homeGraph = document.getElementById("home_graph");
+                        homeGraph.style.flexBasis=res.data.home;
+                        if(res.data.home === "100%")
+                            homeGraph.style.borderRadius="10px";
+                        else{
+                            homeGraph.style.borderTopRightRadius="0px";
+                            homeGraph.style.borderBottomRightRadius="0px";
+                        }
+                        var awayGraph = document.getElementById("away_graph");
+                        awayGraph.style.flexBasis=res.data.away;
+                        if(res.data.away === "100%")
+                            awayGraph.style.borderRadius="10px";
+                        else{
+                            awayGraph.style.borderTopLeftRadius="0px";
+                            awayGraph.style.borderBottomLeftRadius="0px";
+                        }
+
+                        // text update
+                        document.querySelector("#display").innerText = res.data.eventState;
+                        const graph_stop =document.getElementById("event_stop_graph");
+                        const graph_start =document.getElementById("event_start_graph");
+
+                        if(res.data.eventState == "이벤트 종료")
+                        {
+                            cstate = document.querySelector("#currentState").value;
+                            graph_stop.style.display = 'flex';
+                            graph_start.style.display = 'none';
+
+                            document.getElementById("home_text").innerText = res.data.homeName;
+                            document.getElementById("away_text").innerText = res.data.awayName;
+                            console.log("--- cstate ", cstate);
+                            if(cstate == "START"){
+                                console.log("cstate == START");
+                                const modal = document.getElementById('youtubeModal');
+                                if(modal.style.display == 'flex')
+                                {
+                                    closeModal();
+                                }
+                                loadVideo(res.data.youtubeUrl);
+                                document.querySelector("#currentState").value = "STOP";
+                            }
+
+
+                            // if(modal.style.display == 'flex')
+                            // {
+                            //     closeModal();
+                            // }
+                            // loadVideo(res.data.youtubeUrl);
+
+                            // if(modal.style.display != 'flex')
+                            //     loadVideo(res.data.youtubeUrl);
+                        }
+                        else
+                        {
+                            document.querySelector("#currentState").value = "START";
+
+                            graph_stop.style.display = 'none';
+                            graph_start.style.display = 'flex';
+
+                            const homeTextElement = document.getElementById("home_text");
+                            if (res.data.homeCount > 0)
+                            {
+                                const homeText = homeTextElement.innerText;
+                                const match = homeText.match(/\d+$/);
+                                if(match)
+                                {
+                                    prevCount = parseInt(match[0], 10);
+                                    if(prevCount != res.data.homeCount){
+                                        homeTextElement.classList.add('grow');
+                                        setTimeout(() => {
+                                            homeTextElement.classList.remove('grow');
+                                        }, 200);
+                                    }
+                                }
+                                else {
+                                    homeTextElement.classList.add('grow');
+                                    setTimeout(() => {
+                                        homeTextElement.classList.remove('grow');
+                                    }, 200);
+                                }
+
+                                homeTextElement.innerText = res.data.homeName + " " + res.data.homeCount;
+                            }
+                            else {
+                                homeTextElement.innerText = res.data.homeName;
+                            }
+
+                            const awayTextElement = document.getElementById("away_text");
+                            if (res.data.awayCount > 0){
+                                const awayText = awayTextElement.innerText;
+                                const match = awayText.match(/\d+$/);
+                                if(match)
+                                {
+                                    prevCount = parseInt(match[0], 10);
+                                    if(prevCount != res.data.awayCount){
+                                        awayTextElement.classList.add('grow');
+                                        setTimeout(() => {
+                                            awayTextElement.classList.remove('grow');
+                                        }, 200);
+                                    }
+                                }
+                                else {
+                                    awayTextElement.classList.add('grow');
+                                    setTimeout(() => {
+                                        awayTextElement.classList.remove('grow');
+                                    }, 200);
+                                }
+
+                                awayTextElement.innerText = res.data.awayCount + " " +res.data.awayName;
+                            }
+                            else{
+                                awayTextElement.innerText = res.data.awayName;
+                            }
+                            //window.navigator.vibrate(200);
+                            //console.log("res.data.isStart ", res.data.isStart);
+                            if(res.data.isStart)
+                                window.navigator.vibrate(500);
+                        }
+                    }
+                    else
+                    {
+
+                    }
+                });
             }
 
         </script>

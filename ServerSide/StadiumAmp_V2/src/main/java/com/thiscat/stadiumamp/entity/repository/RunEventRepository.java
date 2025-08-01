@@ -98,4 +98,65 @@ public interface RunEventRepository extends JpaRepository<RunEvent, Long> {
 
     @Query("select a from RunEvent a where a.event.id=:eventId and a.id between :fromId and :toId order by a.startDateTime desc ")
     List<RunEvent> findByEventAndId(Long eventId, Long fromId, Long toId);
+
+
+    @Query(value = " select m.youtube_url " +
+            " from ( " +
+            " select " +
+            "    re.event_id,  " +
+            "    array_position( " +
+            "        array[ " +
+            "            re.home1count, re.home2count, re.home3count, re.home4count, re.home5count, " +
+            "            re.home6count, re.home7count, re.home8count, re.home9count, re.home10count, " +
+            "            re.home11count, re.home12count, re.home13count, re.home14count, re.home15count, " +
+            "            re.home16count, re.home17count, re.home18count, re.home19count, re.home20count " +
+            "        ], " +
+            "        greatest( " +
+            "            re.home1count, re.home2count, re.home3count, re.home4count, re.home5count, " +
+            "            re.home6count, re.home7count, re.home8count, re.home9count, re.home10count, " +
+            "            re.home11count, re.home12count, re.home13count, re.home14count, re.home15count, " +
+            "            re.home16count, re.home17count, re.home18count, re.home19count, re.home20count " +
+            "        ) " +
+            "    ) as max_home_index " +
+            " from public.run_event re " +
+            " where re.run_event_id = :runEventId and re.event_id = :eventId " +
+            " ) as sub " +
+            " join public.event_music em " +
+            " on em.event_id = sub.event_id " +
+            " and em.team_type = 'TEAM_HOME' " +
+            " and em.sequence + 1 = sub.max_home_index " +
+            " join public.music m " +
+            " on em.music_id = m.music_id ",
+         nativeQuery = true)
+    String findHomeYoutubeUrlByRunEventIdAndEventId(Long runEventId, Long eventId);
+
+    @Query(value = " select m.youtube_url " +
+            " from ( " +
+            " select " +
+            "    re.event_id,  " +
+            "    array_position( " +
+            "        array[ " +
+            "            re.away1count, re.away2count, re.away3count, re.away4count, re.away5count, " +
+            "            re.away6count, re.away7count, re.away8count, re.away9count, re.away10count, " +
+            "            re.away11count, re.away12count, re.away13count, re.away14count, re.away15count, " +
+            "            re.away16count, re.away17count, re.away18count, re.away19count, re.away20count " +
+            "        ], " +
+            "        greatest( " +
+            "            re.away1count, re.away2count, re.away3count, re.away4count, re.away5count, " +
+            "            re.away6count, re.away7count, re.away8count, re.away9count, re.away10count, " +
+            "            re.away11count, re.away12count, re.away13count, re.away14count, re.away15count, " +
+            "            re.away16count, re.away17count, re.away18count, re.away19count, re.away20count " +
+            "        ) " +
+            "    ) as max_home_index " +
+            " from public.run_event re " +
+            " where re.run_event_id = :runEventId and re.event_id = :eventId " +
+            " ) as sub " +
+            " join public.event_music em " +
+            " on em.event_id = sub.event_id " +
+            " and em.team_type = 'TEAM_AWAY' " +
+            " and em.sequence + 1 = sub.max_home_index " +
+            " join public.music m " +
+            " on em.music_id = m.music_id ",
+            nativeQuery = true)
+    String findAwayYoutubeUrlByRunEventIdAndEventId(Long runEventId, Long eventId);
 }
