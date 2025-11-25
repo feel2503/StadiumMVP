@@ -94,30 +94,39 @@
                                 <button class="btn-narrow"
                                         th:if="${stat.index} < ${#lists.size(runevent.homeYoutube)}"
                                         th:attr="data-youtube=${runevent.homeYoutube[stat.index]}"
-                                        th:styleAppend="|background-color: ${homeFont}; color:${homeColor}|"
+                                        th:styleAppend="|background-color:${homeFont}; color:${homeColor}|"
                                         onclick="loadVideo(this.getAttribute('data-youtube'))">
-                                    <img th:if="${runevent.homeYoutube[stat.index] != null and !#strings.isEmpty(runevent.homeYoutube[stat.index])}"
-                                         src="/asset/play_circle.svg"
-                                         alt="Play" width="36" height="36"/>
 
-                                    <!-- ❌ 값이 없거나 null: stop_circle -->
-                                    <img th:unless="${runevent.homeYoutube[stat.index] != null and !#strings.isEmpty(runevent.homeYoutube[stat.index])}"
-                                         src="/asset/stop_circle.svg"
-                                         alt="Stop" width="36" height="36"/>
+                                    <!-- ▶ Play 아이콘 (값이 있을 때) -->
+                                    <svg th:if="${runevent.homeYoutube[stat.index] != null and !#strings.isEmpty(runevent.homeYoutube[stat.index])}"
+                                         class="icon"
+                                         xmlns="http://www.w3.org/2000/svg"
+                                         viewBox="0 -960 960 960"
+                                         width="36" height="36"
+                                         aria-hidden="true">
+                                        <path fill="currentColor" fill-rule="nonzero" clip-rule="nonzero"
+                                              d="M382-306.67 653.33-480 382-653.33v346.66ZM480-80q-82.33 0-155.67-31.5-72.84-31.5-127.18-85.83Q143-251.67 111.5-324.56T80-480.33q0-82.88 31.5-155.78Q143-709 197.33-763q54.34-54 127.23-85.5T480.33-880q82.88 0 155.78 31.5Q709-817 763-763t85.5 127Q880-563 880-480.18q0 82.83-31.5 155.67Q817-251.67 763-197.46q-54 54.21-127 85.84Q563-80 480.18-80Zm.15-66.67q139 0 236-97.33t97-236.33q0-139-96.87-236-96.88-97-236.46-97-138.67 0-236 96.87-97.33 96.88-97.33 236.46 0 138.67 97.33 236 97.33 97.33 236.33 97.33Z M480-480Z"/>
+                                    </svg>
 
+                                    <!-- ⏹ Stop 아이콘 (값이 없을 때) -->
+                                    <svg th:unless="${runevent.homeYoutube[stat.index] != null and !#strings.isEmpty(runevent.homeYoutube[stat.index])}"
+                                         class="icon"
+                                         xmlns="http://www.w3.org/2000/svg"
+                                         viewBox="0 -960 960 960"
+                                         width="36" height="36"
+                                         aria-hidden="true">
+                                        <path fill="currentColor" fill-rule="nonzero" clip-rule="nonzero"
+                                              d="M326.67-326.67h306.66v-306.66H326.67v306.66ZM480.18-80q-82.83 0-155.67-31.5-72.84-31.5-127.18-85.83Q143-251.67 111.5-324.56T80-480.33q0-82.88 31.5-155.78Q143-709 197.33-763q54.34-54 127.23-85.5T480.33-880q82.88 0 155.78 31.5Q709-817 763-763t85.5 127Q880-563 880-480.18q0 82.83-31.5 155.67Q817-251.67 763-197.46q-54 54.21-127 85.84Q563-80 480.18-80Zm.15-66.67q139 0 236-97.33t97-236.33q0-139-96.87-236-96.88-97-236.46-97-138.67 0-236 96.87-97.33 96.88-97.33 236.46 0 138.67 97.33 236 97.33 97.33 236.33 97.33ZM480-480Z"/>
+                                    </svg>
                                 </button>
+
                             </div>
                         </div>
                     </div>
 
+
                     <div class="bt-02">
                         <div th:if="${teamtype == 'Away'}">
-<!--                            <button th:each="away, stat : ${runevent.awayTitles}"-->
-<!--                                    th:onclick="|vote(event, ${team}, ${event.id}, ${stat.index + 1});|"-->
-<!--                                    class="marquee"-->
-<!--                                    th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|">-->
-<!--                                <span>[[${away}]]</span>-->
-<!--                            </button>-->
                             <div class="button-row"
                                  th:each="away, stat : ${runevent.awayTitles}">
 
@@ -135,16 +144,41 @@
                                             th:attr="data-youtube=${runevent.awayYoutube[stat.index]}"
                                             th:styleAppend="|background-color: ${awayFont}; color:${awayColor}|"
                                             onclick="loadVideo(this.getAttribute('data-youtube'))">
-                                        <img th:if="${runevent.awayYoutube[stat.index] != null and !#strings.isEmpty(runevent.awayYoutube[stat.index])}"
-                                             src="/asset/play_circle.svg"
-                                             alt="Play" width="36" height="36"/>
+<!--                                        <img th:if="${runevent.awayYoutube[stat.index] != null and !#strings.isEmpty(runevent.awayYoutube[stat.index])}"-->
+<!--                                             src="/asset/play_circle.svg"-->
+<!--                                             alt="Play" width="36" height="36"/>-->
 
-                                        <!-- ❌ 값이 없거나 null: stop_circle -->
-                                        <img th:unless="${runevent.awayYoutube[stat.index] != null and !#strings.isEmpty(runevent.awayYoutube[stat.index])}"
-                                             src="/asset/stop_circle.svg"
-                                             alt="Stop" width="36" height="36"/>
+<!--                                        &lt;!&ndash; ❌ 값이 없거나 null: stop_circle &ndash;&gt;-->
+<!--                                        <img th:unless="${runevent.awayYoutube[stat.index] != null and !#strings.isEmpty(runevent.awayYoutube[stat.index])}"-->
+<!--                                             src="/asset/stop_circle.svg"-->
+<!--                                             alt="Stop" width="36" height="36"/>-->
+
+                                        <!-- ▶ Play 아이콘 (값이 있을 때) -->
+                                        <svg th:if="${runevent.awayYoutube[stat.index] != null and !#strings.isEmpty(runevent.awayYoutube[stat.index])}"
+                                             class="icon"
+                                             xmlns="http://www.w3.org/2000/svg"
+                                             viewBox="0 -960 960 960"
+                                             width="36" height="36"
+                                             aria-hidden="true">
+                                            <path fill="currentColor" fill-rule="nonzero" clip-rule="nonzero"
+                                                  d="M382-306.67 653.33-480 382-653.33v346.66ZM480-80q-82.33 0-155.67-31.5-72.84-31.5-127.18-85.83Q143-251.67 111.5-324.56T80-480.33q0-82.88 31.5-155.78Q143-709 197.33-763q54.34-54 127.23-85.5T480.33-880q82.88 0 155.78 31.5Q709-817 763-763t85.5 127Q880-563 880-480.18q0 82.83-31.5 155.67Q817-251.67 763-197.46q-54 54.21-127 85.84Q563-80 480.18-80Zm.15-66.67q139 0 236-97.33t97-236.33q0-139-96.87-236-96.88-97-236.46-97-138.67 0-236 96.87-97.33 96.88-97.33 236.46 0 138.67 97.33 236 97.33 97.33 236.33 97.33Z M480-480Z"/>
+                                        </svg>
+
+                                        <!-- ⏹ Stop 아이콘 (값이 없을 때) -->
+                                        <svg th:unless="${runevent.awayYoutube[stat.index] != null and !#strings.isEmpty(runevent.awayYoutube[stat.index])}"
+                                             class="icon"
+                                             xmlns="http://www.w3.org/2000/svg"
+                                             viewBox="0 -960 960 960"
+                                             width="36" height="36"
+                                             aria-hidden="true">
+                                            <path fill="currentColor" fill-rule="nonzero" clip-rule="nonzero"
+                                                  d="M326.67-326.67h306.66v-306.66H326.67v306.66ZM480.18-80q-82.83 0-155.67-31.5-72.84-31.5-127.18-85.83Q143-251.67 111.5-324.56T80-480.33q0-82.88 31.5-155.78Q143-709 197.33-763q54.34-54 127.23-85.5T480.33-880q82.88 0 155.78 31.5Q709-817 763-763t85.5 127Q880-563 880-480.18q0 82.83-31.5 155.67Q817-251.67 763-197.46q-54 54.21-127 85.84Q563-80 480.18-80Zm.15-66.67q139 0 236-97.33t97-236.33q0-139-96.87-236-96.88-97-236.46-97-138.67 0-236 96.87-97.33 96.88-97.33 236.46 0 138.67 97.33 236 97.33 97.33 236.33 97.33ZM480-480Z"/>
+                                        </svg>
+
 
                                     </button>
+
+
                                 </div>
                             </div>
                         </div>

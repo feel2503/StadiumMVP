@@ -64,6 +64,11 @@ public class RestApiController extends BaseController{
                         .name(event.getName())
                         .homeName(event.getHoemName())
                         .awayName(event.getAwayName())
+                        .votecountString("현재 남은 투표 : ")
+                        .votetimeString("현재 응원 이벤트 남은 시간")
+                        .votemessageString("응원할 음원을 투표해 주세요.")
+                        .votetagString("응원태그를 설정하면 +1표")
+                        .voteendString("이벤트 종료")
                         .build());
 
         return getResponseEntity( "success", HttpStatus.OK);
@@ -410,7 +415,7 @@ public class RestApiController extends BaseController{
                 long sec = duration.getSeconds();
                 long minV = sec / 60;
                 long secV = sec % 60;
-                voteResultDto.setEventState("현재 응원 이벤트 남은 시간 " + minV + "분" + secV + "초");
+                voteResultDto.setEventState("현재 응원 이벤트 남은 시간 " + minV + "" + secV + "초");
                 System.out.println("--------Sec : " +sec + " con : " + vTime);
                 System.out.println("--------Sec : " +sec + " con : " + vTime);
                 System.out.println("--------Sec : " +sec + " con : " + vTime);
@@ -1010,6 +1015,21 @@ public class RestApiController extends BaseController{
         return getResponseEntity( resultDto, "success", HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Add Event Server")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PostMapping(value = "/v1/server/set-update-votestring", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultResponse> updateVoteString(@RequestBody VoteStringDto voteStringDto) throws Exception {
+        Event event = eventRepository.findById(voteStringDto.getEventId()).orElseThrow(() -> new Exception("event-not-found"));
+//        event.setWebUrl(external2Dto.getWebUrl());
+//        event.setWebImg(external2Dto.getWebImg());
+
+        eventRepository.save(event);
+
+        return getResponseEntity( "success", HttpStatus.OK);
+    }
+
+
+
     private VoteResultDto getVoteResult(RunEvent runevent)
     {
         int homeCount = 0;
@@ -1189,4 +1209,6 @@ public class RestApiController extends BaseController{
             return false;
         return runEvent.getHomeCount() >= runEvent.getAwayCount() ? true : false;
     }
+
+
 }

@@ -77,4 +77,10 @@ public class Event extends BaseEntity {
     String animationColor;
 
     Boolean volumeSync;
+
+    String votecountString;
+    String votetimeString;
+    String votemessageString;
+    String votetagString;
+    String voteendString;
 }
