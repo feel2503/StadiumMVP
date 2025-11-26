@@ -191,15 +191,19 @@
 
 
             <div class="event_bg" th:styleAppend="'background-image: url('+${bgimg}+');'">
-                <div style="padding:5vh 20px 0px 20px;">
+                <div style="padding:1vh 20px 0px 20px;">
                     <!-- First line container -->
                     <div class="flip-container" >
                         <div class="flip-card"
                              id="line1">
                             <div class="flip-face flip-face-front"
-                                 th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">[[${eventTopDtos[0].count}]] 표</div>
+                                 th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">
+                                [[${eventTopDtos[0].count}]] 표
+                            </div>
                             <div class="flip-face flip-face-back"
-                                 th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">[[${eventTopDtos[0].name}]]</div>
+                                 th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">
+                                [[${eventTopDtos[0].name}]]
+                            </div>
                         </div>
                     </div>
 
@@ -258,6 +262,14 @@
                 </div>
             </div>
 
+
+            <div id="bottom_banner" class="bottom_banner">
+                <div class="qr-box">
+                    <div class="qr-text">
+                        [[${event.qrText}]]
+                    </div>
+                    <img class="qr-img" th:src="${qrImage}" alt="QR Code">
+                </div>
 
         </div>
 

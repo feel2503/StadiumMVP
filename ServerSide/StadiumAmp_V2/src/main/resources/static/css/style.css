@@ -516,33 +516,27 @@ div{
     background: #42A5F5;
 }
 .marquee {
-    cursor: pointer;
     width: 100%;
-    background-color: #2552d9;
-    border:none;
-    border-radius: 5px;
-    padding:15px;
-    font-size: 16px;
-    color:#ffffff;
-    font-weight:700;
-    margin-bottom: 15px;
-
-    white-space: nowrap;
     overflow: hidden;
+    white-space: nowrap;
+    display: inline-block;
+    position: relative;
 }
 .marquee span {
     display: inline-block;
-    text-indent: 0;
-    animation: marquee 10s linear infinite;
+    white-space: nowrap;
+    padding-left: 100%; /* 처음 오른쪽 밖에서 시작 */
+    animation: marquee 12s linear infinite;
 }
 .marquee span:hover {
     animation-play-state: paused
 }/* Make it move */
 @keyframes marquee {
-    0% { transform: translate(200px, 0); }
-    30% { transform: translate(0, 0); }
-    60% { transform: translate(0, 0); }
-    100% { transform: translate(-100%, 0); }
+    0% { transform: translateX(0); }          /* 시작 → 오른쪽 바깥 */
+    10% { transform: translateX(0); }         /* 살짝 멈춤 */
+    40% { transform: translateX(-50%); }      /* 가운데까지 이동 */
+    60% { transform: translateX(-50%); }      /* ✋ 중간에서 잠시 멈춤 */
+    100% { transform: translateX(-100%); }    /* 왼쪽 바깥까지 이동 */
 }
 
 .video_container {
@@ -762,6 +756,11 @@ ul.ks-cboxtags li input[type="checkbox"]:focus + label {
     font-size: 16px;
     border: none;
     cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; /* 버튼 밖으로 나가는 애니메이션 숨김 */
 }
 
 .btn-narrow {
@@ -867,4 +866,41 @@ button {
 
 button:hover {
     background-color: #45a049;
+}
+
+
+.qr-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #d8343a; /* 배경색 예시 */
+
+    /*padding: 14px 25px;*/
+    padding-left: 10px;
+    padding-right: 30px;
+    padding-top: 10px;
+    padding-bottom: 30px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* 텍스트 영역 */
+.qr-text {
+    flex: 1;
+    text-align: left;
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    padding-right: 10px;
+    white-space: nowrap;  /* 필요시 제거 가능 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* QR 이미지 크기 고정 */
+.qr-img {
+    width: 160px; /* 원하시면 조정 가능 */
+    height: 160px;
+    object-fit: contain;
+    flex-shrink: 0;
 }

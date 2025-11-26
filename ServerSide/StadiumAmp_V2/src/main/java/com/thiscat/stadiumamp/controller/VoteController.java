@@ -518,6 +518,7 @@ public class VoteController {
 
         }
 
+        String qrImage = eventImageRepository.findTypeEventImage(event_id, "IMAGE_QR");
 
         //bgImage = "https://lh3.googleusercontent.com/drive-viewer/AKGpihYYrUREeok3BOYgpR_kdlLX4MhYkeEVIjVM6UlDkhWlY86tCtknoo_2bgBWHnQ5DiyBGAnnuYdJN9uZ7LLCRw0rw06fsPWdwg=s2560";
         model.addAttribute("event", event);
@@ -535,6 +536,7 @@ public class VoteController {
         model.addAttribute("webimg", event.getWebImg());
         model.addAttribute("eventTopDtos", eventTopDtos);
 
+        model.addAttribute("qrImage", qrImage);
 
         return "voteresult";
     }

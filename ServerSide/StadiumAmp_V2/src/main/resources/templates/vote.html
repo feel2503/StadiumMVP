@@ -87,7 +87,9 @@
                                 <button class="btn-wide"
                                         th:onclick="|vote(event, ${team}, ${event.id}, ${stat.index + 1});|"
                                         th:styleAppend="|background-color: ${homeColor}; color:${homeFont}|">
-                                    <span>[[${home}]]</span>
+                                    <div class="marquee">
+                                        <span>[[${home}]]</span>
+                                    </div>
                                 </button>
 
                                 <!-- homeYoutube 값이 있을 경우 +, 없으면 - 출력 -->
@@ -135,7 +137,9 @@
                                     <button class="btn-wide"
                                             th:onclick="|vote(event, ${team}, ${event.id}, ${stat.index + 1});|"
                                             th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|">
-                                        <span>[[${away}]]</span>
+                                        <div class="marquee">
+                                            <span>[[${away}]]</span>
+                                        </div>
                                     </button>
 
                                     <!-- homeYoutube 값이 있을 경우 +, 없으면 - 출력 -->

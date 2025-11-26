@@ -4,6 +4,7 @@ import com.thiscat.stadiumamp.dto.EventMusicDto;
 import com.thiscat.stadiumamp.dto.RunEventWebDto;
 import com.thiscat.stadiumamp.entity.Event;
 import com.thiscat.stadiumamp.entity.RunEvent;
+import com.thiscat.stadiumamp.entity.repository.EventImageRepository;
 import com.thiscat.stadiumamp.entity.repository.EventMusicRepository;
 import com.thiscat.stadiumamp.entity.repository.EventRepository;
 import com.thiscat.stadiumamp.entity.repository.RunEventRepository;
@@ -33,6 +34,8 @@ public class VoteResultController {
     RunEventRepository runEventRepository;
     @Autowired
     EventMusicRepository eventMusicRepository;
+    @Autowired
+    EventImageRepository eventImageRepository;
 
     @GetMapping("/voteresult_old")
     public String home(Model model,  @RequestParam Integer team, @RequestParam Long event_id,
@@ -139,10 +142,14 @@ public class VoteResultController {
 
         }
 
+        String qrImage = eventImageRepository.findTypeEventImage(event_id, "IMAGE_QR");
+
+
         model.addAttribute("event", event);
         model.addAttribute("runevent", runEventDto);
         model.addAttribute("teamtype", strTeam);
         model.addAttribute("team", team);
+        model.addAttribute("qrImage", qrImage);
 
 //        if((team == 1 || team == 3) && (move == null)) {
 //            model.addAttribute("data", server_id);

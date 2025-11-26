@@ -83,4 +83,6 @@ public class Event extends BaseEntity {
     String votemessageString;
     String votetagString;
     String voteendString;
+
+    String qrText;
 }

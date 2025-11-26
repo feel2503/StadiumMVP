@@ -76,6 +76,20 @@ public class RestApiController extends BaseController{
 
     @ApiOperation(value = "Add Event Server")
     @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PostMapping(value = "/v1/server/voteResultString", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultResponse> saveEventString(@RequestBody ReqAddEventString eventString) throws Exception {
+        Event findEvent = eventRepository.findById(eventString.getEventId())
+                .orElseThrow(() -> new Exception("event-not-fount"));
+
+        findEvent.setQrText(eventString.getEventString());
+
+        eventRepository.save(findEvent);
+
+        return getResponseEntity( "success", HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Add Event Server")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
     @PostMapping(value = "/v1/server/modify", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResultResponse> modifyEvent(@RequestBody ReqModifyEvent event) throws Exception {
         Event findEvent = eventRepository.findById(event.getEventId()).orElseThrow(() -> new Exception("event-not-fount"));
