@@ -559,40 +559,70 @@
 
 
             let player;
-            // Open the Modal with the YouTube Video
+            let playbackInterval;
             function loadVideo(urlInput) {
+                //urlInput = "https://youtu.be/uj7usIs5JdU?start=10&end=19";
+                // urlInput = "https://youtu.be/uj7usIs5JdU";
                 // const urlInput = document.getElementById(inputId).value;
                 const modal = document.getElementById('youtubeModal');
 
                 // Validate the input URL
                 if (urlInput != null && urlInput.trim() !== '') {
                     // Transform YouTube share or Shorts link (if necessary)
-                    let videoId = "";
-                    if (urlInput.includes('youtu.be')) {
-                        videoId = urlInput.split('/').pop();
-                    } else if (urlInput.includes('youtube.com/shorts')) {
-                        videoId = urlInput.split('/').pop();
-                    } else if (urlInput.includes('v=')) {
-                        const params = new URLSearchParams(urlInput.split('?')[1]);
-                        videoId = params.get('v');
-                    }
+                    // let videoId = "";
+                    // if (urlInput.includes('youtu.be')) {
+                    //     videoId = urlInput.split('/').pop();
+                    // } else if (urlInput.includes('youtube.com/shorts')) {
+                    //     videoId = urlInput.split('/').pop();
+                    // } else if (urlInput.includes('v=')) {
+                    //     const params = new URLSearchParams(urlInput.split('?')[1]);
+                    //     videoId = params.get('v');
+                    // }
 
-                    if (videoId) {
+                    const videoInfo = getYouTubeVideoInfo(urlInput);
+
+                    if (videoInfo.videoId) {
                         // Create YouTube Player instance
                         player = new YT.Player('youtubePlayer', {
                             height: '600', // Adjusted height for larger player
                             width: '100%',
-                            videoId: videoId,
+                            videoId: videoInfo.videoId,
                             playerVars: {
                                 autoplay: 1,
                                 controls: 1,
+                                start: videoInfo.startSeconds,
                             },
                             events: {
                                 onReady: function(event) {
                                     event.target.setPlaybackQuality('hd1080'); // Set the video quality
                                 },
                                 onStateChange: function(event) {
-                                    if (event.data === 0) { // State 0 means the video has ended
+                                    // 기존 인터벌 정리
+                                    if (playbackInterval) {
+                                        clearInterval(playbackInterval);
+                                        playbackInterval = null;
+                                    }
+
+                                    // ** [추가된 로직 3] End Time 체크 및 종료 **
+                                    //if (event.data === YT.PlayerState.PLAYING)
+                                    if (event.data === 1)
+                                    {
+                                        // 종료 시간이 설정되어 있고, 시작 시간보다 크면 체크 시작
+                                        if (videoInfo.endSeconds !== null && videoInfo.endSeconds > videoInfo.startSeconds) {
+                                            playbackInterval = setInterval(() => {
+                                                const currentTime = player.getCurrentTime();
+
+                                                if (currentTime >= videoInfo.endSeconds) {
+                                                    player.stopVideo();
+                                                    clearInterval(playbackInterval);
+                                                    playbackInterval = null;
+                                                    closeModal(); // 종료 시간에 도달하면 모달 닫기
+                                                }
+                                            }, 500); // 0.5초마다 체크
+                                        }
+                                    }
+
+                                    if (event.data === 0) { // State 0 means the video has ended naturally
                                         closeModal(); // Automatically close the modal
                                     }
                                 }
@@ -616,6 +646,134 @@
                 }
                 modal.style.display = 'none'; // Hide the modal
             }
+
+
+            function getYouTubeVideoInfo(url) {
+                if (!url) return { videoId: null, startSeconds: null, endSeconds: null };
+                const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
+                const match = url.match(regExp);
+
+                let videoId = "";
+                let vidStr = "";
+                if (url.includes('youtu.be')) {
+                    vidStr = url.split('/').pop();
+                } else if (url.includes('youtube.com/shorts')) {
+                    vidStr = url.split('/').pop();
+                } else if (url.includes('v=')) {
+                    const params = new URLSearchParams(url.split('?')[1]);
+                    vidStr = params.get('v');
+                }
+                // https://www.youtube/E_s7TZakskc?start=15&end=55;
+                // https://www.youtube.com/shorts/E_s7TZakskc?start=15&end=55
+                // https://www.youtube.com/watch?v=E_s7TZakskc?start=15&end=55
+
+                // 유튜브 일반영상 https://youtu.be/E_s7TZakskc  >>>  https://www.youtube.com/watch?v=E_s7TZakskc
+                //    유튜브 쇼츠 https://youtube.com/shorts/BsasaVKwY8U  >>> https://www.youtube.com/shorts/BsasaVKwY8U
+                //    유튜브 라이브 영상 https://www.youtube.com/watch?v=mYVcSmpBfUA
+
+                videoId = vidStr.split("?")[0];
+
+                let startSeconds = 0;
+                let endSeconds = null;
+
+                const queryString = url.split('?')[1];
+                if (queryString) {
+                    const urlParams = new URLSearchParams(queryString);
+                    let parsedStart = urlParams.get('t') || urlParams.get('start');
+                    if (parsedStart) {
+                        // 초 단위로 변환 (예: 1m30s -> 90)
+                        if (typeof parsedStart === 'string' && /[a-z]/i.test(parsedStart)) {
+                            startSeconds = parseDuration(parsedStart);
+                        } else {
+                            startSeconds = parseInt(parsedStart.replace(/[^\d]/g, ''), 10);
+                        }
+                    }
+                    let parsedEnd = urlParams.get('end');
+                    if (parsedEnd) {
+                        if (typeof parsedEnd === 'string' && /[a-z]/i.test(parsedEnd)) {
+                            endSeconds = parseDuration(parsedEnd);
+                        } else {
+                            endSeconds = parseInt(parsedEnd.replace(/[^\d]/g, ''), 10);
+                        }
+                    }
+                }
+                return { videoId: videoId, startSeconds: startSeconds, endSeconds: endSeconds };
+            }
+
+            function parseDuration(duration) {
+                let totalSeconds = 0;
+                const parts = duration.match(/(\d+)([hms])/g);
+                if (parts) {
+                    parts.forEach(part => {
+                        const value = parseInt(part.slice(0, -1), 10);
+                        const unit = part.slice(-1);
+                        if (unit === 'h') totalSeconds += value * 3600;
+                        else if (unit === 'm') totalSeconds += value * 60;
+                        else if (unit === 's') totalSeconds += value;
+                    });
+                } else {
+                    totalSeconds = parseInt(duration.replace(/[^\d]/g, ''), 10) || 0;
+                }
+                return totalSeconds;
+            }
+
+            // Open the Modal with the YouTube Video
+            // function loadVideo(urlInput) {
+            //     // const urlInput = document.getElementById(inputId).value;
+            //     const modal = document.getElementById('youtubeModal');
+            //
+            //     // Validate the input URL
+            //     if (urlInput != null && urlInput.trim() !== '') {
+            //         // Transform YouTube share or Shorts link (if necessary)
+            //         let videoId = "";
+            //         if (urlInput.includes('youtu.be')) {
+            //             videoId = urlInput.split('/').pop();
+            //         } else if (urlInput.includes('youtube.com/shorts')) {
+            //             videoId = urlInput.split('/').pop();
+            //         } else if (urlInput.includes('v=')) {
+            //             const params = new URLSearchParams(urlInput.split('?')[1]);
+            //             videoId = params.get('v');
+            //         }
+            //
+            //         if (videoId) {
+            //             // Create YouTube Player instance
+            //             player = new YT.Player('youtubePlayer', {
+            //                 height: '600', // Adjusted height for larger player
+            //                 width: '100%',
+            //                 videoId: videoId,
+            //                 playerVars: {
+            //                     autoplay: 1,
+            //                     controls: 1,
+            //                 },
+            //                 events: {
+            //                     onReady: function(event) {
+            //                         event.target.setPlaybackQuality('hd1080'); // Set the video quality
+            //                     },
+            //                     onStateChange: function(event) {
+            //                         if (event.data === 0) { // State 0 means the video has ended
+            //                             closeModal(); // Automatically close the modal
+            //                         }
+            //                     }
+            //                 }
+            //             });
+            //
+            //             modal.style.display = 'flex'; // Show the modal
+            //         } else {
+            //             alert('영상 링크 준비중 입니다');
+            //         }
+            //     } else {
+            //         alert('영상 링크 준비중 입니다');
+            //     }
+            // }
+            //
+            // // Close the Modal and Stop the Video
+            // function closeModal() {
+            //     const modal = document.getElementById('youtubeModal');
+            //     if (player) {
+            //         player.destroy(); // Destroy the player instance
+            //     }
+            //     modal.style.display = 'none'; // Hide the modal
+            // }
 
         </script>
 

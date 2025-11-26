@@ -178,6 +178,19 @@ div{
     font-weight:900;
 }
 
+@keyframes blink-effect {
+    /* 기본 상태 (검정 배경 / 흰색 글씨) */
+    0%, 20%, 40%, 60%, 80%, 100% {
+        background-color: black;
+        color: #ffffff;
+    }
+    /* 반전 상태 (흰색 배경 / 검정 글씨) */
+    10%, 30%, 50%, 70%, 90% {
+        background-color: #ffffff;
+        color: black;
+    }
+}
+
 .join_event{
     cursor: pointer;
     width: 100%;
@@ -189,6 +202,11 @@ div{
     color:#ffffff;
     font-weight:700;
     margin-bottom: 25px;
+
+    /* 애니메이션 추가: blink-effect를 5초 동안 실행하고, 종료 후 마지막 상태(forwards) 유지 */
+    animation: blink-effect 5s linear forwards;
+    /* 깜빡일 때 색상 전환을 부드럽게 만들기 위한 transition (선택 사항이지만 권장) */
+    transition: all 0.1s ease-in-out;
 }
 .join_event_disable{
     cursor: pointer;
@@ -201,6 +219,11 @@ div{
     color:#ffffff;
     font-weight:700;
     margin-bottom: 15px;
+
+    /* 애니메이션 추가: blink-effect를 5초 동안 실행하고, 종료 후 마지막 상태(forwards) 유지 */
+    animation: blink-effect 5s linear forwards;
+    /* 깜빡일 때 색상 전환을 부드럽게 만들기 위한 transition (선택 사항이지만 권장) */
+    transition: all 0.1s ease-in-out;
 }
 .join_away_event{
     cursor: pointer;
@@ -213,6 +236,11 @@ div{
     color:#ffffff;
     font-weight:700;
     margin-bottom: 15px;
+
+    /* 애니메이션 추가: blink-effect를 5초 동안 실행하고, 종료 후 마지막 상태(forwards) 유지 */
+    animation: blink-effect 5s linear forwards;
+    /* 깜빡일 때 색상 전환을 부드럽게 만들기 위한 transition (선택 사항이지만 권장) */
+    transition: all 0.1s ease-in-out;
 }
 /*#bottom_banner{*/
 /*    position: fixed;*/
