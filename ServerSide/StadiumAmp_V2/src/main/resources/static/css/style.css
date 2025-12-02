@@ -920,7 +920,7 @@ button:hover {
     font-weight: 600;
     color: white;
     padding-right: 10px;
-    white-space: nowrap;  /* 필요시 제거 가능 */
+    white-space: pre-line;  /* 필요시 제거 가능 */
     overflow: hidden;
     text-overflow: ellipsis;
 }

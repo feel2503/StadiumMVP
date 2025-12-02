@@ -28,10 +28,17 @@ public class EventTopDto {
     }
 
     private String removeExtension(String fileName) {
+        // 1. 확장자 제거
         int lastIndex = fileName.lastIndexOf('.');
         if (lastIndex != -1) {
             fileName = fileName.substring(0, lastIndex);
         }
+        // 2. 괄호 ( ... ) 제거
+        int openParen = fileName.lastIndexOf('(');
+        if (openParen != -1) {
+            fileName = fileName.substring(0, openParen).trim();
+        }
+
         return fileName;
     }
 }

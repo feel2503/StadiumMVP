@@ -265,7 +265,8 @@
 
             <div id="bottom_banner" class="bottom_banner">
                 <div class="qr-box" th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">
-                    <div class="qr-text">
+                    <div class="qr-text"
+                         th:styleAppend="| color:${fontColor}|">
                         [[${event.qrText}]]
                     </div>
                     <img class="qr-img" th:src="${qrImage}" alt="QR Code">
