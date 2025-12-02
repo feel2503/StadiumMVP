@@ -777,6 +777,33 @@
 
         </script>
 
+        <script>
+            function updateMarquee() {
+                const marquees = document.querySelectorAll('.marquee');
+
+                marquees.forEach(marquee => {
+                    const span = marquee.querySelector('span');
+                    if (!span) return;
+
+                    // 강제로 브라우저가 레이아웃 계산한 이후 값을 사용
+                    const contentWidth = span.scrollWidth;     // 텍스트 실제 폭
+                    const containerWidth = marquee.clientWidth; // 보여지는 영역 폭
+
+                    if (contentWidth > containerWidth) {
+                        // 넘침 → marquee 동작
+                        marquee.classList.add('long');
+                    } else {
+                        // 안 넘침 → 가운데 정렬로 가만히
+                        marquee.classList.remove('long');
+                    }
+                });
+            }
+
+            window.addEventListener('load', updateMarquee);
+            window.addEventListener('resize', updateMarquee); // 반응형일 때 대비
+        </script>
+
+
     </div>
 </body>
 </html>

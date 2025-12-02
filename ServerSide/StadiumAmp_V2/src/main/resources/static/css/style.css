@@ -553,18 +553,18 @@ div{
 .marquee span {
     display: inline-block;
     white-space: nowrap;
-    padding-left: 100%; /* 처음 오른쪽 밖에서 시작 */
-    animation: marquee 12s linear infinite;
+    padding-left: 0;
 }
-.marquee span:hover {
-    animation-play-state: paused
-}/* Make it move */
+/* 길 때만 이 클래스가 붙어서 marquee 발동 */
+.marquee.long span {
+    padding-left: 10%;                 /* 처음 오른쪽 밖에서 시작 */
+    animation: marquee 7s linear infinite;
+}
+
+
 @keyframes marquee {
-    0% { transform: translateX(0); }          /* 시작 → 오른쪽 바깥 */
-    10% { transform: translateX(0); }         /* 살짝 멈춤 */
-    40% { transform: translateX(-50%); }      /* 가운데까지 이동 */
-    60% { transform: translateX(-50%); }      /* ✋ 중간에서 잠시 멈춤 */
-    100% { transform: translateX(-100%); }    /* 왼쪽 바깥까지 이동 */
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-60%); }
 }
 
 .video_container {
