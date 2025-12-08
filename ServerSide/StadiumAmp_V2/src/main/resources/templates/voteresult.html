@@ -91,47 +91,7 @@
             }
         }
 
-        /* --- 투명 레이어 관련 CSS 시작 --- */
-        .overlay {
-            display: none; /* 초기에는 숨김 */
-            position: fixed; /* 뷰포트에 고정 */
-            top: 0;
-            left: 0;
-            width: 100vw; /* 뷰포트 너비의 100% */
-            height: 100vh; /* 뷰포트 높이의 100% */
-            background-color: rgba(0, 0, 0, 0); /* 더 투명하게 변경 (alpha 값을 낮춤) */
-            /* z-index는 각 레이어에 개별적으로 설정 */
-            justify-content: center;
-            align-items: center;
-        }
 
-        /* 첫 번째 레이어 (뒤에 위치) */
-        #overlay1 {
-            z-index: 1000;
-        }
-
-        /* 두 번째 레이어 (앞에 위치) */
-        #overlay2 {
-            z-index: 1001; /* 더 높은 z-index로 두 번째 레이어가 첫 번째 레이어 위에 보이도록 */
-        }
-
-
-        .overlay-content {
-            position: relative;
-            background-color: transparent; /* 투명 배경 */
-            border: none; /* 테두리 없음 */
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden; /* iframe 스크롤 방지 */
-        }
-
-        .overlay-content iframe {
-            width: 100vw; /* iframe이 뷰포트 너비의 100%를 차지하도록 함 */
-            height: 100vh; /* iframe이 뷰포트 높이의 100%를 차지하도록 함 */
-            border: none; /* iframe 테두리 제거 */
-            background-color: transparent; /* iframe 배경 투명 */
-        }
 
         .close-button {
             position: absolute;
