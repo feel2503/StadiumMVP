@@ -16,7 +16,7 @@ public interface EventImageRepository extends JpaRepository<EventImage, Long> {
             value = " select i.image_url from event e "      +
                     "   left join event_image ei on e.event_id=ei.event_id  "                                                   +
                     "   left join image i on ei.image_id = i.image_id "           +
-                    "   where e.event_id = :eventId and image_type=:type   ",
+                    "   where e.event_id = :eventId and image_type=:type limit 1  ",
             nativeQuery = true)
     String findTypeEventImage(Long eventId, String type);
 

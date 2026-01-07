@@ -21,8 +21,8 @@
         .flip-container {
             perspective: 1000px; /* For 3D effect */
             margin: 10px 0; /* Reduced margin between clocks */
-            width: 90%; /* Responsive width */
-            max-width: 700px; /* Max width for larger screens */
+            width: 100%; /* Responsive width */
+            max-width: 768px; /* Max width for larger screens */
         }
 
         .flip-card {
@@ -91,7 +91,27 @@
             }
         }
 
+        .overlayvoteresult {
+            position: absolute;
+            top: 50%;               /* event-header의 위쪽 */
+            left: 0;             /* event-header의 오른쪽 */
+            width: 400px;         /* 필요에 맞게 조절 */
+            height: 400px;         /* 필요에 맞게 조절 */
+            transform: translateY(-50%);
+            z-index: 1000;
+        }
 
+        .overlayvoteresult-content {
+            width: 100%;
+            height: 100%;
+        }
+
+        .overlayvoteresult iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background-color: transparent;
+        }
 
         .close-button {
             position: absolute;
@@ -107,6 +127,28 @@
             z-index: 1002; /* 닫기 버튼은 모든 레이어 위에 있어야 하므로 더 높은 z-index */
         }
         /* --- 투명 레이어 관련 CSS 끝 --- */
+
+        .modalresult {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Video Container */
+        .modalresult-content {
+            position: relative;
+            width: 90%; /* Increased width */
+            max-width: 1200px; /* Adjusted max width */
+            border-radius: 15px;
+            overflow: hidden;
+        }
     </style>
 
 </head>
@@ -117,121 +159,130 @@
             현재 응원 이벤트 남은 시간 0분 0초
         </div>
 
-        <div class="sample">
 
-            <div style="padding-left: 20px; padding-right:20px; padding-top:0px; padding-bottom: 0px;"
-                 onclick="location.href='https://sites.google.com/view/introduce-stadiumamp/';">
-                <div class="wc_text_01">
-                    <b>[[${event.name}]]</b>
-                </div>
+        <div style="padding-left: 20px; padding-right:20px; padding-top:0px; padding-bottom: 0px;"
+             onclick="location.href='https://sites.google.com/view/introduce-stadiumamp/';">
+            <div class="wc_text_01">
+                <b>[[${event.name}]]</b>
+            </div>
 
-                <div class="result_text">
-                    <div class="home_text" th:styleAppend="|color: ${homeColor}|"
-                         id="home_text">[[${event.homeName}]] [[${runevent.homeCount}]]</div>
-                    <div class="away_text" th:styleAppend="|color: ${awayColor}|"
-                         id="away_text">[[${event.awayName}]] [[${runevent.awayCount}]]</div>
-                </div>
-
-
-                <div class="result_graph" id="event_stop_graph">
-                    <div class="gray_graph_full">
-                        <div class="flex-center">다음 응원 이벤트를 기다려주세요</div>
-                    </div>
-                    <div class="away_graph_zero"></div>
-                </div>
-
-                <div class="result_graph" id="event_start_graph">
-                    <div class="home_graph" th:styleAppend="|background-color: ${homeColor}|"
-                         id="home_graph"></div>
-                    <div class="away_graph" th:styleAppend="|background-color: ${awayColor}|"
-                         id="away_graph"></div>
-                </div>
+            <div class="result_text">
+                <div class="home_text" th:styleAppend="|color: ${homeColor}|"
+                     id="home_text">[[${event.homeName}]] [[${runevent.homeCount}]]</div>
+                <div class="away_text" th:styleAppend="|color: ${awayColor}|"
+                     id="away_text">[[${event.awayName}]] [[${runevent.awayCount}]]</div>
             </div>
 
 
+            <div class="result_graph" id="event_stop_graph">
+                <div class="gray_graph_full">
+                    <div class="flex-center">다음 응원 이벤트를 기다려주세요</div>
+                </div>
+                <div class="away_graph_zero"></div>
+            </div>
 
-            <div class="event_bg" th:styleAppend="'background-image: url('+${bgimg}+');'">
-                <div style="padding:1vh 20px 0px 20px;">
-                    <!-- First line container -->
-                    <div class="flip-container" >
-                        <div class="flip-card"
-                             id="line1">
-                            <div class="flip-face flip-face-front"
-                                 th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">
-                                [[${eventTopDtos[0].count}]] 표
-                            </div>
-                            <div class="flip-face flip-face-back"
-                                 th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">
-                                [[${eventTopDtos[0].name}]]
-                            </div>
+            <div class="result_graph" id="event_start_graph">
+                <div class="home_graph" th:styleAppend="|background-color: ${homeColor}|"
+                     id="home_graph"></div>
+                <div class="away_graph" th:styleAppend="|background-color: ${awayColor}|"
+                     id="away_graph"></div>
+            </div>
+        </div>
+
+
+
+        <div class="event_bg" th:styleAppend="'background-image: url('+${bgimg}+');'">
+            <div style="padding:1vh 20px 0px 20px;">
+                <!-- First line container -->
+                <div class="flip-container" >
+                    <div class="flip-card"
+                         id="line1">
+                        <div class="flip-face flip-face-front"
+                             th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">
+                            [[${eventTopDtos[0].count}]] 표
                         </div>
-                    </div>
-
-                    <!-- Second line container -->
-                    <div class="flip-container">
-                        <div class="flip-card" id="line2">
-                            <div class="flip-face flip-face-front"
-                                 th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">[[${eventTopDtos[1].count}]] 표</div>
-                            <div class="flip-face flip-face-back"
-                                 th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">[[${eventTopDtos[1].name}]]</div>
-                        </div>
-                    </div>
-
-                    <!-- Third line container -->
-                    <div class="flip-container">
-                        <div class="flip-card" id="line3">
-                            <div class="flip-face flip-face-front"
-                                 th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">[[${eventTopDtos[2].count}]] 표</div>
-                            <div class="flip-face flip-face-back"
-                                 th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">[[${eventTopDtos[2].name}]]</div>
+                        <div class="flip-face flip-face-back"
+                             th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">
+                            [[${eventTopDtos[0].name}]]
                         </div>
                     </div>
                 </div>
 
-                <p></p>
-
-                <input type="hidden" id="startMin" th:value="${min}">
-                <input type="hidden" id="startSec" th:value="${sec}">
-                <input type="hidden" id="startIdVal" th:value="${event.id}">
-                <input type="hidden" id="eventState" th:value="${state}">
-                <input type="hidden" id="currentState" th:value="${state}">
-
-
-            </div>
-
-
-            <div class="modal" id="youtubeModal">
-                <div class="modal-content">
-                    <button class="close-btn" onclick="closeModal()">X</button>
-                    <div id="youtubePlayer"></div>
-                </div>
-            </div>
-
-
-
-            <div class="overlay" id="overlay1">
-                <div class="overlay-content">
-                    <button class="close-button" onclick="closeLayer('overlay1')">×</button>
-                    <iframe id="layerIframe1" src="" allowfullscreen></iframe>
-                </div>
-            </div>
-            <div class="overlay" id="overlay2">
-                <div class="overlay-content">
-                    <button class="close-button" onclick="closeLayer('overlay2')">×</button>
-                    <iframe id="layerIframe2" src="" allowfullscreen></iframe>
-                </div>
-            </div>
-
-
-            <div id="bottom_banner" class="bottom_banner">
-                <div class="qr-box" th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">
-                    <div class="qr-text"
-                         th:styleAppend="| color:${fontColor}|">
-                        [[${event.qrText}]]
+                <!-- Second line container -->
+                <div class="flip-container">
+                    <div class="flip-card" id="line2">
+                        <div class="flip-face flip-face-front"
+                             th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">[[${eventTopDtos[1].count}]] 표</div>
+                        <div class="flip-face flip-face-back"
+                             th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">[[${eventTopDtos[1].name}]]</div>
                     </div>
-                    <img class="qr-img" th:src="${qrImage}" alt="QR Code">
                 </div>
 
+                <!-- Third line container -->
+                <div class="flip-container">
+                    <div class="flip-card" id="line3">
+                        <div class="flip-face flip-face-front"
+                             th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">[[${eventTopDtos[2].count}]] 표</div>
+                        <div class="flip-face flip-face-back"
+                             th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">[[${eventTopDtos[2].name}]]</div>
+                    </div>
+                </div>
+            </div>
+
+            <p></p>
+
+            <input type="hidden" id="startMin" th:value="${min}">
+            <input type="hidden" id="startSec" th:value="${sec}">
+            <input type="hidden" id="startIdVal" th:value="${event.id}">
+            <input type="hidden" id="eventState" th:value="${state}">
+            <input type="hidden" id="currentState" th:value="${state}">
+
+
+        </div>
+
+
+
+        <div id="bottom_banner" class="bottom_banner">
+            <div class="qr-box" th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">
+                <div class="qr-text"
+                     th:styleAppend="| color:${fontColor}|">
+                    [[${event.qrText}]]
+                </div>
+                <img class="qr-img" th:src="${qrImage}" alt="QR Code">
+            </div>
+
+        </div>
+
+        <div class="overlayvoteresult" id="overlay1">
+            <div class="overlayvoteresult-content">
+                <iframe id="layerIframe1" src="" allowfullscreen></iframe>
+            </div>
+        </div>
+        <div class="overlayvoteresult" id="overlay2">
+            <div class="overlayvoteresulty-content">
+                <iframe id="layerIframe2" src="" allowfullscreen></iframe>
+            </div>
+        </div>
+
+<!--        <div class="overlay" id="overlay1">-->
+<!--            <div class="overlay-content">-->
+<!--                <button class="close-button" onclick="closeLayer('overlay1')">×</button>-->
+<!--                <iframe id="layerIframe1" src="" allowfullscreen></iframe>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="overlay" id="overlay2">-->
+<!--            <div class="overlay-content">-->
+<!--                <button class="close-button" onclick="closeLayer('overlay2')">×</button>-->
+<!--                <iframe id="layerIframe2" src="" allowfullscreen></iframe>-->
+<!--            </div>-->
+<!--        </div>-->
+
+
+        <div class="modalresult" id="youtubeModal">
+            <div class="modalresult-content">
+                <button class="close-btn" onclick="closeModal()">X</button>
+                <div id="youtubePlayer"></div>
+            </div>
         </div>
 
         <script th:inline="javascript">
@@ -427,7 +478,7 @@
                             videoId: videoInfo.videoId,
                             playerVars: {
                                 autoplay: 1,
-                                controls: 1,
+                                controls: 0,
                                 start: videoInfo.startSeconds,
                             },
                             events: {
