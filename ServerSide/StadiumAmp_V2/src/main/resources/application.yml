@@ -6,6 +6,7 @@
 #  keyStoreType: PKCS12
 ########################################### SPRING  ##############################
 server:
+#    port: 80
     port: 443
     ssl:
         key-store: cert/keystore.p12
