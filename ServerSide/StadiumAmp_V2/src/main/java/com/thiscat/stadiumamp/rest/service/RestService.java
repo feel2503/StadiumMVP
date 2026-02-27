@@ -287,7 +287,7 @@ public class RestService {
         VoteResultDto voteResultDto = getVoteResult(runEvent);
         if(event.getTriggerType() == 0)
         {
-            RunEvent resultEvent = updateVoteCount(runEvent, teamType, eventType);
+            RunEvent resultEvent = updateVoteCount(runEvent, teamType, eventType, false);
             voteResultDto.setEventState(runEvent.getEventState());
         }
         else
@@ -298,7 +298,7 @@ public class RestService {
             }
             else
             {
-                RunEvent resultEvent = updateVoteCount(runEvent, teamType, eventType);
+                RunEvent resultEvent = updateVoteCount(runEvent, teamType, eventType, false);
                 if(runEvent.getHomeCount() != null)
                     homeCount = runEvent.getHomeCount();
                 if(runEvent.getAwayCount() != null)
@@ -327,9 +327,22 @@ public class RestService {
         return voteResultDto;
     }
 
+    @Transactional // 락을 사용하기 위해 반드시 필요합니다.
     public VoteResultDto voteSave(VoteDto voteDto) throws Exception
     {
-        RunEvent runEvent = runEventRepository.findByEventLimit(voteDto.getEventId()).orElseThrow(EntityNotFoundException::new);
+        //RunEvent runEvent = runEventRepository.findByEventLimit(voteDto.getEventId()).orElseThrow(EntityNotFoundException::new);
+        // 1. 락을 걸고 데이터를 가져옵니다.
+        RunEvent runEvent = runEventRepository.findFirstByEventIdAndEventStateOrderByIdDesc(voteDto.getEventId(), "START")
+                .orElseThrow(EntityNotFoundException::new);
+
+        // 2. 락 대기 중이던 다른 스레드가 진입했을 때, 이미 이벤트가 STOP 상태라면 중복 처리를 막습니다.
+        if ("STOP".equals(runEvent.getEventState())) {
+            // 이미 종료된 이벤트에 대한 투표 처리 방침에 따라 로직 작성 (무시하거나 결과만 반환)
+            VoteResultDto resultDto = getVoteResult(runEvent);
+            resultDto.setEventState("STOP");
+            return resultDto;
+        }
+
         Event event = eventRepository.findById(voteDto.getEventId()).orElse(null);
 
         int triVote = runEvent.getEvent().getTriggerVote();
@@ -345,8 +358,8 @@ public class RestService {
         voteResultDto.setAwayName(event.getAwayName());
         if(event.getTriggerType() == 0)
         {
-            RunEvent resultEvent = updateVoteCount(runEvent, voteDto.getTeamType(), voteDto.getEventType());
-            resultEvent = updateTagState(runEvent, voteDto);
+            boolean isTag = updateTagState(runEvent, voteDto);
+            RunEvent resultEvent = updateVoteCount(runEvent, voteDto.getTeamType(), voteDto.getEventType(), isTag);
 
             voteResultDto.setEventState(runEvent.getEventState());
         }
@@ -358,8 +371,9 @@ public class RestService {
             }
             else
             {
-                updateVoteCount(runEvent, voteDto.getTeamType(), voteDto.getEventType());
-                updateTagState(runEvent, voteDto);
+                boolean isTag = updateTagState(runEvent, voteDto);
+                updateVoteCount(runEvent, voteDto.getTeamType(), voteDto.getEventType(), isTag);
+
                 if(runEvent.getHomeCount() != null)
                     homeCount = runEvent.getHomeCount();
                 if(runEvent.getAwayCount() != null)
@@ -368,8 +382,8 @@ public class RestService {
                 if(triVote <= homeCount || triVote <= awayCount)
                 {
                     RunEventDto runEventDto = stopEvent(runEvent);
+                    runEvent.setEventState("STOP");
                     voteResultDto.setEventState("STOP");
-
 
                     if(event.getContinuityType() == 1){
                         System.out.println("[ EventContinueTimer ] : " +" voteSave");
@@ -416,11 +430,13 @@ public class RestService {
         return value != null ? value + addVal : addVal;
     }
 
-    public RunEvent updateVoteCount(RunEvent runEvent, String teamType, Long eventType)
+    public RunEvent updateVoteCount(RunEvent runEvent, String teamType, Long eventType, boolean isTag)
     {
         int voteCount = 1;
         if(teamType.equalsIgnoreCase("1") || teamType.equalsIgnoreCase("3"))
             voteCount = 3;
+        if(isTag)
+            voteCount += 1;
 
         if(teamType.equalsIgnoreCase("0") || teamType.equalsIgnoreCase("1"))
         {
@@ -660,13 +676,17 @@ public class RestService {
             return value ? 1 : 0;
     }
 
-    public RunEvent updateTagState(RunEvent runEvent, VoteDto voteDto)
+    public boolean updateTagState(RunEvent runEvent, VoteDto voteDto)
     {
+        boolean result = false;
         for (Map.Entry<String, Boolean> entry : voteDto.getTags().entrySet()) {
             String key = entry.getKey();
             Boolean value = entry.getValue();
             System.out.println("Key: " + key + ", Value: " + value);
             updateValue(runEvent, key, value);
+
+            if(value.booleanValue())
+                result = value.booleanValue();
         }
 
 //        runEvent.setTag1(runEvent.getTag1().intValue() + getBoolToInt(voteDto.getTagState1()));
@@ -681,7 +701,8 @@ public class RestService {
 //        runEvent.setTag10(runEvent.getTag1().intValue() + getBoolToInt(voteDto.getTagState1()));
 
         RunEvent saveResult = runEventRepository.save(runEvent);
-        return saveResult;
+
+        return result;
     }
 
     private void updateValue(RunEvent runEvent, String key, boolean value)
@@ -804,6 +825,13 @@ public class RestService {
             Event event = eventRepository.findById(eventId).orElse(null);
             if(event == null || event.getAutoRunState() == 0)
                 return;
+
+            // [추가된 방어 로직] 이미 START 상태인 RunEvent가 최근에 생성되었다면 중복 생성하지 않음
+            boolean isAlreadyStarted = runEventRepository.existsByEventIdAndEventState(eventId, "START");
+            if (isAlreadyStarted) {
+                System.out.println("이미 START 상태인 이벤트가 존재하여 타이머 실행을 취소합니다.");
+                return;
+            }
 
             LocalDateTime startDateTime = LocalDateTime.now();
             RunEvent runEvent = RunEvent.builder()

@@ -6,9 +6,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import javax.persistence.LockModeType;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,8 +26,20 @@ public interface RunEventRepository extends JpaRepository<RunEvent, Long> {
             nativeQuery = true)
     Optional<RunEvent> findByEventLimit(Long eventId);
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query(
+            value = "SELECT * FROM run_event " +
+                    " WHERE event_id=:eventId order by reg_date_time desc limit 1",
+            nativeQuery = true
+    )
+    Optional<RunEvent> findByEventLimitForUpdate(Long eventId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<RunEvent> findFirstByEventIdAndEventStateOrderByIdDesc(Long eventId, String eventState);
+
     Optional<RunEvent> findFirstByEventOrderByIdDesc(Event event);
 
+    boolean existsByEventIdAndEventState(Long eventId, String eventState);
 
     Page<RunEvent> findAll(Pageable var1);
 
