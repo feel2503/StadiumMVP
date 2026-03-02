@@ -27,7 +27,8 @@ import retrofit2.http.Body;
 import retrofit2.http.Query;
 
 public class ServerManager {
-    private String BASE_URL = "http://223.130.134.43/";
+    //private String BASE_URL = "http://223.130.134.43/";
+    private String BASE_URL = "https://fanground.co.kr/";
     //private String BASE_URL = "http://192.168.123.195/";
     public static int CONNECTION_TIMEOUT = 5000;
     public static int READ_TIMEOUT = 5000;
