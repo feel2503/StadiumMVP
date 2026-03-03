@@ -43,112 +43,376 @@
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>이벤트 상세 정보</h1>
+    <div class="container">
+        <h1>이벤트 상세 정보</h1>
 
-    <!-- 이벤트 기본 정보 -->
-    <h2 class="section-title">📌 이벤트 정보</h2>
-    <table>
-        <tr><th>이벤트 ID</th><td th:text="${event.id}">3532</td></tr>
-        <tr><th>이벤트 코드</th><td th:text="${event.eventId}">5</td></tr>
-        <tr><th>서버 이름</th><td th:text="${event.serverName ?: '-'}">-</td></tr>
-        <tr><th>홈 팀</th><td th:text="${event.homeName}">흥국생명</td></tr>
-        <tr><th>원정 팀</th><td th:text="${event.awayName ?: '-'}">-</td></tr>
-        <tr><th>트리거 타입</th><td th:text="${event.triggerType}">0</td></tr>
-        <tr><th>트리거 시간</th><td th:text="${event.triggerTime}">0</td></tr>
-        <tr><th>트리거 투표</th><td th:text="${event.triggerVote}">0</td></tr>
-        <tr><th>연속성 타입</th><td th:text="${event.continuityType}">0</td></tr>
-        <tr><th>연속성 시간</th><td th:text="${event.continuityTime}">0</td></tr>
-    </table>
+        <!-- 이벤트 기본 정보 -->
+        <h2 class="section-title">📌 이벤트 정보</h2>
+        <table>
+            <tr>
+                <th>이벤트 ID</th>
+                <td th:text="${event.id}">3532</td>
+            </tr>
+            <tr>
+                <th>이벤트 코드</th>
+                <td th:text="${event.eventId}">5</td>
+            </tr>
+            <tr>
+                <th>서버 이름</th>
+                <td th:text="${event.serverName ?: '-'}">-</td>
+            </tr>
+            <tr>
+                <th>홈 팀</th>
+                <td th:text="${event.homeName}">흥국생명</td>
+            </tr>
+            <tr>
+                <th>원정 팀</th>
+                <td th:text="${event.awayName ?: '-'}">-</td>
+            </tr>
+            <tr>
+                <th>트리거 타입</th>
+                <td th:text="${event.triggerType}">0</td>
+            </tr>
+            <tr>
+                <th>트리거 시간</th>
+                <td th:text="${event.triggerTime}">0</td>
+            </tr>
+            <tr>
+                <th>트리거 투표</th>
+                <td th:text="${event.triggerVote}">0</td>
+            </tr>
+            <tr>
+                <th>연속성 타입</th>
+                <td th:text="${event.continuityType}">0</td>
+            </tr>
+            <tr>
+                <th>연속성 시간</th>
+                <td th:text="${event.continuityTime}">0</td>
+            </tr>
+        </table>
 
         <!-- 이벤트 상태 및 시간 -->
         <h2 class="section-title">🕒 이벤트 상태 및 시간</h2>
         <table>
-            <tr><th>결과</th><td th:text="${event.result}">Home1</td></tr>
-            <tr><th>이벤트 상태</th><td th:text="${event.eventState}">STOP</td></tr>
-            <tr><th>시작 시간</th><td th:text="${event.startDateTime}">2025-03-20T18:50:30</td></tr>
-            <tr><th>종료 시간</th><td th:text="${event.endDateTime}">2025-03-20T18:50:54</td></tr>
-            <tr><th>진행 시간</th><td th:text="${event.duration}">0h 0m 24s</td></tr>
+            <tr>
+                <th>결과</th>
+                <td th:text="${event.result}">Home1</td>
+            </tr>
+            <tr>
+                <th>이벤트 상태</th>
+                <td th:text="${event.eventState}">STOP</td>
+            </tr>
+            <tr>
+                <th>시작 시간</th>
+                <td th:text="${event.startDateTime}">2025-03-20T18:50:30</td>
+            </tr>
+            <tr>
+                <th>종료 시간</th>
+                <td th:text="${event.endDateTime}">2025-03-20T18:50:54</td>
+            </tr>
+            <tr>
+                <th>진행 시간</th>
+                <td th:text="${event.duration}">0h 0m 24s</td>
+            </tr>
         </table>
 
+        <h2 class="section-title">🏠 홈 & 🚀 원정 팀 카운트</h2>
+        <table border="1">
+            <thead>
+            <tr>
+                <th>구분</th>
+                <th>총 카운트</th>
+                <th colspan="20">세부 카운트</th>
+            </tr>
+            <tr>
+                <th></th>
+                <th>응원</th>
+                <td th:each="i : ${#numbers.sequence(1, 20)}"
+                    th:text="${i}"></td>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- 홈 팀 -->
+            <tr>
+                <th>Home</th>
+                <td th:text="${event.homeCount}">30</td>
+                <td th:each="i : ${#numbers.sequence(1, 20)}"
+                    th:text="${#maps.containsKey(eventMap, 'home' + i + 'Count') ? eventMap['home' + i + 'Count'] : 0}"></td>
+            </tr>
 
-<!--    &lt;!&ndash; 홈 팀 카운트 &ndash;&gt;-->
-<!--    <h2 class="section-title">🏠 홈 팀 카운트</h2>-->
-<!--    <table>-->
-<!--        <tr><th>총 카운트</th><td th:text="${event.homeCount}">30</td></tr>-->
-<!--        <tr th:each="i : ${#numbers.sequence(1, 20)}">-->
-<!--            <th th:text="'Home ' + ${i}"></th>-->
-<!--            <td th:text="${#maps.containsKey(eventMap, 'home' + i + 'Count') ? eventMap['home' + i + 'Count'] : 0}"></td>-->
-<!--        </tr>-->
-<!--    </table>-->
+            <!-- 원정 팀 -->
+            <tr>
+                <th>Away</th>
+                <td th:text="${event.awayCount ?: 0}">0</td>
+                <td th:each="i : ${#numbers.sequence(1, 20)}"
+                    th:text="${#maps.containsKey(eventMap, 'away' + i + 'Count') ? eventMap['away' + i + 'Count'] : 0}"></td>
+            </tr>
+            </tbody>
+        </table>
 
-<!--    &lt;!&ndash; 원정(어웨이) 팀 카운트 &ndash;&gt;-->
-<!--    <h2 class="section-title">🚀 원정(어웨이) 팀 카운트</h2>-->
-<!--    <table>-->
-<!--        <tr><th>총 카운트</th><td th:text="${event.awayCount ?: 0}">0</td></tr>-->
-<!--        <tr th:each="i : ${#numbers.sequence(1, 20)}">-->
-<!--            <th th:text="'Away ' + ${i}"></th>-->
-<!--            <td th:text="${#maps.containsKey(eventMap, 'away' + i + 'Count') ? eventMap['away' + i + 'Count'] : 0}"></td>-->
-<!--        </tr>-->
-<!--    </table>-->
+        <h2 class="section-title">📊 Home vs Away 통계 차트</h2>
+        <div style="display: flex; justify-content: flex-start; width: 100%;">
+            <div style="width: 60%;"> <canvas id="homeAwayChart"></canvas>
+            </div>
+        </div>
 
-    <h2 class="section-title">🏠 홈 & 🚀 원정 팀 카운트</h2>
-    <table border="1">
-        <thead>
-        <tr>
-            <th>구분</th>
-            <th>총 카운트</th>
-            <th colspan="20">세부 카운트</th>
-        </tr>
-        <tr>
-            <th> </th>
-            <th>응원</th>
-            <td th:each="i : ${#numbers.sequence(1, 20)}"
-                th:text="${i}"></td>
-        </tr>
-        </thead>
-        <tbody>
-        <!-- 홈 팀 -->
-        <tr>
-            <th>Home</th>
-            <td th:text="${event.homeCount}">30</td>
-            <td th:each="i : ${#numbers.sequence(1, 20)}"
-                th:text="${#maps.containsKey(eventMap, 'home' + i + 'Count') ? eventMap['home' + i + 'Count'] : 0}"></td>
-        </tr>
+        <!-- 태그 정보 -->
+        <h2 class="section-title">🏷️ 태그 정보</h2>
+        <table>
+            <thead>
+            <tr>
+                <td th:each="i : ${#numbers.sequence(1, 10)}"
+                    th:text="${'Tag ' + i}"></td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td th:each="i : ${#numbers.sequence(0, 9)}"
+                    th:text="${#maps.containsKey(eventMap, 'tag' + i) ? eventMap['tag' + i] : 0}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <!-- 차트 -->
+        <h2 class="section-title">📊 태그별 통계 차트</h2>
+        <div style="display: flex; justify-content: flex-start; width: 100%;">
+            <div style="width: 40%;">
+                <canvas id="tagChart"></canvas>
+            </div>
+        </div>
 
-        <!-- 원정 팀 -->
-        <tr>
-            <th>Away</th>
-            <td th:text="${event.awayCount ?: 0}">0</td>
-            <td th:each="i : ${#numbers.sequence(1, 20)}"
-                th:text="${#maps.containsKey(eventMap, 'away' + i + 'Count') ? eventMap['away' + i + 'Count'] : 0}"></td>
-        </tr>
-        </tbody>
-    </table>
 
-    <!-- 태그 정보 -->
-    <h2 class="section-title">🏷️ 태그 정보</h2>
-    <table>
-        <thead>
-        <tr>
-            <td th:each="i : ${#numbers.sequence(1, 10)}"
-                th:text="${'Tag ' + i}"></td>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td th:each="i : ${#numbers.sequence(0, 9)}"
-                th:text="${#maps.containsKey(eventMap, 'tag' + i) ? eventMap['tag' + i] : 0}"></td>
-        </tr>
-        </tbody>
+        <h2 class="section-title">👫 성별 분포</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>미선택</th>
+                <th>남성 (1)</th>
+                <th>여성 (2)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${gender != null}">
+                <td th:text="${gender.genderValue0}">0</td>
+                <td th:text="${gender.genderValue1}">0</td>
+                <td th:text="${gender.genderValue2}">0</td>
+            </tr>
+            <tr th:unless="${gender != null}">
+                <td colspan="4">데이터가 없습니다.</td>
+            </tr>
+            </tbody>
+        </table>
 
-<!--        <tr><th>Tag 0</th><td th:text="${event.tag0 ?: 0}">30</td></tr>-->
-<!--        <tr th:each="i : ${#numbers.sequence(1, 9)}">-->
-<!--            <th th:text="'Tag ' + ${i}"></th>-->
-<!--            <td th:text="${#maps.containsKey(eventMap, 'tag' + i) ? eventMap['tag' + i] : 0}"></td>-->
-<!--        </tr>-->
-    </table>
+        <h2 class="section-title">🎂 연령대 분포</h2>
+        <table>
+            <thead>
+            <tr>
+                <th th:each="i : ${#numbers.sequence(0, 6)}"
+                    th:text="${i == 0 ? '미선택' : i + '0대'}"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${ageGroup != null}">
+                <td th:each="i : ${#numbers.sequence(0, 6)}"
+                    th:text="${ageGroup['ageValue' + i]}">0
+                </td>
+            </tr>
+            <tr th:unless="${ageGroup != null}">
+                <td colspan="7">데이터가 없습니다.</td>
+            </tr>
+            </tbody>
+        </table>
 
-</div>
+        <h2 class="section-title">📊 인구통계 통계</h2>
+        <div style="display: flex; justify-content: flex-start; gap: 20px; width: 100%; margin-bottom: 40px;">
+            <div style="width: 10%;">
+                <h3 style="text-align: center;">👫 성별 분포</h3>
+                <canvas id="genderChart"></canvas>
+            </div>
+            <div style="width: 30%;">
+                <h3 style="text-align: center;">🎂 연령대 분포</h3>
+                <canvas id="ageChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:inline="javascript">
+        // 1. 데이터 준비 (Thymeleaf map 데이터를 JS 배열로 변환)
+        const tagLabels = [];
+        const tagData = [];
+
+        /*[# th:each="i : ${#numbers.sequence(0, 9)}"]*/
+        tagLabels.push("Tag [[${i+1}]]");
+        // eventMap에서 값을 가져오되 없으면 0 처리
+        tagData.push([[${eventMap['tag' + i] != null ? eventMap['tag' + i] : 0}]]);
+        /*[/]*/
+
+        // 2. 차트 생성
+        const ctx = document.getElementById('tagChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar', // 막대 그래프
+            data: {
+                labels: tagLabels,
+                datasets: [{
+                    label: '태그별 수치',
+                    data: tagData,
+                    // 이미지와 유사한 다채로운 색상 적용
+                    backgroundColor: [
+                        '#6b7bb3', '#52d3a2', '#e67a73', '#4ba0a5', '#b3829c',
+                        '#d1d56e', '#5a93b2', '#e48d53', '#5fc4ac', '#8e79a4'
+                    ],
+                    borderWidth: 0,
+                    borderRadius: 5 // 막대 끝을 약간 둥글게 (옵션)
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        suggestedMax: 100 // 이미지처럼 100 기준 설정
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false // 범례 숨김 (이미지와 동일하게)
+                    }
+                }
+            }
+        });
+    </script>
+
+    <script th:inline="javascript">
+        document.addEventListener("DOMContentLoaded", function() {
+            // 1. 데이터 준비 (1~20까지 순회)
+            const labels = [];
+            const homeData = [];
+            const awayData = [];
+
+            /*[# th:each="i : ${#numbers.sequence(1, 20)}"]*/
+            labels.push("Point [[${i}]]");
+            // Home 데이터 추출
+            homeData.push([[${eventMap['home' + i + 'Count'] != null ? eventMap['home' + i + 'Count'] : 0}]]);
+            // Away 데이터 추출
+            awayData.push([[${eventMap['away' + i + 'Count'] != null ? eventMap['away' + i + 'Count'] : 0}]]);
+            /*[/]*/
+
+            // 2. 차트 렌더링
+            const ctx = document.getElementById('homeAwayChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Home',
+                            data: homeData,
+                            backgroundColor: '#4e73df', // 파란색 계열
+                            borderColor: '#4e73df',
+                            borderWidth: 1,
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Away',
+                            data: awayData,
+                            backgroundColor: '#e74a3b', // 빨간색 계열
+                            borderColor: '#e74a3b',
+                            borderWidth: 1,
+                            borderRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                drawBorder: false
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true, // Home/Away 구분을 위해 범례를 표시합니다
+                            position: 'top'
+                        },
+                        tooltip: {
+                            mode: 'index', // 마우스를 올렸을 때 Home/Away 데이터를 같이 보여줌
+                            intersect: false
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+
+    <script th:inline="javascript">
+        document.addEventListener("DOMContentLoaded", function() {
+
+            // --- 1. 성별 분포 차트 (Doughnut) ---
+            const genderCtx = document.getElementById('genderChart').getContext('2d');
+            const genderData = [
+                [[${gender != null ? gender.genderValue0 : 0}]], // 미선택
+                [[${gender != null ? gender.genderValue1 : 0}]], // 남성
+                [[${gender != null ? gender.genderValue2 : 0}]]  // 여성
+            ];
+
+            new Chart(genderCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['미선택', '남성', '여성'],
+                    datasets: [{
+                        data: genderData,
+                        backgroundColor: ['#cbd5e0', '#4e73df', '#e74a3b'],
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+            // --- 2. 연령대 분포 차트 (Bar) ---
+            const ageLabels = [];
+            const ageData = [];
+
+            /*[# th:each="i : ${#numbers.sequence(0, 6)}"]*/
+            ageLabels.push([[${i == 0 ? '미선택' : i + '0대'}]]);
+            ageData.push([[${ageGroup != null ? ageGroup['ageValue' + i] : 0}]]);
+            /*[/]*/
+
+            const ageCtx = document.getElementById('ageChart').getContext('2d');
+            new Chart(ageCtx, {
+                type: 'bar',
+                data: {
+                    labels: ageLabels,
+                    datasets: [{
+                        label: '인원 수',
+                        data: ageData,
+                        backgroundColor: '#52d3a2',
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true }
+                    },
+                    plugins: {
+                        legend: { display: false } // 막대 차트는 범례 숨김이 깔끔함
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>

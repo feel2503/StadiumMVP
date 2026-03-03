@@ -112,7 +112,7 @@
                             <!-- home 제목 출력 -->
                             <div class="button-wrapper">
                                 <button class="btn-wide"
-                                        th:onclick="|vote(event, ${team}, ${event.id}, ${stat.index + 1});|"
+                                        th:onclick="|vote(event, ${team}, ${event.id}, ${stat.index + 1}, ${gender}, ${ageGroup});|"
                                         th:styleAppend="|background-color: ${homeColor}; color:${homeFont}|">
                                     <div class="marquee">
                                         <span>[[${home}]]</span>
@@ -162,7 +162,7 @@
                                 <!-- home 제목 출력 -->
                                 <div class="button-wrapper">
                                     <button class="btn-wide"
-                                            th:onclick="|vote(event, ${team}, ${event.id}, ${stat.index + 1});|"
+                                            th:onclick="|vote(event, ${team}, ${event.id}, ${stat.index + 1}, ${gender}, ${ageGroup});|"
                                             th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|">
                                         <div class="marquee">
                                             <span>[[${away}]]</span>
@@ -358,7 +358,7 @@
 
             let totalCount = 0;
 
-            function vote(event, teamType, eventId, eventType) {
+            function vote(event, teamType, eventId, eventType, gender, ageGroup) {
                 console.log("vote_tag : ", teamType, eventId, eventType)
 
                 let tagData = {};
@@ -411,7 +411,9 @@
                         teamType: teamType,
                         eventId: eventId,
                         eventType: eventType,
-                        tags: tagData  // 체크박스 데이터
+                        tags: tagData,  // 체크박스 데이터
+                        gender: gender,
+                        ageGroup: ageGroup
                     }),
                     dataType: 'json'
                 }).done(function (res) {

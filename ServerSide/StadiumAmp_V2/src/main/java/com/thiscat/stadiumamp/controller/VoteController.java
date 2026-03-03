@@ -23,9 +23,7 @@ import java.math.BigInteger;
 import java.net.URLDecoder;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -44,10 +42,33 @@ public class VoteController {
 
     @GetMapping("/vote")
     public String vote(Model model,  @RequestParam Integer team, @RequestParam Long event_id,
-        @RequestParam ( required = false) Integer move){
+        @RequestParam ( required = false) Integer move, @RequestParam ( required = false)Integer gender,
+                       @RequestParam ( required = false) Integer ageGroup){
         if((team == 1 || team == 3) && (move == null)) {
             model.addAttribute("data", event_id);
             model.addAttribute("team", team);
+
+//            List<String> genders = Arrays.asList("남자", "여자");
+//            List<String> ages = Arrays.asList("10대", "20대", "30대", "40대", "50대", "60대이상");
+//            model.addAttribute("genders", genders);
+//            model.addAttribute("ages", ages);
+
+            Map<Integer, String> genderMap = new LinkedHashMap<>();
+            genderMap.put(0, "선택안함");
+            genderMap.put(1, "남자");
+            genderMap.put(2, "여자");
+            model.addAttribute("genders", genderMap);
+
+            Map<Integer, String> ageMap = new LinkedHashMap<>();
+            ageMap.put(0, "선택안함");
+            ageMap.put(1, "10대");
+            ageMap.put(2, "20대");
+            ageMap.put(3, "30대");
+            ageMap.put(4, "40대");
+            ageMap.put(5, "50대");
+            ageMap.put(6, "60대이상");
+            model.addAttribute("ages", ageMap);
+
             return "sso";
         }
 
@@ -120,6 +141,8 @@ public class VoteController {
         model.addAttribute("bgcolor", "#"+event.getEventBkcolor());
         model.addAttribute("openchatimg", event.getOpenchatImg());
         model.addAttribute("webimg", event.getWebImg());
+        model.addAttribute("gender", gender);
+        model.addAttribute("ageGroup", ageGroup);
 
 
         // Tag 추가

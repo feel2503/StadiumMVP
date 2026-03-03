@@ -12,54 +12,113 @@
 
         <!-- Global CSS -->
         <link rel="stylesheet" href="css/style.css">
+
+        <style>
+            /* 공통 스타일: 흰색 배경 선택창 */
+            .select_custom {
+                width: 100%;
+                background-color: white;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                padding: 15px;
+                font-size: 16px;
+                color: #333;
+                font-weight: 500;
+                margin-bottom: 10px;
+                cursor: pointer;
+
+                /* 텍스트 가운데 정렬 핵심 속성 */
+                text-align: center;
+                text-align-last: center;
+
+                /* 기본 화살표 제거 및 커스텀 아이콘 */
+                appearance: none;
+                -webkit-appearance: none;
+            }
+            .select_custom option {
+                text-align: center;
+            }
+            /* 이미지의 '그레이 처리'용 스타일 (비활성화 상태) */
+            .input_disabled {
+                width: 100%;
+                background-color: #e0e0e0; /* 연한 회색 */
+                border: none;
+                border-radius: 5px;
+                padding: 15px;
+                margin-bottom: 10px;
+                height: 52px; /* select와 높이 맞춤 */
+            }
+
+            /* 검은색 접속 버튼 */
+            .bt_submit {
+                width: 100%;
+                background-color: black;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                padding: 15px;
+                font-size: 16px;
+                font-weight: bold;
+                cursor: pointer;
+                margin-top: 10px;
+            }
+        </style>
     </head>
     <body>
-        <div >
+    <div class="sample">
+        <div>
             <div class="logo">
                 <img src="asset/StadiumAMP-Logo.svg">
             </div>
-            <div class="event_bg">
+            <div class="event_bg" th:styleAppend="'background-image: url('+${bgimg}+');'">
 
                 <div class="wc_text">
                     <li>MVP Fan 으로 접속 합니다.</li>
                     <li>메일 주소를 입력해주세요.</li>
                 </div>
 
-                <form method="get" action="vote">
+                <form method="get" action="vote" style="padding:20px;">
                     <input type="hidden"  name="team" th:value="${team}" >
                     <input type="hidden" id="gameToken" name="event_id" th:value="${data}" >
                     <input type="hidden"  name="move" th:value="${team}" >
 
-                    <div style="padding:20px;">
-                        <div class="bt">
-                            <input type="submit" class="bt_google" value="구글계정으로 계속하기" ></input>
-                        </div>
-                        <div class="bt">
-                            <input type="submit" class="bt_naver" value="네이버계정으로 계속하기" ></input>
-                        </div>
-                        <div class="bt">
-                            <input type="submit" class="bt_kakao" value="카카오계정으로 계속하기" ></input>
-                        </div>
-                        <div class="bt">
-                            <input type="submit" class="bt_custom" value="메일 주소 입력하기" ></input>
-                        </div>
+                    <div class="form_container">
+                        <select name="gender" class="select_custom">
+                            <option value="">성별을 알려주세요</option>
+                            <option th:each="entry : ${genders}"
+                                    th:value="${entry.key}"
+                                    th:text="${entry.value}">성별</option>
+
+                        </select>
+
+                        <select name="ageGroup" class="select_custom">
+                            <option value="">연령대를 알려주세요</option>
+                            <option th:each="entry : ${ages}"
+                                    th:value="${entry.key}"
+                                    th:text="${entry.value}">연령대</option>
+                        </select>
+
+                        <div class="input_disabled"></div>
+                        <div class="input_disabled"></div>
+                        <div class="input_disabled"></div>
+
+                        <button type="submit" class="bt_submit">MVP로 접속하기</button>
                     </div>
                 </form>
-                </div>
-        </div>
-
-        <div id="bottom_banner" class="bottom_banner">
-            <div style="position: relative">
-                <input  style="float: right;"
-                        type='button'
-                        value='X'
-                        id='btn2'
-                        onclick='toggleBtn1()'/>
-                <img class="bottom_banner_img" src="asset/banner2.png">
             </div>
 
+            <div id="bottom_banner" class="bottom_banner">
+                <div style="position: relative">
+                    <input  style="float: right;"
+                            type='button'
+                            value='X'
+                            id='btn2'
+                            onclick='toggleBtn1()'/>
+                    <img class="bottom_banner_img" src="asset/banner2.png">
+                </div>
 
-        </div>
+
+            </div>
 
         <script>
             function toggleBtn1() {

@@ -24,4 +24,7 @@ public class VoteDto {
 
     Map<String, Boolean> tags;
 
+    Integer gender;
+    Integer ageGroup;
+
 }

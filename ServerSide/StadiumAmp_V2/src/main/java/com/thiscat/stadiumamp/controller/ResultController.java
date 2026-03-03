@@ -4,8 +4,12 @@ package com.thiscat.stadiumamp.controller;
 import com.thiscat.stadiumamp.dto.RunEventDto;
 import com.thiscat.stadiumamp.entity.Event;
 import com.thiscat.stadiumamp.entity.RunEvent;
+import com.thiscat.stadiumamp.entity.SurveyAgegroup;
+import com.thiscat.stadiumamp.entity.SurveyGender;
 import com.thiscat.stadiumamp.entity.repository.EventRepository;
 import com.thiscat.stadiumamp.entity.repository.RunEventRepository;
+import com.thiscat.stadiumamp.entity.repository.SurveyAgegroupRepository;
+import com.thiscat.stadiumamp.entity.repository.SurveyGenderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.data.web.PageableDefault;
@@ -29,6 +33,10 @@ public class ResultController {
     EventRepository eventRepository;
     @Autowired
     RunEventRepository runEventRepository;
+    @Autowired
+    SurveyGenderRepository surveyGenderRepository;
+    @Autowired
+    SurveyAgegroupRepository surveyAgegroupRepository;
 
     @GetMapping("/result")
     public String boardList(Model model, @PageableDefault(page = 0, size = 20, sort = "id", direction = Sort.Direction.DESC) Pageable pageable){
@@ -389,6 +397,13 @@ public class ResultController {
                 eventMap.put("tag" + i, 0);
             }
         }
+
+        Optional<SurveyGender> optionalGender = surveyGenderRepository.findByRunEvent(x);
+        optionalGender.ifPresent(s -> model.addAttribute("gender", s));
+        Optional<SurveyAgegroup> optionalAgegroup = surveyAgegroupRepository.findByRunEvent(x);
+        optionalAgegroup.ifPresent(s -> model.addAttribute("ageGroup", s));
+
+
 
         model.addAttribute("server", stadiumservers);
         model.addAttribute("event", runEventDto);

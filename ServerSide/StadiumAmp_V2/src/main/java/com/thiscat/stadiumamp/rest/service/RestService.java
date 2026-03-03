@@ -1,14 +1,9 @@
 package com.thiscat.stadiumamp.rest.service;
 
 import com.thiscat.stadiumamp.dto.*;
-import com.thiscat.stadiumamp.entity.Event;
-import com.thiscat.stadiumamp.entity.EventImage;
-import com.thiscat.stadiumamp.entity.EventMusic;
-import com.thiscat.stadiumamp.entity.RunEvent;
+import com.thiscat.stadiumamp.entity.*;
 import com.thiscat.stadiumamp.entity.repository.*;
-import com.thiscat.stadiumamp.rest.RestApiController;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +28,10 @@ public class RestService {
     private EventImageRepository eventImageRepository;
     @Autowired
     RunEventRepository runEventRepository;
+    @Autowired
+    SurveyGenderRepository surveyGenderRepository;
+    @Autowired
+    SurveyAgegroupRepository surveyAgegroupRepository;
 
     public EventDto getEventInfo(Event event) throws Exception
     {
@@ -360,6 +359,7 @@ public class RestService {
         {
             boolean isTag = updateTagState(runEvent, voteDto);
             RunEvent resultEvent = updateVoteCount(runEvent, voteDto.getTeamType(), voteDto.getEventType(), isTag);
+            updateSurvey(runEvent, voteDto);
 
             voteResultDto.setEventState(runEvent.getEventState());
         }
@@ -373,6 +373,7 @@ public class RestService {
             {
                 boolean isTag = updateTagState(runEvent, voteDto);
                 updateVoteCount(runEvent, voteDto.getTeamType(), voteDto.getEventType(), isTag);
+                updateSurvey(runEvent, voteDto);
 
                 if(runEvent.getHomeCount() != null)
                     homeCount = runEvent.getHomeCount();
@@ -703,6 +704,56 @@ public class RestService {
         RunEvent saveResult = runEventRepository.save(runEvent);
 
         return result;
+    }
+
+    public void updateSurvey(RunEvent runEvent, VoteDto voteDto)
+    {
+        // gender
+        SurveyGender surveyGender = surveyGenderRepository.findByRunEvent(runEvent).orElseGet(() -> {
+            SurveyGender newSurvey = new SurveyGender();
+            newSurvey.setRunEvent(runEvent); // 필수 값인 runEvent 설정 (이 부분이 누락됨)
+            return newSurvey;
+        });
+        if(voteDto.getGender() == null){
+            surveyGender.setGenderValueNull(safeAdd(surveyGender.getGenderValueNull()));
+        } else if(voteDto.getGender() == 0){
+            surveyGender.setGenderValue0(safeAdd(surveyGender.getGenderValue0()));
+        } else if(voteDto.getGender() == 1){
+            surveyGender.setGenderValue1(safeAdd(surveyGender.getGenderValue1()));
+        } else if(voteDto.getGender() == 2){
+            surveyGender.setGenderValue2(safeAdd(surveyGender.getGenderValue2()));
+        }
+        surveyGenderRepository.save(surveyGender);
+
+        // age
+        SurveyAgegroup surveyAge = surveyAgegroupRepository.findByRunEvent(runEvent).orElseGet(() -> {
+            SurveyAgegroup newSurvey = new SurveyAgegroup();
+            newSurvey.setRunEvent(runEvent);
+            return newSurvey;
+        });
+
+        if(voteDto.getAgeGroup() == null){
+            surveyAge.setAgeValue0(safeAdd(surveyAge.getAgeValue0()));
+        } else if(voteDto.getAgeGroup() == 0){
+            surveyAge.setAgeValue0(safeAdd(surveyAge.getAgeValue0()));
+        } else if(voteDto.getAgeGroup() == 1){
+            surveyAge.setAgeValue1(safeAdd(surveyAge.getAgeValue1()));
+        } else if(voteDto.getAgeGroup() == 2){
+            surveyAge.setAgeValue2(safeAdd(surveyAge.getAgeValue2()));
+        } else if(voteDto.getAgeGroup() == 3){
+            surveyAge.setAgeValue3(safeAdd(surveyAge.getAgeValue3()));
+        } else if(voteDto.getAgeGroup() == 4){
+            surveyAge.setAgeValue4(safeAdd(surveyAge.getAgeValue4()));
+        } else if(voteDto.getAgeGroup() == 5){
+            surveyAge.setAgeValue5(safeAdd(surveyAge.getAgeValue5()));
+        } else if(voteDto.getAgeGroup() == 6){
+            surveyAge.setAgeValue6(safeAdd(surveyAge.getAgeValue6()));
+        }
+        surveyAgegroupRepository.save(surveyAge);
+    }
+
+    private Integer safeAdd(Integer value) {
+        return (value == null ? 0 : value) + 1;
     }
 
     private void updateValue(RunEvent runEvent, String key, boolean value)
