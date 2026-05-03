@@ -1,0 +1,10 @@
+sudo openssl pkcs12 -export \
+-in /etc/letsencrypt/live/fanground.co.kr/fullchain.pem \
+-inkey /etc/letsencrypt/live/fanground.co.kr/privkey.pem \
+-out keystore.p12 \
+-name tomcat \
+-CAfile /etc/letsencrypt/live/fanground.co.kr/chain.pem \
+-caname root
+
+
+
