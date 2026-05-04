@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=9;IE=10;IE=Edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Welcome to stadiumAMP</title>
+
+    <link rel="stylesheet"
+          th:href="@{css/style.css}"/>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <style>
+        /* 새로 추가된 5개 다이나믹 리스트 애니메이션 및 스타일 */
+        .timeline-list {
+            position: relative;
+            padding-left: 20px;
+            margin: 0;
+            list-style: none;
+        }
+        .timeline-list::before {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 10px;
+            bottom: 10px;
+            width: 2px;
+            background: rgba(255, 255, 255, 0.3);
+        }
+        @keyframes fadeInSlideUp {
+            0% { opacity: 0; transform: translateY(15px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeInSlideUp 0.5s ease-out forwards;
+        }
+        .timeline-item:nth-child(1) { animation-delay: 0.2s; }
+        .timeline-item:nth-child(2) { animation-delay: 0.4s; }
+        .timeline-item:nth-child(3) { animation-delay: 0.6s; }
+        .timeline-item:nth-child(4) { animation-delay: 0.8s; }
+        .timeline-item:nth-child(5) { animation-delay: 1.0s; }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: 18px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #555;
+            border: 2px solid #000;
+        }
+        .timeline-item.latest::before {
+            background: #DA020E;
+            box-shadow: 0 0 8px rgba(218, 2, 14, 0.8);
+        }
+        .time {
+            font-size: 12px;
+            color: #ddd;
+            margin-bottom: 4px;
+            display: block;
+        }
+        .chant-box {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            padding: 15px;
+            backdrop-filter: blur(5px);
+            color: #fff;
+        }
+        .timeline-item.latest .chant-box {
+            border-color: #DA020E;
+            background: rgba(218, 2, 14, 0.2);
+        }
+        .chant-title {
+            font-size: 16px;
+            margin: 0;
+        }
+        .timeline-item.latest .chant-title {
+            font-weight: bold;
+        }
+
+        /* 12.5초 주기: 0~80%(10초) 대기, 80~100%(2.5초) 동안 1~5번 순차 깜빡임 */
+        @keyframes blink1 { 0%, 80%, 84%, 100% { opacity: 1; } 82% { opacity: 0; } }
+        @keyframes blink2 { 0%, 84%, 88%, 100% { opacity: 1; } 86% { opacity: 0; } }
+        @keyframes blink3 { 0%, 88%, 92%, 100% { opacity: 1; } 90% { opacity: 0; } }
+        @keyframes blink4 { 0%, 92%, 96%, 100% { opacity: 1; } 94% { opacity: 0; } }
+        @keyframes blink5 { 0%, 96%, 100% { opacity: 1; } 98% { opacity: 0; } }
+
+        /* 각 항목의 텍스트에 독립적인 애니메이션 할당 */
+        .timeline-item:nth-child(1) .chant-title { animation: blink1 12.5s infinite; }
+        .timeline-item:nth-child(2) .chant-title { animation: blink2 12.5s infinite; }
+        .timeline-item:nth-child(3) .chant-title { animation: blink3 12.5s infinite; }
+        .timeline-item:nth-child(4) .chant-title { animation: blink4 12.5s infinite; }
+        .timeline-item:nth-child(5) .chant-title { animation: blink5 12.5s infinite; }
+    </style>
+
+</head>
+<body class="sample" >
+    <div th:styleAppend="|background-color: ${bgcolor}|">
+
+        <div class="remain_text_02" id="display">
+            현재 응원 이벤트 남은 시간 0분 0초
+        </div>
+
+
+        <div style="padding-left: 20px; padding-right:20px; padding-top:0px; padding-bottom: 0px;"
+             onclick="location.href='https://sites.google.com/view/introduce-stadiumamp/';">
+            <div class="wc_text_01">
+                <b>[[${event.name}]]</b>
+            </div>
+
+            <div class="result_text">
+                <div class="home_text" th:styleAppend="|color: ${homeColor}|"
+                     id="home_text">[[${event.homeName}]] [[${runevent.homeCount}]]</div>
+                <div class="away_text" th:styleAppend="|color: ${awayColor}|"
+                     id="away_text">[[${event.awayName}]] [[${runevent.awayCount}]]</div>
+            </div>
+
+
+            <div class="result_graph" id="event_stop_graph">
+                <div class="gray_graph_full">
+                    <div class="flex-center">다음 응원 이벤트를 기다려주세요</div>
+                </div>
+                <div class="away_graph_zero"></div>
+            </div>
+
+            <div class="result_graph" id="event_start_graph">
+                <div class="home_graph" th:styleAppend="|background-color: ${homeColor}|"
+                     id="home_graph"></div>
+                <div class="away_graph" th:styleAppend="|background-color: ${awayColor}|"
+                     id="away_graph"></div>
+            </div>
+        </div>
+
+
+
+        <div class="event_bg" th:styleAppend="'background-image: url('+${bgimg}+');'">
+            <div style="padding:1vh 20px 0px 20px;">
+                <!-- back -->
+                <ul class="timeline-list">
+                    <li th:each="stat, iterStat : ${eventStatisticsDtos}"
+                        class="timeline-item"
+                        th:classappend="${iterStat.first} ? 'latest' : ''">
+
+                        <!-- 시간 정보 표시 (이전데이터 또는 n분 전) -->
+                        <span class="time">
+                            [[${stat.diffFromLastStart}]]
+                            <th:block th:if="${!iterStat.first}">분 전</th:block>
+                        </span>
+
+                        <div class="chant-box">
+                            <!-- 곡 제목 표시 -->
+                            <p class="chant-title" th:text="${stat.musicName}">곡 제목</p>
+                        </div>
+                    </li>
+<!--                    <li class="timeline-item latest">-->
+<!--                        <span class="time">이전 이벤트 결과</span>-->
+<!--                        <div class="chant-box">-->
+<!--                            <p class="chant-title">MUFC Here We Go</p>-->
+<!--                        </div>-->
+<!--                    </li>-->
+<!--                    <li class="timeline-item">-->
+<!--                        <span class="time">n분 전</span>-->
+<!--                        <div class="chant-box">-->
+<!--                            <p class="chant-title">United Clap Clap Clap</p>-->
+<!--                        </div>-->
+<!--                    </li>-->
+<!--                    <li class="timeline-item">-->
+<!--                        <span class="time">n분 전</span>-->
+<!--                        <div class="chant-box">-->
+<!--                            <p class="chant-title">Hello, Hello We Are The Busby Boys</p>-->
+<!--                        </div>-->
+<!--                    </li>-->
+<!--                    <li class="timeline-item">-->
+<!--                        <span class="time">n분 전</span>-->
+<!--                        <div class="chant-box">-->
+<!--                            <p class="chant-title">Glory Glory Man United</p>-->
+<!--                        </div>-->
+<!--                    </li>-->
+<!--                    <li class="timeline-item">-->
+<!--                        <span class="time">n분 전</span>-->
+<!--                        <div class="chant-box">-->
+<!--                            <p class="chant-title">Take Me Home, United Road</p>-->
+<!--                        </div>-->
+<!--                    </li>-->
+                </ul>
+
+            </div>
+
+            <p></p>
+
+            <input type="hidden" id="startMin" th:value="${min}">
+            <input type="hidden" id="startSec" th:value="${sec}">
+            <input type="hidden" id="startIdVal" th:value="${event.id}">
+            <input type="hidden" id="eventState" th:value="${state}">
+            <input type="hidden" id="currentState" th:value="${state}">
+
+        </div>
+
+        <div id="bottom_banner" class="bottom_banner">
+            <div class="qr-box" th:styleAppend="|background-color: ${btColor}; color:${fontColor}|">
+                <div class="qr-text"
+                     th:styleAppend="| color:${fontColor}|">
+                    [[${event.qrText}]]
+                </div>
+                <img class="qr-img" th:src="${qrImage}" alt="QR Code">
+            </div>
+
+        </div>
+
+        <script th:src="@{jquery/jquery-3.4.1.min.js}"></script>
+
+        <script>
+            estate = document.querySelector("#eventState").value;
+            const graph_stop = document.getElementById("event_stop_graph");
+            const graph_start = document.getElementById("event_start_graph");
+            if (estate === "STOP") {
+                graph_stop.style.display = 'flex';
+                graph_start.style.display = 'none';
+            } else {
+                graph_stop.style.display = 'none';
+                graph_start.style.display = 'flex';
+            }
+
+            function flipText()
+            {
+                $.ajax({
+                    url:  '/v2/event/vote-result',
+                    method: 'get',
+                    data: {
+                        serverId: serverId,
+                    }
+                }).done(function(res) {
+                    if (res) {
+                        // // console.log("vote-result", res);
+                        // $('.event_bg').css('background-image', 'url(' + res.data.bgImage + ')');
+                        //
+                        // $('#line1 .flip-face').css({
+                        //     'background-color': res.data.btColor,
+                        //     'color': res.data.fontColor
+                        // });
+                        // $('#line2 .flip-face').css({
+                        //     'background-color': res.data.btColor,
+                        //     'color': res.data.fontColor
+                        // });
+                        // $('#line3 .flip-face').css({
+                        //     'background-color': res.data.btColor,
+                        //     'color': res.data.fontColor
+                        // });
+                        //
+                        // removeFlipText('line1', res.data.eventTopDtos[0].count+'표', res.data.eventTopDtos[0].name);
+                        // removeFlipText('line2', res.data.eventTopDtos[1].count+'표', res.data.eventTopDtos[1].name);
+                        // removeFlipText('line3', res.data.eventTopDtos[2].count+'표', res.data.eventTopDtos[2].name);
+                        //
+                        //
+                        // setTimeout(() => {
+                        //     setFlipText('line1');
+                        // }, 700); // Delay of 700ms after the first line starts
+                        //
+                        //
+                        // // Apply text and flip for the second line after a delay
+                        // setTimeout(() => {
+                        //     setFlipText('line2');
+                        // }, 1400); // Delay of 700ms after the first line starts
+                        //
+                        // // Apply text and flip for the third line after another delay
+                        // setTimeout(() => {
+                        //     setFlipText('line3');
+                        // }, 2100); // Delay of 1400ms after the first line starts (700ms after the second)
+
+                    } else {
+
+                    }
+                });
+            }
+
+
+            // When the window loads, apply the text and start the flip animations
+            window.onload = () => {
+                // Apply text and flip for the first line
+                // setFlipText('line1', lines[0]);
+                //
+                voteTimer();
+                setInterval(flipText, 3000);
+            };
+
+            let min, sec;
+            let timer;
+            let serverId;
+
+            function clearTimer(t, text) {
+                clearInterval(t);
+                document.getElementById("display").innerText = text;
+                document.getElementById("startMin").value = "";
+                document.getElementById("startSec").value = "";
+            }
+
+            function initGraph()
+            {
+                console.log("initGraph : ")
+                $.ajax({
+                    url:  '/v1/event/eventdto',
+                    method: 'get',
+                    data: {
+                        serverId: serverId
+                    }
+                }).done(function(res) {
+                    if (res) {
+                        console.log("res", res);
+
+                        if(res.data.eventState == "이벤트 종료")
+                        {
+                            document.getElementById("event_stop_graph").style.display ='flex';
+                            document.getElementById("event_start_graph").style.display ='none';
+                        }
+                        else
+                        {
+                            document.getElementById("event_stop_graph").style.display ='none';
+                            document.getElementById("event_start_graph").style.display ='flex';
+                        }
+
+                        var homeGraph = document.getElementById("home_graph");
+                        homeGraph.style.flexBasis=res.data.home;
+                        if(res.data.home === "100%")
+                            homeGraph.style.borderRadius="10px";
+                        else{
+                            homeGraph.style.borderTopRightRadius="0px";
+                            homeGraph.style.borderBottomRightRadius="0px";
+                        }
+                        var awayGraph = document.getElementById("away_graph");
+                        awayGraph.style.flexBasis=res.data.away;
+                        if(res.data.away === "100%")
+                            awayGraph.style.borderRadius="10px";
+                        else{
+                            awayGraph.style.borderTopLeftRadius="0px";
+                            awayGraph.style.borderBottomLeftRadius="0px";
+                        }
+                    } else {
+
+                    }
+                });
+            }
+
+            function voteTimer() {
+                min = document.querySelector("#startMin").value;
+                if (min === "") min = 0;
+                sec = document.querySelector("#startSec").value;
+                if (sec === "") sec = 0;
+                // init time text
+                if (sec != 0) {
+                    sec--;
+                    document.querySelector("#display").innerText =
+                        "현재 응원 이벤트 남은 시간 " + min + "분" + sec + "초";
+                } else {
+                    if (min != 0) {
+                        min--;
+                        sec = 59;
+                    } else {
+                        clearTimer(timer, "이벤트 종료");
+                    }
+                }
+
+                // update timer
+                timer = setInterval(countTimer, 1000);
+
+                //serverId = document.querySelector("#startIdVal").value;
+                serverId = document.getElementById("startIdVal").value;
+                initGraph();
+            }
+
+            function countTimer() {
+                //console.log("countTimer : ")
+                //updateGraph();
+                $.ajax({
+                    url:  '/v1/event/eventdto',
+                    method: 'get',
+                    data: {
+                        serverId: serverId
+                    }
+                }).done(function(res) {
+                    if (res)
+                    {
+                        //console.log("event-state ", res);
+                        // graph update
+                        var homeGraph = document.getElementById("home_graph");
+                        homeGraph.style.flexBasis=res.data.home;
+                        if(res.data.home === "100%")
+                            homeGraph.style.borderRadius="10px";
+                        else{
+                            homeGraph.style.borderTopRightRadius="0px";
+                            homeGraph.style.borderBottomRightRadius="0px";
+                        }
+                        var awayGraph = document.getElementById("away_graph");
+                        awayGraph.style.flexBasis=res.data.away;
+                        if(res.data.away === "100%")
+                            awayGraph.style.borderRadius="10px";
+                        else{
+                            awayGraph.style.borderTopLeftRadius="0px";
+                            awayGraph.style.borderBottomLeftRadius="0px";
+                        }
+
+                        // text update
+                        document.querySelector("#display").innerText = res.data.eventState;
+                        const graph_stop =document.getElementById("event_stop_graph");
+                        const graph_start =document.getElementById("event_start_graph");
+
+                        if(res.data.eventState == "이벤트 종료")
+                        {
+                            cstate = document.querySelector("#currentState").value;
+                            graph_stop.style.display = 'flex';
+                            graph_start.style.display = 'none';
+
+                            document.getElementById("home_text").innerText = res.data.homeName;
+                            document.getElementById("away_text").innerText = res.data.awayName;
+                            if(cstate == "START"){
+                                console.log("cstate == START");
+                                const modal = document.getElementById('youtubeModal');
+                                if(modal.style.display == 'flex')
+                                {
+                                    closeModal();
+                                }
+                                loadVideo(res.data.youtubeUrl);
+                                document.querySelector("#currentState").value = "STOP";
+                            }
+                        }
+                        else
+                        {
+                            document.querySelector("#currentState").value = "START";
+
+                            graph_stop.style.display = 'none';
+                            graph_start.style.display = 'flex';
+
+                            const homeTextElement = document.getElementById("home_text");
+                            if (res.data.homeCount > 0)
+                            {
+                                const homeText = homeTextElement.innerText;
+                                const match = homeText.match(/\d+$/);
+                                if(match)
+                                {
+                                    prevCount = parseInt(match[0], 10);
+                                    if(prevCount != res.data.homeCount){
+                                        homeTextElement.classList.add('grow');
+                                        setTimeout(() => {
+                                            homeTextElement.classList.remove('grow');
+                                        }, 200);
+                                    }
+                                }
+                                else {
+                                    homeTextElement.classList.add('grow');
+                                    setTimeout(() => {
+                                        homeTextElement.classList.remove('grow');
+                                    }, 200);
+                                }
+
+                                homeTextElement.innerText = res.data.homeName + " " + res.data.homeCount;
+                            }
+                            else {
+                                homeTextElement.innerText = res.data.homeName;
+                            }
+
+                            const awayTextElement = document.getElementById("away_text");
+                            if (res.data.awayCount > 0){
+                                const awayText = awayTextElement.innerText;
+                                const match = awayText.match(/\d+$/);
+                                if(match)
+                                {
+                                    prevCount = parseInt(match[0], 10);
+                                    if(prevCount != res.data.awayCount){
+                                        awayTextElement.classList.add('grow');
+                                        setTimeout(() => {
+                                            awayTextElement.classList.remove('grow');
+                                        }, 200);
+                                    }
+                                }
+                                else {
+                                    awayTextElement.classList.add('grow');
+                                    setTimeout(() => {
+                                        awayTextElement.classList.remove('grow');
+                                    }, 200);
+                                }
+
+                                awayTextElement.innerText = res.data.awayCount + " " +res.data.awayName;
+                            }
+                            else{
+                                awayTextElement.innerText = res.data.awayName;
+                            }
+                            if(res.data.isStart)
+                                window.navigator.vibrate(500);
+                        }
+                    }
+                    else
+                    {
+
+                    }
+                });
+            }
+
+        </script>
+    </div>
+</body>
+</html>
