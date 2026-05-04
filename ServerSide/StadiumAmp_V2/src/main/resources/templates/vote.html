@@ -13,6 +13,14 @@
           th:href="@{css/style.css}"/>
 
     <style>
+        .no-select {
+            -webkit-user-select: none;  /* Chrome, Safari, Android */
+            -moz-user-select: none;     /* Firefox */
+            -ms-user-select: none;      /* IE/Edge */
+            user-select: none;          /* 표준 */
+            -webkit-touch-callout: none; /* iOS/Android 롱탭 시 시스템 메뉴 호출 방지 */
+        }
+
         .event-header {
             position: relative;   /* 자식 absolute 기준 */
         }
@@ -40,7 +48,7 @@
 
     <script src="https://www.youtube.com/iframe_api"></script>
 </head>
-<body class="sample" onload="startTimer()">
+<body class="sample no-select" onload="startTimer()">
 <div th:styleAppend="|background-color: ${bgcolor}|">
 
     <div class="remain_text_02" id="display">
@@ -244,7 +252,7 @@
 
         <div class="action-sheet" id="actionSheet">
             <div class="action-options">
-                <div class="option close" onclick="hideActionSheet()">닫기</div>
+                <div class="option close" onclick="saveActionSheet()">저장하기</div>
                 <div class="option">응원태그를 설정하시면 투표마다 1표씩 추가로 집계 됩니다.</div>
 
                 <ul class="ks-cboxtags">
@@ -256,7 +264,7 @@
                         <label th:for="${tag.id}" th:text="${tag.label}"></label>
                     </li>
                 </ul>
-                <div class="option save" onclick="saveActionSheet()">저장하기</div>
+                <div class="option save" onclick="hideActionSheet()">닫기</div>
             </div>
         </div>
 
@@ -271,7 +279,53 @@
         <script th:src="@{jquery/jquery-3.4.1.min.js}"></script>
 <!--        <script th:src="@{js/timer.js}"></script>-->
 
+<!--        <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>-->
+<!--        <script>-->
+<!--            var vConsole = new window.VConsole();-->
+<!--            console.log("화면이 활성화되었습니다. 데이터를 동기화합니다.");-->
+<!--        </script>-->
+
         <script>
+            // 페이지의 가시성 상태가 변경될 때 실행
+            document.addEventListener("visibilitychange", function() {
+                if (document.visibilityState === 'visible') {
+                    // 1. 화면이 다시 켜졌을 때 즉시 서버 데이터 업데이트 실행
+                    console.log("화면이 활성화되었습니다. 데이터를 동기화합니다.");
+                    countTimer();
+
+                    // 2. 만약 타이머가 완전히 죽었다면 재시작 (선택 사항)
+                    // 기존 timer가 살아있는지 체크 후 필요 시 setInterval 다시 호출
+                }
+            });
+            // 체크박스 상태를 LocalStorage에 저장하는 함수
+            function saveActionSheet() {
+                let tagData = {};
+                $("input[type='checkbox']").each(function () {
+                    tagData[$(this).attr("id")] = $(this).is(":checked");
+                });
+
+                // 데이터를 JSON 문자열로 변환하여 저장
+                localStorage.setItem('stadiumAMP_tags', JSON.stringify(tagData));
+
+                console.log("태그 설정이 저장되었습니다.");
+                hideActionSheet();
+            }
+
+            // LocalStorage에서 상태를 읽어와 체크박스에 적용하는 함수
+            function loadCheckboxStatus() {
+                const savedData = localStorage.getItem('stadiumAMP_tags');
+                if (savedData) {
+                    const tagData = JSON.parse(savedData);
+                    for (const id in tagData) {
+                        const checkbox = document.getElementById(id);
+                        if (checkbox) {
+                            checkbox.checked = tagData[id];
+                        }
+                    }
+                }
+            }
+
+
             estate = document.querySelector("#eventState").value;
             const graph_stop = document.getElementById("event_stop_graph");
             const graph_start = document.getElementById("event_start_graph");
@@ -491,10 +545,10 @@
                 document.getElementById("actionSheet").classList.remove("active");
             }
 
-            // Action Sheet 감추기
-            function saveActionSheet() {
-                document.getElementById("actionSheet").classList.remove("active");
-            }
+            // // Action Sheet 감추기
+            // function saveActionSheet() {
+            //     document.getElementById("actionSheet").classList.remove("active");
+            // }
 
             // 각 옵션 클릭 시 처리
             function handleOption(option) {
@@ -753,12 +807,17 @@
 
         <script>
             ///////////// vote timer
-
             let min, sec;
             let timer;
             let serverId;
 
             function startTimer() {
+                // 체크박스 상태 업데이트
+                document.addEventListener('DOMContentLoaded', function() {
+                    loadCheckboxStatus(); // 저장된 체크박스 상태 불러오기
+                });
+
+                // 타이머 시작
                 min = document.querySelector("#startMin").value;
                 if (min === "") min = 0;
                 sec = document.querySelector("#startSec").value;
