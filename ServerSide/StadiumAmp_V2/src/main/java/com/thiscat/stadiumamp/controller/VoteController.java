@@ -54,19 +54,19 @@ public class VoteController {
 //            model.addAttribute("ages", ages);
 
             Map<Integer, String> genderMap = new LinkedHashMap<>();
-            genderMap.put(0, "선택안함");
-            genderMap.put(1, "남자");
-            genderMap.put(2, "여자");
+            genderMap.put(0, "남자");
+            genderMap.put(1, "여자");
+            genderMap.put(2, "선택안함");
             model.addAttribute("genders", genderMap);
 
             Map<Integer, String> ageMap = new LinkedHashMap<>();
-            ageMap.put(0, "선택안함");
-            ageMap.put(1, "10대");
-            ageMap.put(2, "20대");
-            ageMap.put(3, "30대");
-            ageMap.put(4, "40대");
-            ageMap.put(5, "50대");
-            ageMap.put(6, "60대이상");
+            ageMap.put(0, "10대");
+            ageMap.put(1, "20대");
+            ageMap.put(2, "30대");
+            ageMap.put(3, "40대");
+            ageMap.put(4, "50대");
+            ageMap.put(5, "60대이상");
+            ageMap.put(6, "선택안함");
             model.addAttribute("ages", ageMap);
 
             return "sso";

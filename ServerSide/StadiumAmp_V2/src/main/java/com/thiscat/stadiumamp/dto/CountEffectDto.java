@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CountEffectDto {
-    @ApiModelProperty(value = "Event ㅑㅇ")
+    @ApiModelProperty(value = "Event ID")
     private Long eventId;
 
     @ApiModelProperty(value = "animation count")
@@ -25,7 +25,7 @@ public class CountEffectDto {
     @ApiModelProperty(value = "emoji")
     String emoji;
 
-    @ApiModelProperty(value = "animation_color")
-    String animationColor;
+//    @ApiModelProperty(value = "animation_color")
+//    String animationColor;
 
 }

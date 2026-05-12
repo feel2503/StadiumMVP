@@ -44,11 +44,81 @@
             height: 100%;
             border: none;
         }
+
+        /* 흔들기 모드 시 선택된 버튼의 시각적 효과 */
+        .pressed-state {
+            transform: scale(0.96) translateY(2px) !important;
+            box-shadow: inset 0 4px 6px rgba(0,0,0,0.4) !important;
+            opacity: 0.8;
+            border: 2px solid #fff !important;
+        }
+
+        /* 팝업 레이어 공통 스타일 */
+        .prompt-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none; /* 기본 숨김 */
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            flex-direction: column;
+        }
+
+        .prompt-image {
+            max-width: 60%;
+            max-height: 50%;
+        }
+
+        .prompt-text {
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .emoji-box {
+            position: absolute; bottom: 5vh; left: 50%;
+            width: 0; height: 0; pointer-events: none; z-index: 10;
+        }
+
+        .popcorn {
+            position: absolute; left: 0; bottom: 0; opacity: 0;
+            animation: pop var(--duration) ease-in-out var(--delay) forwards;
+        }
+
+        /* 이미지가 들어올 경우를 대비한 스타일 */
+        img.popcorn {
+            object-fit: contain;
+        }
+
+        /* 반응형 물리 엔진 */
+        @keyframes pop {
+            0% { transform: translate(0, 0) scale(0.3) rotate(0deg); opacity: 1; }
+            40% { transform: translate(var(--peak-x), var(--peak-y)) scale(1.2) rotate(var(--rot-mid)); opacity: 1; }
+            100% { transform: translate(var(--end-x), var(--end-y)) scale(0.8) rotate(var(--rot-end)); opacity: 0; }
+        }
     </style>
 
     <script src="https://www.youtube.com/iframe_api"></script>
 </head>
 <body class="sample no-select" onload="startTimer()">
+
+<div id="touchPromptOverlay" class="prompt-overlay">
+    <img src="https://www.dropbox.com/scl/fi/4qhjdniscmwisaffejrse/touch-phone.png?rlkey=ug1401g17udqduaalr1z0abrv&st=5ej1aclt&raw=1" class="prompt-image" alt="터치해주세요">
+    <div class="prompt-text">터치해서 투표에 참여해주세요!<br>응원태그를 설정하시면 터치마다 +1표가 됩니다<br>Please touch for vote event!<br>If you set the Tag, your vote would +1 in every touch</div>
+</div>
+
+<div id="shakePromptOverlay" class="prompt-overlay">
+    <img src="https://www.dropbox.com/scl/fi/seejkyp2a9na843qu1lyf/shake-phone.png?rlkey=adc413u39k7dnw617kpox9ecb&st=ujjz1wlf&raw=1" class="prompt-image" alt="흔들어주세요">
+    <div class="prompt-text">스마트폰을 흔들어 응원해주세요!<br>응원태그를 설정하시면 터치마다 +1표가 됩니다<br>Please shake your phone for vote event!<br>If you set the Tag, your vote would +1 in every shake</div>
+</div>
+
 <div th:styleAppend="|background-color: ${bgcolor}|">
 
     <div class="remain_text_02" id="display">
@@ -101,15 +171,20 @@
 
         <div class="event_bg" th:styleAppend="'background-image: url('+${bgimg}+');'">
             <div style="padding:0px 20px 0px 20px;">
-                <div th:if="${teamtype =='Home'}">
-                    <div class="wc_text_02" th:styleAppend="|color:${homeColor}|">
-                        응원할 음원을 투표해 주세요.
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <div th:if="${teamtype =='Home'}">
+                        <div class="wc_text_02" th:styleAppend="|color:${homeColor}|">
+                            응원할 음원을 투표해 주세요.
+                        </div>
                     </div>
-                </div>
-
-                <div th:if="${teamtype =='Away'}">
-                    <div class="wc_text_02" th:styleAppend="|color:${awayColor}|">
-                        응원할 음원을 투표해 주세요.
+                    <div th:if="${teamtype =='Away'}">
+                        <div class="wc_text_02" th:styleAppend="|color:${awayColor}|">
+                            응원할 음원을 투표해 주세요.
+                        </div>
+                    </div>
+                    <div style="color: #FDFCFF; font-size: 14px; display: flex; align-items: center; gap: 5px;">
+                        <input type="checkbox" id="shakeModeCheckbox" style="cursor: pointer; transform: scale(1.2);">
+                        <label for="shakeModeCheckbox" style="cursor: pointer;">흔들어서 응원하기 모드</label>
                     </div>
                 </div>
                 <div class="bt-02">
@@ -120,6 +195,8 @@
                             <!-- home 제목 출력 -->
                             <div class="button-wrapper">
                                 <button class="btn-wide"
+                                        onmousedown="selectForShake(this)"
+                                        ontouchstart="selectForShake(this)"
                                         th:onclick="|vote(event, ${team}, ${event.id}, ${stat.index + 1}, ${gender}, ${ageGroup});|"
                                         th:styleAppend="|background-color: ${homeColor}; color:${homeFont}|">
                                     <div class="marquee">
@@ -170,6 +247,8 @@
                                 <!-- home 제목 출력 -->
                                 <div class="button-wrapper">
                                     <button class="btn-wide"
+                                            onmousedown="selectForShake(this)"
+                                            ontouchstart="selectForShake(this)"
                                             th:onclick="|vote(event, ${team}, ${event.id}, ${stat.index + 1}, ${gender}, ${ageGroup});|"
                                             th:styleAppend="|background-color: ${awayColor}; color:${awayFont}|">
                                         <div class="marquee">
@@ -277,13 +356,145 @@
         </div>
 
         <script th:src="@{jquery/jquery-3.4.1.min.js}"></script>
-<!--        <script th:src="@{js/timer.js}"></script>-->
 
-<!--        <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>-->
-<!--        <script>-->
-<!--            var vConsole = new window.VConsole();-->
-<!--            console.log("화면이 활성화되었습니다. 데이터를 동기화합니다.");-->
-<!--        </script>-->
+        <script>
+            // ============================================================
+            // 흔들어서 응원하기 핵심 로직
+            // ============================================================
+            let inactivityTimer = null;
+            const INACTIVITY_LIMIT = 15000;
+            let selectedShakeButton = null;
+            let lastShakeTime = Date.now();
+            const shakeThreshold = 25; // 흔들림 강도 임계값
+            const timeThreshold = 1000; // 흔들림 간격 (ms)
+
+            // 1. 흔들기 타겟 버튼 선택 (라디오 버튼처럼 동작)
+            function selectForShake(element) {
+                const isShakeMode = document.getElementById('shakeModeCheckbox').checked;
+                if (!isShakeMode) return;
+
+                // 모든 버튼 효과 제거 후 선택된 버튼에만 적용
+                document.querySelectorAll('.btn-wide').forEach(btn => btn.classList.remove('pressed-state'));
+                element.classList.add('pressed-state');
+                selectedShakeButton = element;
+            }
+
+            // 2. 흔들기 감지 이벤트 핸들러
+            function handleMotion(event) {
+                const isShakeMode = document.getElementById('shakeModeCheckbox').checked;
+                if (!isShakeMode) return;
+
+                const acc = event.accelerationIncludingGravity;
+                if (!acc || acc.x === null) return;
+
+                const mag = Math.sqrt(acc.x**2 + acc.y**2 + acc.z**2);
+                const now = Date.now();
+
+                // 임계값 이상 흔들리고 일정 시간이 지났을 때 실행
+                if (mag > shakeThreshold && now - lastShakeTime > timeThreshold) {
+                    lastShakeTime = now;
+                    handleUserActivity(); // 팝업 닫기 및 타이머 리셋
+
+                    if (selectedShakeButton) {
+                        // 선택된 버튼의 클릭 이벤트를 강제로 발생시켜 투표 진행
+                        selectedShakeButton.click();
+
+                        // 시각적 피드백 (진동)
+                        if (window.navigator && window.navigator.vibrate) {
+                            window.navigator.vibrate([100, 50, 100]);
+                        }
+                    }
+                }
+            }
+
+            // 3. 센서 권한 요청 및 활성화
+            async function startSensor(cb) {
+                // iOS 13+ 권한 요청 대응
+                if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+                    try {
+                        const permission = await DeviceMotionEvent.requestPermission();
+                        if (permission === 'granted') {
+                            window.addEventListener('devicemotion', handleMotion);
+                        } else {
+                            alert("센서 접근 권한이 거부되었습니다.");
+                            cb.checked = false;
+                        }
+                    } catch (e) {
+                        console.error(e);
+                        cb.checked = false;
+                    }
+                } else {
+                    // 안드로이드 및 일반 브라우저
+                    window.addEventListener('devicemotion', handleMotion);
+                }
+            }
+
+            // 4. 체크박스 모드 전환 제어
+            document.getElementById('shakeModeCheckbox').addEventListener('change', function() {
+                handleUserActivity(); // 팝업 초기화
+                if (this.checked) {
+                    startSensor(this);
+
+                } else {
+                    window.removeEventListener('devicemotion', handleMotion);
+                    document.querySelectorAll('.btn-wide').forEach(btn => btn.classList.remove('pressed-state'));
+                    selectedShakeButton = null;
+                }
+            });
+
+            // ============================================================
+            // 무활동 감지 및 팝업 제어 로직
+            // ============================================================
+
+            // 터치 모드 타이머 시작
+            function startTouchTimer() {
+                clearTimeout(inactivityTimer);
+                inactivityTimer = setTimeout(() => {
+                    const isShakeMode = document.getElementById('shakeModeCheckbox').checked;
+                    if (!isShakeMode) {
+                        document.getElementById('touchPromptOverlay').style.display = 'flex';
+                    }
+                }, INACTIVITY_LIMIT);
+            }
+
+            // 흔들기 모드 타이머 시작
+            function startShakeTimer() {
+                clearTimeout(inactivityTimer);
+                inactivityTimer = setTimeout(() => {
+                    const isShakeMode = document.getElementById('shakeModeCheckbox').checked;
+                    if (isShakeMode) {
+                        document.getElementById('shakePromptOverlay').style.display = 'flex';
+                    }
+                }, INACTIVITY_LIMIT);
+            }
+
+            // 사용자 활동 감지 시 팝업 닫기 및 타이머 리셋
+            function handleUserActivity() {
+                const isShakeMode = document.getElementById('shakeModeCheckbox').checked;
+
+                // 현재 활성화된 팝업 숨기기
+                document.getElementById('touchPromptOverlay').style.display = 'none';
+                document.getElementById('shakePromptOverlay').style.display = 'none';
+
+                // 모드에 맞는 타이머 재시작
+                if (isShakeMode) {
+                    startShakeTimer();
+                } else {
+                    startTouchTimer();
+                }
+            }
+
+            // 전역 이벤트 리스너 등록 (터치 및 클릭)
+            window.addEventListener('touchstart', handleUserActivity, { passive: true });
+            window.addEventListener('mousedown', handleUserActivity, { passive: true });
+
+
+
+            // 페이지 로드 시 즉시 실행
+            document.addEventListener('DOMContentLoaded', () => {
+                startTouchTimer();
+            });
+        </script>
 
         <script>
             // 페이지의 가시성 상태가 변경될 때 실행
@@ -443,15 +654,16 @@
 
                             const previousCount = totalCount;
                             totalCount += multiplier;
-                            createHearts(event, multiplier);
+                            //createHearts(event, multiplier);
 
                             const triggerCount = parseInt(document.getElementById('anyCount').value, 10) || 10;
 
                             if (Math.floor(previousCount / triggerCount) < Math.floor(totalCount / triggerCount)) {
-                                createConfetti();
+                                //createConfetti();
+                                firePopcornSequence();
                             }
                         } catch (error) {
-                            createHearts(event, multiplier);
+                            //createHearts(event, multiplier);
                         }
                     }
                 }
@@ -572,17 +784,18 @@
                     const previousCount = totalCount;
                     totalCount += multiplier;
                     updateCounter(totalCount);
-                    createHearts(event, multiplier);
+                    //createHearts(event, multiplier);
 
                     const triggerCount = parseInt(document.getElementById('triggerCount').value, 10);
                     if (Math.floor(previousCount / triggerCount) < Math.floor(totalCount / triggerCount)) {
-                        createConfetti();
+                        //createConfetti();
+                        firePopcornSequence();
                     }
                 }
             }
 
             function createHearts(event, number) {
-                const emoji = document.getElementById('emoji').value || '🫰';
+                const emoji = document.getElementById('emoji').value || "💗";
                 for (let i = 0; i < number; i++) {
                     const heart = document.createElement('div');
                     heart.className = 'emoji';
@@ -722,13 +935,6 @@
                     const params = new URLSearchParams(url.split('?')[1]);
                     vidStr = params.get('v');
                 }
-                // https://www.youtube/E_s7TZakskc?start=15&end=55;
-                // https://www.youtube.com/shorts/E_s7TZakskc?start=15&end=55
-                // https://www.youtube.com/watch?v=E_s7TZakskc?start=15&end=55
-
-                // 유튜브 일반영상 https://youtu.be/E_s7TZakskc  >>>  https://www.youtube.com/watch?v=E_s7TZakskc
-                //    유튜브 쇼츠 https://youtube.com/shorts/BsasaVKwY8U  >>> https://www.youtube.com/shorts/BsasaVKwY8U
-                //    유튜브 라이브 영상 https://www.youtube.com/watch?v=mYVcSmpBfUA
 
                 videoId = vidStr.split("?")[0];
 
@@ -812,6 +1018,9 @@
             let serverId;
 
             function startTimer() {
+                loadCheckboxStatus(); // 기존에 있던 체크박스 불러오기
+                startTouchTimer();    // 🔽 추가: 무활동 감지 타이머 시작
+
                 // 체크박스 상태 업데이트
                 document.addEventListener('DOMContentLoaded', function() {
                     loadCheckboxStatus(); // 저장된 체크박스 상태 불러오기
@@ -1088,6 +1297,114 @@
                 loadLayer('overlay2', URL_TO_LOAD_AUTOMATICALLY_2);
             });
         </script>
+
+        <script>
+            // 팝콘 효과 변경
+            const EMOJI_COUNT = 20;
+
+            function loadMedia() {
+                let url = document.getElementById('media-url').value.trim();
+                if (!url) return alert("배경 URL을 입력해주세요!");
+
+                if (url.includes("dropbox.com")) {
+                    url = url.replace("dl=0", "raw=1");
+                }
+
+                const imgEl = document.getElementById('bg-img');
+                const videoEl = document.getElementById('bg-video');
+                const isVideo = url.toLowerCase().split('?')[0].endsWith('.mp4');
+
+                if (isVideo) {
+                    imgEl.style.display = 'none';
+                    videoEl.style.display = 'block';
+                    videoEl.src = url;
+                    videoEl.play().catch(e => console.log("자동 재생 정책으로 인해 무음 재생됩니다."));
+                } else {
+                    videoEl.style.display = 'none';
+                    videoEl.pause();
+                    imgEl.style.display = 'block';
+                    imgEl.src = url;
+                }
+            }
+
+            // 💡 파라미터로 이모지 데이터를 받도록 수정
+            function fireSingleBurst(emoticonData) {
+                return new Promise(resolve => {
+                    const box = document.getElementById('emoji-box');
+                    let maxTime = 0;
+
+                    const isImage = emoticonData.startsWith('http') || emoticonData.startsWith('data:image');
+
+                    const w = window.innerWidth;
+                    const h = window.innerHeight;
+
+                    for (let i = 0; i < EMOJI_COUNT; i++) {
+                        const el = document.createElement(isImage ? 'img' : 'div');
+                        el.className = 'popcorn';
+
+                        if (isImage) {
+                            let imgUrl = emoticonData;
+                            if (imgUrl.includes("dropbox.com")) imgUrl = imgUrl.replace("dl=0", "raw=1");
+                            el.src = imgUrl;
+                        } else {
+                            el.innerText = emoticonData;
+                        }
+
+                        const peakX = (Math.random() - 0.5) * (w * 0.8);
+                        const peakY = -(Math.random() * (h * 0.5) + (h * 0.3));
+                        const endX = peakX + (Math.random() - 0.5) * (w * 0.4);
+                        const endY = h + 50;
+
+                        const rotMid = (Math.random() - 0.5) * 360;
+                        const rotEnd = rotMid + (Math.random() - 0.5) * 360;
+
+                        const duration = Math.random() * 1 + 1.5;
+                        const delay = Math.random() * 0.2;
+
+                        const totalTime = duration + delay;
+                        if (totalTime > maxTime) maxTime = totalTime;
+
+                        el.style.setProperty('--peak-x', `${peakX}px`);
+                        el.style.setProperty('--peak-y', `${peakY}px`);
+                        el.style.setProperty('--end-x', `${endX}px`);
+                        el.style.setProperty('--end-y', `${endY}px`);
+                        el.style.setProperty('--rot-mid', `${rotMid}deg`);
+                        el.style.setProperty('--rot-end', `${rotEnd}deg`);
+                        el.style.setProperty('--duration', `${duration}s`);
+                        el.style.setProperty('--delay', `${delay}s`);
+
+                        // 💡 [75% 크기 축소 버전] 화면 비율 대비 7.5%, 최소 9px ~ 최대 60px
+                        let baseSize = w * 0.075;
+                        baseSize = Math.max(9, Math.min(baseSize, 60));
+                        const finalSize = baseSize * (0.8 + Math.random() * 0.4);
+
+                        if (isImage) {
+                            el.style.width = `${finalSize}px`;
+                            el.style.height = 'auto';
+                        } else {
+                            el.style.fontSize = `${finalSize}px`;
+                        }
+
+                        box.appendChild(el);
+
+                        setTimeout(() => el.remove(), totalTime * 1000);
+                    }
+
+                    setTimeout(resolve, maxTime * 1000);
+                });
+            }
+
+            async function firePopcornSequence() {
+                //const emojiInput = document.getElementById('emoji-input').value.trim() || "💗";
+                const emojiInput = document.getElementById('emoji').value || "💗";
+
+                // 💡 3번 반복하는 for문과 1초 대기 로직을 모두 지우고, 딱 1번만 호출합니다!
+                await fireSingleBurst(emojiInput);
+
+            }
+        </script>
+
     </div>
+    <div class="emoji-box" id="emoji-box"></div>
 </body>
 </html>

@@ -156,41 +156,17 @@
                             <th:block th:if="${!iterStat.first}">분 전</th:block>
                         </span>
 
-                        <div class="chant-box">
-                            <!-- 곡 제목 표시 -->
-                            <p class="chant-title" th:text="${stat.musicName}">곡 제목</p>
+                        <div class="chant-box"
+                             th:styleAppend="|background-color: ${btColor}; color: ${fontColor}; border-color: ${fontColor}33; opacity: 0.8;|">
+                            <p class="chant-title"
+                               th:text="${stat.musicName}"
+                               th:styleAppend="|color: ${fontColor};|">곡 제목</p>
                         </div>
+<!--                        <div class="chant-box">-->
+<!--                            <p class="chant-title" th:text="${stat.musicName}">곡 제목</p>-->
+<!--                        </div>-->
                     </li>
-<!--                    <li class="timeline-item latest">-->
-<!--                        <span class="time">이전 이벤트 결과</span>-->
-<!--                        <div class="chant-box">-->
-<!--                            <p class="chant-title">MUFC Here We Go</p>-->
-<!--                        </div>-->
-<!--                    </li>-->
-<!--                    <li class="timeline-item">-->
-<!--                        <span class="time">n분 전</span>-->
-<!--                        <div class="chant-box">-->
-<!--                            <p class="chant-title">United Clap Clap Clap</p>-->
-<!--                        </div>-->
-<!--                    </li>-->
-<!--                    <li class="timeline-item">-->
-<!--                        <span class="time">n분 전</span>-->
-<!--                        <div class="chant-box">-->
-<!--                            <p class="chant-title">Hello, Hello We Are The Busby Boys</p>-->
-<!--                        </div>-->
-<!--                    </li>-->
-<!--                    <li class="timeline-item">-->
-<!--                        <span class="time">n분 전</span>-->
-<!--                        <div class="chant-box">-->
-<!--                            <p class="chant-title">Glory Glory Man United</p>-->
-<!--                        </div>-->
-<!--                    </li>-->
-<!--                    <li class="timeline-item">-->
-<!--                        <span class="time">n분 전</span>-->
-<!--                        <div class="chant-box">-->
-<!--                            <p class="chant-title">Take Me Home, United Road</p>-->
-<!--                        </div>-->
-<!--                    </li>-->
+
                 </ul>
 
             </div>
@@ -233,52 +209,47 @@
             function flipText()
             {
                 $.ajax({
-                    url:  '/v2/event/vote-result',
+                    url:  '/v2/event/vote-history',
                     method: 'get',
                     data: {
                         serverId: serverId,
                     }
                 }).done(function(res) {
-                    if (res) {
-                        // // console.log("vote-result", res);
-                        // $('.event_bg').css('background-image', 'url(' + res.data.bgImage + ')');
-                        //
-                        // $('#line1 .flip-face').css({
-                        //     'background-color': res.data.btColor,
-                        //     'color': res.data.fontColor
-                        // });
-                        // $('#line2 .flip-face').css({
-                        //     'background-color': res.data.btColor,
-                        //     'color': res.data.fontColor
-                        // });
-                        // $('#line3 .flip-face').css({
-                        //     'background-color': res.data.btColor,
-                        //     'color': res.data.fontColor
-                        // });
-                        //
-                        // removeFlipText('line1', res.data.eventTopDtos[0].count+'표', res.data.eventTopDtos[0].name);
-                        // removeFlipText('line2', res.data.eventTopDtos[1].count+'표', res.data.eventTopDtos[1].name);
-                        // removeFlipText('line3', res.data.eventTopDtos[2].count+'표', res.data.eventTopDtos[2].name);
-                        //
-                        //
-                        // setTimeout(() => {
-                        //     setFlipText('line1');
-                        // }, 700); // Delay of 700ms after the first line starts
-                        //
-                        //
-                        // // Apply text and flip for the second line after a delay
-                        // setTimeout(() => {
-                        //     setFlipText('line2');
-                        // }, 1400); // Delay of 700ms after the first line starts
-                        //
-                        // // Apply text and flip for the third line after another delay
-                        // setTimeout(() => {
-                        //     setFlipText('line3');
-                        // }, 2100); // Delay of 1400ms after the first line starts (700ms after the second)
+                    if (res && res.data) {
+                        const timelineItems = $('.timeline-list .timeline-item'); // 1. 모든 li 요소를 가져옴
+                        res.data.forEach((stat, index) => {
+                            // 해당 인덱스의 li 요소가 존재하는지 확인
+                            const $item = timelineItems.eq(index);
+                            if ($item.length > 0) {
+                                const isFirst = (index === 0);
 
-                    } else {
+                                // 시간 텍스트 처리
+                                let timeText = stat.diffFromLastStart;
+                                if (!isFirst) {
+                                    timeText += "분 전";
+                                }
 
+                                // 2. 새로운 데이터와 기존 데이터가 다를 때만 텍스트 변경 (최적화)
+                                const $timeSpan = $item.find('.time');
+                                const $titleP = $item.find('.chant-title');
+
+                                if ($timeSpan.text() !== timeText) {
+                                    $timeSpan.text(timeText);
+                                }
+
+                                if ($titleP.text() !== stat.musicName) {
+                                    $titleP.text(stat.musicName);
+                                }
+
+                                // 3. (선택사항) 첫 번째 항목에 latest 클래스가 없다면 추가
+                                if (isFirst && !$item.hasClass('latest')) {
+                                    $item.addClass('latest');
+                                }
+                            }
+                        });
                     }
+                }).fail(function(err) {
+                    console.error("데이터를 가져오는 중 오류가 발생했습니다.", err);
                 });
             }
 
@@ -289,7 +260,7 @@
                 // setFlipText('line1', lines[0]);
                 //
                 voteTimer();
-                setInterval(flipText, 3000);
+                setInterval(flipText, 5000);
             };
 
             let min, sec;

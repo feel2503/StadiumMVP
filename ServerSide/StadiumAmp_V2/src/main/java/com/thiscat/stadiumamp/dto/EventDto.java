@@ -2,6 +2,8 @@ package com.thiscat.stadiumamp.dto;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.thiscat.stadiumamp.dao.TagDao;
+import com.thiscat.stadiumamp.entity.Cheertag;
 import com.thiscat.stadiumamp.entity.Event;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -11,6 +13,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import java.util.ArrayList;
+import java.util.List;
 
 
 @Data
@@ -57,4 +60,6 @@ public class EventDto {
     String cheerUrl2;
 
     Boolean volumeSync;
+
+    List<TagDao> tags;
 }

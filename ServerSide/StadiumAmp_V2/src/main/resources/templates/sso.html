@@ -84,7 +84,7 @@
 
                     <div class="form_container">
                         <select name="gender" class="select_custom">
-                            <option value="">성별을 알려주세요</option>
+                            <option value="" disabled selected hidden >성별을 알려주세요</option>
                             <option th:each="entry : ${genders}"
                                     th:value="${entry.key}"
                                     th:text="${entry.value}">성별</option>
@@ -92,7 +92,7 @@
                         </select>
 
                         <select name="ageGroup" class="select_custom">
-                            <option value="">연령대를 알려주세요</option>
+                            <option value="" disabled selected hidden>연령대를 알려주세요</option>
                             <option th:each="entry : ${ages}"
                                     th:value="${entry.key}"
                                     th:text="${entry.value}">연령대</option>
@@ -107,18 +107,16 @@
                 </form>
             </div>
 
-            <div id="bottom_banner" class="bottom_banner">
-                <div style="position: relative">
-                    <input  style="float: right;"
-                            type='button'
-                            value='X'
-                            id='btn2'
-                            onclick='toggleBtn1()'/>
-                    <img class="bottom_banner_img" src="asset/banner2.png">
-                </div>
-
-
-            </div>
+<!--            <div id="bottom_banner" class="bottom_banner">-->
+<!--                <div style="position: relative">-->
+<!--                    <input  style="float: right;"-->
+<!--                            type='button'-->
+<!--                            value='X'-->
+<!--                            id='btn2'-->
+<!--                            onclick='toggleBtn1()'/>-->
+<!--                    <img class="bottom_banner_img" src="asset/banner2.png">-->
+<!--                </div>-->
+<!--            </div>-->
 
         <script>
             function toggleBtn1() {

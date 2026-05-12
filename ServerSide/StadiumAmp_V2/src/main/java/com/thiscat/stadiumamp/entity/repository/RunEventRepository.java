@@ -178,66 +178,60 @@ public interface RunEventRepository extends JpaRepository<RunEvent, Long> {
 
     @Query(
             value = "" +
-                    "WITH LastStart AS (  " +
-                    "        SELECT reg_date_time, event_id  " +
-                    "        FROM public.run_event   " +
-                    "        WHERE event_id = :eventId AND event_state = 'START'  " +
-                    "        ORDER BY reg_date_time DESC   " +
-                    "        LIMIT 1  " +
-                    "    ),  " +
-                    "    TargetEvents AS (  " +
-                    "        SELECT *  " +
-                    "        FROM public.run_event  " +
-                    "        WHERE event_id = :eventId   " +
-                    "          AND event_state = 'STOP'  " +
-                    "          AND reg_date_time < (SELECT reg_date_time FROM LastStart)  " +
-                    "        ORDER BY reg_date_time DESC  " +
-                    "        LIMIT 5  " +
-                    "    ),  " +
-                    "    MaxColumnStats AS (  " +
-                    "        SELECT   " +
-                    "            t.*,  " +
-                    "            mx.col_name AS max_column_name,  " +
-                    "            mx.max_val AS max_count_value,  " +
-                    "            CASE WHEN mx.col_name LIKE 'home%' THEN 'TEAM_HOME' ELSE 'TEAM_AWAY' END as target_team_type,  " +
-                    "            (CAST(SUBSTRING(mx.col_name FROM '[0-9]+') AS INTEGER) - 1) as target_sequence,  " +
-                    "            ROW_NUMBER() OVER (ORDER BY t.reg_date_time DESC) as row_num  " +
-                    "        FROM TargetEvents t  " +
-                    "        CROSS JOIN LATERAL (  " +
-                    "            SELECT col_name, max_val  " +
-                    "            FROM (VALUES   " +
-                    "                ('home1count', t.home1count), ('home2count', t.home2count), ('home3count', t.home3count), ('home4count', t.home4count), ('home5count', t.home5count),  " +
-                    "                ('home6count', t.home6count), ('home7count', t.home7count), ('home8count', t.home8count), ('home9count', t.home9count), ('home10count', t.home10count),  " +
-                    "                ('home11count', t.home11count), ('home12count', t.home12count), ('home13count', t.home13count), ('home14count', t.home14count), ('home15count', t.home15count),  " +
-                    "                ('home16count', t.home16count), ('home17count', t.home17count), ('home18count', t.home18count), ('home19count', t.home19count), ('home20count', t.home20count),  " +
-                    "                ('away1count', t.away1count), ('away2count', t.away2count), ('away3count', t.away3count), ('away4count', t.away4count), ('away5count', t.away5count),  " +
-                    "                ('away6count', t.away6count), ('away7count', t.away7count), ('away8count', t.away8count), ('away9count', t.away9count), ('away10count', t.away10count),  " +
-                    "                ('away11count', t.away11count), ('away12count', t.away12count), ('away13count', t.away13count), ('away14count', t.away14count), ('away15count', t.away15count),  " +
-                    "                ('away16count', t.away16count), ('away17count', t.away17count), ('away18count', t.away18count), ('away19count', t.away19count), ('away20count', t.away20count)  " +
-                    "            ) AS v(col_name, max_val)  " +
-                    "            ORDER BY max_val DESC  " +
-                    "            LIMIT 1  " +
-                    "        ) mx  " +
-                    "    )  " +
-                    "    SELECT   " +
-                    "        m.run_event_id as runEventId,  " +
-                    "        m.reg_date_time as regDateTime,  " +
-                    "        m.max_column_name as maxColumnName,  " +
-                    "        m.max_count_value as maxCountValue,  " +
-                    "        ms.music_id as musicId,  " +
-                    "        ms.music_name as musicName,  " +
-                    "        ms.youtube_url as youtubeUrl,  " +
-                    "        CASE   " +
-                    "            WHEN m.row_num = 1 THEN '이전 이벤트 결과'  " +
-                    "            ELSE CAST(TRUNC(EXTRACT(EPOCH FROM ((SELECT reg_date_time FROM LastStart) - m.reg_date_time)) / 60) AS TEXT)  " +
-                    "        END AS diffFromLastStart  " +
-                    "    FROM MaxColumnStats m  " +
-                    "    LEFT JOIN public.event_music em ON   " +
-                    "        em.event_id = m.event_id   " +
-                    "        AND em.team_type = m.target_team_type   " +
-                    "        AND em.sequence = m.target_sequence  " +
-                    "    LEFT JOIN public.music ms ON ms.music_id = em.music_id  " +
-                    "    ORDER BY m.reg_date_time DESC",
+                    "WITH TargetEvents AS ( " +
+                    "            SELECT * " +
+                    "            FROM public.run_event " +
+                    "            WHERE event_id = :eventId  " +
+                    "              AND event_state = 'STOP' " +
+                    "            ORDER BY reg_date_time DESC " +
+                    "            LIMIT 5 " +
+                    "        ), " +
+                    "        MaxColumnStats AS ( " +
+                    "            SELECT " +
+                    "                t.*, " +
+                    "                mx.col_name AS max_column_name, " +
+                    "                mx.max_val AS max_count_value, " +
+                    "                CASE WHEN mx.col_name LIKE 'home%' THEN 'TEAM_HOME' ELSE 'TEAM_AWAY' END as target_team_type, " +
+                    "                (CAST(SUBSTRING(mx.col_name FROM '[0-9]+') AS INTEGER) - 1) as target_sequence, " +
+                    "                ROW_NUMBER() OVER (ORDER BY t.reg_date_time DESC) as row_num " +
+                    "            FROM TargetEvents t " +
+                    "            CROSS JOIN LATERAL ( " +
+                    "                SELECT col_name, max_val " +
+                    "                FROM (VALUES " +
+                    "                    ('home1count', t.home1count), ('home2count', t.home2count), ('home3count', t.home3count), ('home4count', t.home4count), ('home5count', t.home5count), " +
+                    "                    ('home6count', t.home6count), ('home7count', t.home7count), ('home8count', t.home8count), ('home9count', t.home9count), ('home10count', t.home10count), " +
+                    "                    ('home11count', t.home11count), ('home12count', t.home12count), ('home13count', t.home13count), ('home14count', t.home14count), ('home15count', t.home15count), " +
+                    "                    ('home16count', t.home16count), ('home17count', t.home17count), ('home18count', t.home18count), ('home19count', t.home19count), ('home20count', t.home20count), " +
+                    "                    ('away1count', t.away1count), ('away2count', t.away2count), ('away3count', t.away3count), ('away4count', t.away4count), ('away5count', t.away5count), " +
+                    "                    ('away6count', t.away6count), ('away7count', t.away7count), ('away8count', t.away8count), ('away9count', t.away9count), ('away10count', t.away10count), " +
+                    "                    ('away11count', t.away11count), ('away12count', t.away12count), ('away13count', t.away13count), ('away14count', t.away14count), ('away15count', t.away15count), " +
+                    "                    ('away16count', t.away16count), ('away17count', t.away17count), ('away18count', t.away18count), ('away19count', t.away19count), ('away20count', t.away20count) " +
+                    "                ) AS v(col_name, max_val) " +
+                    "                ORDER BY max_val DESC " +
+                    "                LIMIT 1 " +
+                    "            ) mx " +
+                    "        ) " +
+                    "        SELECT " +
+                    "            m.run_event_id AS runEventId, " +
+                    "            m.reg_date_time AS regDateTime, " +
+                    "            m.max_column_name AS maxColumnName, " +
+                    "            m.max_count_value AS maxCountValue, " +
+                    "            ms.music_id AS musicId , " +
+                    "            regexp_replace(ms.music_name, '\\.[^.]+$', '') AS musicName, " +
+                    "            ms.youtube_url AS youtubeUrl, " +
+                    "            CASE " +
+                    "                WHEN m.row_num = 1 THEN '이전데이터' " +
+                    "                ELSE CAST(TRUNC(EXTRACT(EPOCH FROM ( " +
+                    "                    (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Seoul') - (m.end_date_time AT TIME ZONE 'Asia/Seoul') " +
+                    "                )) / 60) AS TEXT) " +
+                    "            END AS diffFromLastStart " +
+                    "        FROM MaxColumnStats m " +
+                    "        LEFT JOIN public.event_music em ON " +
+                    "            em.event_id = m.event_id " +
+                    "            AND em.team_type = m.target_team_type " +
+                    "            AND em.sequence = m.target_sequence " +
+                    "        LEFT JOIN public.music ms ON ms.music_id = em.music_id " +
+                    "        ORDER BY m.reg_date_time DESC",
             nativeQuery = true)
     List<EventStatisticsDto> findTop5EventStatistics(Long eventId);
 

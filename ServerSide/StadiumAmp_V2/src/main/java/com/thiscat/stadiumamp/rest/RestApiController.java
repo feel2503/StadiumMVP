@@ -1,5 +1,6 @@
 package com.thiscat.stadiumamp.rest;
 
+import com.thiscat.stadiumamp.dao.TagDao;
 import com.thiscat.stadiumamp.dto.*;
 import com.thiscat.stadiumamp.dto.request.*;
 import com.thiscat.stadiumamp.entity.*;
@@ -314,6 +315,17 @@ public class RestApiController extends BaseController{
     public ResponseEntity<ApiResultWithValue> getEventInfo(@RequestParam Long eventId) throws Exception {
         Event event = eventRepository.findById(eventId).orElseThrow(()->new Exception("event-not-found"));
         EventDto eventDto = restService.getEventInfo(event);
+        List<Cheertag> cheertags = cheertagRepository.findAllByEventOrderById(event);
+        List<TagDao> tagDaos = cheertags
+                .stream()
+                .map(x->TagDao.builder()
+                        .id(x.getTag_id())
+                        .label(x.getLabel())
+                        .value(x.getValue())
+                        .build())
+                .collect(Collectors.toList());
+
+        eventDto.setTags(tagDaos);
         return getResponseEntity(eventDto, "success", HttpStatus.OK);
     }
 
@@ -854,7 +866,7 @@ public class RestApiController extends BaseController{
         Event event = eventRepository.findById(countEffectDto.getEventId()).orElseThrow(() -> new Exception("event-not-found"));
 
         event.setAnimationCount(countEffectDto.getAnimationCount());
-        event.setAnimationColor(countEffectDto.getAnimationColor());
+        //event.setAnimationColor(countEffectDto.getAnimationColor());
         event.setEmoji(countEffectDto.getEmoji());
 
         eventRepository.save(event);
@@ -1042,6 +1054,14 @@ public class RestApiController extends BaseController{
         return getResponseEntity( "success", HttpStatus.OK);
     }
 
+
+    @ApiOperation(value = "Add Event Server")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @GetMapping(value = "/v2/event/vote-history", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultWithValue> getVoteHistory(@RequestParam Long serverId) throws Exception {
+        List<EventStatisticsDto> eventStatisticsDtos = runEventRepository.findTop5EventStatistics(serverId);
+        return getResponseEntity( eventStatisticsDtos, "success", HttpStatus.OK);
+    }
 
 
     private VoteResultDto getVoteResult(RunEvent runevent)

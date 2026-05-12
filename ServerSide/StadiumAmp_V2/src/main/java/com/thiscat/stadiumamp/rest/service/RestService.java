@@ -682,8 +682,10 @@ public class RestService {
         boolean result = false;
         for (Map.Entry<String, Boolean> entry : voteDto.getTags().entrySet()) {
             String key = entry.getKey();
+            if(!key.startsWith("tag"))
+                continue;
+
             Boolean value = entry.getValue();
-            System.out.println("Key: " + key + ", Value: " + value);
             updateValue(runEvent, key, value);
 
             if(value.booleanValue())
