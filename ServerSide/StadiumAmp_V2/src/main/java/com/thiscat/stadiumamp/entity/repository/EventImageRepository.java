@@ -11,6 +11,7 @@ import java.util.Optional;
 
 public interface EventImageRepository extends JpaRepository<EventImage, Long> {
     List<EventImage> findAllByEventOrderByImageTypeAsc(Event event);
+    List<EventImage> findAllByEventOrderById(Event event);
 
     @Query(
             value = " select i.image_url from event e "      +

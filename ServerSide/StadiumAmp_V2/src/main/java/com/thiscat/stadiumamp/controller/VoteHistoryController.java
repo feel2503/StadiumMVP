@@ -69,20 +69,20 @@ public class VoteHistoryController {
 
         runEventDto = updateRunEventMusic(runEventDto, event.getId());
 
-        String bgImage = "";
+        String bgImage = eventImageRepository.findTypeEventImage(event_id, "IMAGE_DEFAULT");
         List<Object[]> tops = null;
         String btColor;
         String fontColor;
         if(getIntValue(runevent.getHomeCount()) >= getIntValue(runevent.getAwayCount()))
         {
-            bgImage = eventImageRepository.findTypeEventImage(event_id, "IMAGE_HOME");
+            //bgImage = eventImageRepository.findTypeEventImage(event_id, "IMAGE_HOME");
             tops = runEventRepository.findHomeTopCounts(runevent.getId(), runevent.getEvent().getId());
             btColor = event.getHomeColor();
             fontColor = event.getHomeFont();
         }
         else
         {
-            bgImage = eventImageRepository.findTypeEventImage(event_id, "IMAGE_AWAY");
+            //bgImage = eventImageRepository.findTypeEventImage(event_id, "IMAGE_AWAY");
             tops = runEventRepository.findAwayTopCounts(runevent.getId(), runevent.getEvent().getId());
             btColor = event.getAwayColor();
             fontColor = event.getAwayFont();

@@ -46,7 +46,8 @@ public class RestService {
                         (String)x[2], (Integer)x[3], (String)x[4],(String)x[5], (String)x[6]))
                 .collect(Collectors.toList());
 
-        List<EventImage> eventImageList = eventImageRepository.findAllByEventOrderByImageTypeAsc(event);
+        //List<EventImage> eventImageList = eventImageRepository.findAllByEventOrderByImageTypeAsc(event);
+        List<EventImage> eventImageList = eventImageRepository.findAllByEventOrderById(event);
         List<EventImageDto> eventImageDtoList = eventImageList
                 .stream()
                 .map(x -> new EventImageDto(x))
