@@ -511,7 +511,8 @@
             // 체크박스 상태를 LocalStorage에 저장하는 함수
             function saveActionSheet() {
                 let tagData = {};
-                $("input[type='checkbox']").each(function () {
+                // #actionSheet 안에 있는 체크박스만 선택하도록 수정
+                $("#actionSheet input[type='checkbox']").each(function () {
                     tagData[$(this).attr("id")] = $(this).is(":checked");
                 });
 
@@ -528,7 +529,8 @@
                 if (savedData) {
                     const tagData = JSON.parse(savedData);
                     for (const id in tagData) {
-                        const checkbox = document.getElementById(id);
+                        // actionSheet 내부에 해당 ID가 있는지 확인 후 적용
+                        const checkbox = document.querySelector(`#actionSheet #${id}`);
                         if (checkbox) {
                             checkbox.checked = tagData[id];
                         }
