@@ -3,15 +3,12 @@ package com.thiscat.stadiumamp.dto;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.thiscat.stadiumamp.dao.TagDao;
-import com.thiscat.stadiumamp.entity.Cheertag;
-import com.thiscat.stadiumamp.entity.Event;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,10 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class EventDto {
-//    private Long id;
-    private Long eventId;
-
+public class NewEventDto {
     String eventName;
     String homeName;
     String awayName;
@@ -42,9 +36,8 @@ public class EventDto {
     int continuityType;
     int continuityTime;
 
-
-    Long runEvent;
-    String eventState;
+    ArrayList<NewEventImageDto> eventImageList;
+    ArrayList<NewEventMusicDto> eventMusicList;
 
     String homeColor;
     String homeFont;
@@ -58,14 +51,18 @@ public class EventDto {
 
     String eventBkcolor;
     Integer autoRunState;
-    Integer animationCount;
-    String animationColor;
-    String qrText;
-    String emoji;
+
     String cheerUrl1;
     String cheerUrl2;
 
     Boolean volumeSync;
+
+    List<NewEventTagDto> tags;
+
+    Integer animationCount;
+    String emoji;
+    String animationColor;
+    String qrText;
 
     String logoImg;
     String bottomAd;
@@ -73,10 +70,4 @@ public class EventDto {
     String awayTitleImg;
     Boolean awayShowState;
     String bottomAdUrl;
-
-    ArrayList<EventImageDto> eventImageList;
-    ArrayList<EventMusicDto> eventMusicList;
-
-    List<TagDao> tags;
-
 }

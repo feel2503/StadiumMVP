@@ -1063,6 +1063,64 @@ public class RestApiController extends BaseController{
         return getResponseEntity( eventStatisticsDtos, "success", HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Add Event Server")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PostMapping(value = "/v3/server/add-new", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultWithValue> saveNewEvent(@RequestBody NewEventDto newEventDto) throws Exception {
+        Event event = restService.createNewEvent(newEventDto);
+
+        return getResponseEntity( event, "success", HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Add Event Server, eventName 변경 필수")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PostMapping(value = "/v3/server/teamconfig", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultResponse> updateTeamConfig(@RequestBody TeamConfigDto teamConfigDto) throws Exception {
+        Event event = eventRepository.findById(teamConfigDto.getEventId())
+                .orElseThrow(() -> new Exception("event-not-found"));
+        if(teamConfigDto.getLogoImg() != null){
+            event.setLogoImg(teamConfigDto.getLogoImg());
+        }
+
+        if(teamConfigDto.getBottomAd() != null){
+            event.setBottomAd(teamConfigDto.getBottomAd());
+        }
+
+        if(teamConfigDto.getHomeTitleImg() != null){
+            event.setHomeTitleImg(teamConfigDto.getHomeTitleImg());
+        }
+
+        if(teamConfigDto.getAwayTitleImg() != null){
+            event.setAwayTitleImg(teamConfigDto.getAwayTitleImg());
+        }
+        if(teamConfigDto.getBottomAdUrl() != null){
+            event.setBottomAdUrl(teamConfigDto.getBottomAdUrl());
+        }
+
+        eventRepository.save(event);
+        return getResponseEntity( "success", HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Add Event Server")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PostMapping(value = "/v3/server/away-state", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultResponse> setAwayShowState(@RequestBody AwayStateDto awayStateDto) throws Exception {
+        Event event = eventRepository.findById(awayStateDto.getEventId())
+                .orElseThrow(() -> new Exception("event-not-found"));
+        event.setAwayShowState(awayStateDto.getState());
+        eventRepository.save(event);
+
+        return getResponseEntity( "success", HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Event Start")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @GetMapping(value = "/v3/event/start-event", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResultResponse> startEventNew(@RequestParam Long eventId) throws Exception {
+        boolean result = restService.startEvent(eventId);
+
+        return getResponseEntity( "success", HttpStatus.OK);
+    }
 
     private VoteResultDto getVoteResult(RunEvent runevent)
     {

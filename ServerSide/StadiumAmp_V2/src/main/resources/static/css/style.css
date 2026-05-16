@@ -152,7 +152,6 @@ div{
     background-position:90%;
     margin-bottom:10px;
     background-color:black;
-    background-image: url('./../asset/home-black-420X200.png');
     border-radius:10px;
 
 }
@@ -169,7 +168,6 @@ div{
     background-position:90%;
     margin-bottom:10px;
     background-color:black;
-    background-image: url('./../asset/away-black-420X200.png');
     border-radius:10px;
 }
 .select_away div{

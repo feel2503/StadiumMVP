@@ -29,8 +29,43 @@ public class EventController {
         String bgImage = eventImageRepository.findTypeEventImage(id, "IMAGE_DEFAULT");
         model.addAttribute("data", event);
         model.addAttribute("bgimg", bgImage);
+        model.addAttribute("bgcolor", getColorValue(event.getEventBkcolor()));
+
+        model.addAttribute("logoImg", getDropboxImage(event.getLogoImg()));
+        model.addAttribute("bottomAd", getDropboxImage(event.getBottomAd()));
+        model.addAttribute("homeTitleImg", getDropboxImage(event.getHomeTitleImg()));
+        model.addAttribute("awayTitleImg", getDropboxImage(event.getAwayTitleImg()));
+        model.addAttribute("awayShowSate", event.getAwayShowState());
+        model.addAttribute("homeColor", getColorValue(event.getHomeColor()));
+        model.addAttribute("homeFont", getColorValue(event.getHomeFont()));
+        model.addAttribute("awayColor", getColorValue(event.getAwayColor()));
+        model.addAttribute("awayFont", getColorValue(event.getAwayFont()));
+        model.addAttribute("bottomAdUrl", event.getBottomAdUrl());
         return "event";
     }
 
+
+
+    private String getDropboxImage(String baseUrl){
+
+        if (baseUrl != null && baseUrl.contains("dropbox.com")) {
+            // www.dropbox.com을 dl.dropboxusercontent.com으로 치환
+            baseUrl = baseUrl.replace("www.dropbox.com", "dl.dropboxusercontent.com");
+            // 맨 뒤의 dl=0 또는 dl=1 파라미터를 제거하거나 변경 (선택사항이지만 치환하면 더 안전합니다)
+            baseUrl = baseUrl.replaceAll("\\?dl=\\d", "");
+            baseUrl = baseUrl.replaceAll("&dl=\\d", "");
+        }
+        return baseUrl;
+    }
+
+    private String getColorValue(String color){
+        if(color != null ){
+            if(!color.startsWith("#"))
+                color = "#" + color;
+        }else{
+            color = "#FFFFFF";
+        }
+        return color;
+    }
 
 }

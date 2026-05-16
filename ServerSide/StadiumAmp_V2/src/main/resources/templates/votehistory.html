@@ -156,15 +156,21 @@
                             <th:block th:if="${!iterStat.first}">분 전</th:block>
                         </span>
 
-                        <div class="chant-box"
-                             th:styleAppend="|background-color: ${btColor}; color: ${fontColor}; border-color: ${fontColor}33; opacity: 0.8;|">
-                            <p class="chant-title"
-                               th:text="${stat.musicName}"
-                               th:styleAppend="|color: ${fontColor};|">곡 제목</p>
-                        </div>
-<!--                        <div class="chant-box">-->
-<!--                            <p class="chant-title" th:text="${stat.musicName}">곡 제목</p>-->
+<!--                        <div class="chant-box"-->
+<!--                             th:styleAppend="|background-color: ${btColor}; color: ${fontColor}; border-color: ${fontColor}33; opacity: 0.8;|">-->
+<!--                            <p class="chant-title"-->
+<!--                               th:text="${stat.musicName}"-->
+<!--                               th:styleAppend="|color: ${fontColor};|">곡 제목</p>-->
 <!--                        </div>-->
+
+                        <a th:href="@{/result/view(id=${stat.runEventId})} + '#home-away-count'" target="_blank" style="text-decoration: none; display: block;">
+                            <div class="chant-box"
+                                 th:styleAppend="|background-color: ${btColor}; color: ${fontColor}; border-color: ${fontColor}33; opacity: 0.8;|">
+                                <p class="chant-title"
+                                   th:text="${stat.musicName}"
+                                   th:styleAppend="|color: ${fontColor};|">곡 제목</p>
+                            </div>
+                        </a>
                     </li>
 
                 </ul>

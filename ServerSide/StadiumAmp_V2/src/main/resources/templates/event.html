@@ -13,17 +13,96 @@
         <!-- Global CSS -->
         <link rel="stylesheet" href="css/style.css">
 
+        <style>
+            .logo {
+                text-align: center;
+                padding: 0;           /* 기존 상하 패딩(10px)을 제거하여 완전 밀착 */
+                width: 100%;          /* 가로폭 100% 확보 */
+                overflow: hidden;     /* 혹시 모를 엇나감 방지 */
+            }
+
+            .logo img {
+                width: 100%;          /* 80%에서 100%로 변경하여 가로 꽉 채움 */
+                height: auto;         /* 비율에 맞게 세로 크기 자동 조절 */
+                display: block;       /* 하단 미세한 빈 공백(기본 inline 공백) 제거 */
+            }
+
+            .wc_text{
+                text-align: left;
+                line-height: 24px;
+                font-size:18px;
+                font-weight:bold;
+                padding: 20px;
+            }
+            .bottom_banner{
+                position: fixed;
+                bottom:0px;
+                width: 100%;
+                max-width: 768px;
+            }
+            .bottom_banner_img{
+                width: 100%;
+            }
+            /* 팀 선택 박스 전체 디자인 */
+            .team_box {
+                background-color: #000000; /* 백그라운드 검은색 처리 */
+                border-radius: 12px;       /* 모서리 라운딩 */
+                padding: 15px;
+                margin-bottom: 15px;
+                display: flex;             /* 라디오 버튼과 이미지를 가로 정렬 */
+                justify-content: space-between; /* 양 끝으로 배치 */
+                align-items: center;       /* 세로 중앙 정렬 */
+                box-sizing: border-box;
+            }
+
+            /* 라디오 버튼 두 줄 그룹 */
+            .radio_group {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;                 /* 라디오 버튼 간격 */
+            }
+
+            .radio_group div {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            /* 우측 이미지 영역 디자인 (원형으로 변경) */
+            .team_logo {
+                width: 70px;               /* 원의 가로 크기 */
+                height: 70px;              /* 원의 세로 크기 (가로와 똑같이 맞춰야 정원이 됩니다) */
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                /* ─── 원형을 만드는 핵심 속성 ─── */
+                border-radius: 50%;        /* 모서리를 50%로 깎아 원형으로 만듦 */
+                overflow: hidden;          /* 원형 영역 밖으로 나가는 이미지는 잘라냄 */
+                /* ────────────────────────────── */
+            }
+
+            .team_logo img {
+                width: 100%;
+                height: 100%;
+
+                /* ─── 원형 안에서 이미지가 찌그러지지 않게 채우는 속성 ─── */
+                object-fit: cover;         /* 원형 영역에 꽉 차게 맞춤 (주변이 살짝 잘릴 수 있음) */
+                /* 만약 로고 전체가 잘리지 않고 원 안에 다 나오게 하려면 cover 대신 contain을 사용하세요 */
+            }
+        </style>
+
     </head>
     <body >
         <div class="sample">
             <div>
                 <div class="logo">
-                    <img src="asset/StadiumAMP-Logo.svg">
+                    <img th:src="${logoImg}" src="asset/StadiumAMP-Logo.svg">
                 </div>
 
                 <div class="event_bg" th:styleAppend="'background-image: url('+${bgimg}+');'">
 
-                    <div class="wc_text">
+                    <div class="wc_text" th:style="'color: ' + ${bgcolor} + ';'">
                         <li>서버 <span th:text="${data.name}"/> 에 접속 하셨습니다.</li>
                         <li>응원 권한을 선택해주세요.</li>
                     </div>
@@ -31,27 +110,36 @@
                     <form method="get" action="vote" style="padding:20px;">
                         <input type="hidden" id="gameToken" name="event_id" th:value="${data.id}" >
                         <div style="padding:5px;">
-                            <div class="select_home">
-                                <div>
-                                    <input type="radio" name="team" value=0 checked>
-                                    <span style="color:white">[[${data.homeName}]] Fan </span>
-                                    <div> </div>
+                            <div class="team_box" th:style="|background-color: ${homeColor}; color: ${homeFont};|">
+                                <div class="radio_group">
+                                    <div>
+                                        <input type="radio" name="team" value="0" checked>
+                                        <span>[[${data.homeName}]] Fan </span>
+                                    </div>
+                                    <div>
+                                        <input type="radio" name="team" value="1">
+                                        <span>[[${data.homeName}]] MVP Fan </span>
+                                    </div>
                                 </div>
-                                <div>
-                                    <input type="radio" name="team" value=1 >
-                                    <span style="color:white">[[${data.homeName}]] MVP Fan </span>
+                                <div class="team_logo">
+                                    <img th:src="${homeTitleImg}" alt="Home Team Logo">
                                 </div>
                             </div>
 
-                            <div class="select_away">
-                                <div>
-                                    <input type="radio" name="team" value=2 >
-                                    <span style="color:white" t>[[${data.awayName}]] Fan </span>
-                                    <div> </div>
+                            <div class="team_box" th:if="${awayShowSate == 'Y' or awayShowSate == true}"
+                                 th:style="|background-color: ${awayColor}; color: ${awayFont};|">
+                                <div class="radio_group">
+                                    <div>
+                                        <input type="radio" name="team" value="2">
+                                        <span>[[${data.awayName}]] Fan </span>
+                                    </div>
+                                    <div>
+                                        <input type="radio" name="team" value="3">
+                                        <span>[[${data.awayName}]] MVP Fan </span>
+                                    </div>
                                 </div>
-                                <div>
-                                    <input type="radio" name="team" value=3 >
-                                    <span style="color:white" t>[[${data.awayName}]] MVP Fan </span>
+                                <div class="team_logo">
+                                    <img th:src="${awayTitleImg}" alt="Away Team Logo">
                                 </div>
                             </div>
 
@@ -73,12 +161,15 @@
 
             <div id="bottom_banner" class="bottom_banner">
                 <div style="position: relative">
-                    <input  style="float: right;"
+                    <input  style="float: right; position: absolute; right: 0; top: 0; z-index: 10;"
                             type='button'
                             value='X'
                             id='btn2'
                             onclick='toggleBtn1()'/>
-                    <img class="bottom_banner_img" src="asset/banner2.png">
+
+                    <a th:href="${bottomAdUrl}" target="_blank" style="display: block; text-decoration: none;">
+                        <img class="bottom_banner_img" th:src="${bottomAd}" src="asset/banner2.png">
+                    </a>
                 </div>
             </div>
         </div>

@@ -85,4 +85,11 @@ public class Event extends BaseEntity {
     String voteendString;
 
     String qrText;
+
+    String logoImg;
+    String bottomAd;
+    String homeTitleImg;
+    String awayTitleImg;
+    Boolean awayShowState;
+    String bottomAdUrl;
 }

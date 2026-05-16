@@ -44,6 +44,9 @@ public class VoteController {
     public String vote(Model model,  @RequestParam Integer team, @RequestParam Long event_id,
         @RequestParam ( required = false) Integer move, @RequestParam ( required = false)Integer gender,
                        @RequestParam ( required = false) Integer ageGroup){
+
+        Event event = eventRepository.findById(event_id).orElseThrow(EntityNotFoundException::new);
+
         if((team == 1 || team == 3) && (move == null)) {
             model.addAttribute("data", event_id);
             model.addAttribute("team", team);
@@ -68,11 +71,12 @@ public class VoteController {
             ageMap.put(5, "60대이상");
             ageMap.put(6, "선택안함");
             model.addAttribute("ages", ageMap);
+            model.addAttribute("logoImg", getDropboxImage(event.getLogoImg()));
 
             return "sso";
         }
 
-        Event event = eventRepository.findById(event_id).orElseThrow(EntityNotFoundException::new);
+
         RunEvent runevent = runEventRepository.findFirstByEventOrderByIdDesc(event).orElseThrow(EntityNotFoundException::new);
 
         RunEventWebDto runEventDto = RunEventWebDto.builder()
@@ -569,5 +573,17 @@ public class VoteController {
             return 0;
         else
             return obj.intValue();
+    }
+
+    private String getDropboxImage(String baseUrl){
+
+        if (baseUrl != null && baseUrl.contains("dropbox.com")) {
+            // www.dropbox.com을 dl.dropboxusercontent.com으로 치환
+            baseUrl = baseUrl.replace("www.dropbox.com", "dl.dropboxusercontent.com");
+            // 맨 뒤의 dl=0 또는 dl=1 파라미터를 제거하거나 변경 (선택사항이지만 치환하면 더 안전합니다)
+            baseUrl = baseUrl.replaceAll("\\?dl=\\d", "");
+            baseUrl = baseUrl.replaceAll("&dl=\\d", "");
+        }
+        return baseUrl;
     }
 }

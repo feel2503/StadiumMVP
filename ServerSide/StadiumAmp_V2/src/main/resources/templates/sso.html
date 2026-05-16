@@ -14,6 +14,18 @@
         <link rel="stylesheet" href="css/style.css">
 
         <style>
+            .logo {
+                text-align: center;
+                padding: 0;           /* 기존 상하 패딩(10px)을 제거하여 완전 밀착 */
+                width: 100%;          /* 가로폭 100% 확보 */
+                overflow: hidden;     /* 혹시 모를 엇나감 방지 */
+            }
+
+            .logo img {
+                width: 100%;          /* 80%에서 100%로 변경하여 가로 꽉 채움 */
+                height: auto;         /* 비율에 맞게 세로 크기 자동 조절 */
+                display: block;       /* 하단 미세한 빈 공백(기본 inline 공백) 제거 */
+            }
             /* 공통 스타일: 흰색 배경 선택창 */
             .select_custom {
                 width: 100%;
@@ -68,7 +80,7 @@
     <div class="sample">
         <div>
             <div class="logo">
-                <img src="asset/StadiumAMP-Logo.svg">
+                <img th:src="${logoImg}" src="asset/StadiumAMP-Logo.svg">
             </div>
             <div class="event_bg" th:styleAppend="'background-image: url('+${bgimg}+');'">
 

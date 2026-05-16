@@ -32,6 +32,8 @@ public class RestService {
     SurveyGenderRepository surveyGenderRepository;
     @Autowired
     SurveyAgegroupRepository surveyAgegroupRepository;
+    @Autowired
+    private CheertagRepository cheertagRepository;
 
     public EventDto getEventInfo(Event event) throws Exception
     {
@@ -47,7 +49,8 @@ public class RestService {
                 .collect(Collectors.toList());
 
         //List<EventImage> eventImageList = eventImageRepository.findAllByEventOrderByImageTypeAsc(event);
-        List<EventImage> eventImageList = eventImageRepository.findAllByEventOrderById(event);
+        //List<EventImage> eventImageList = eventImageRepository.findAllByEventOrderByIdDesc(event);
+        List<EventImage> eventImageList = eventImageRepository.findAllByEventOrderByImageId(event.getId());
         List<EventImageDto> eventImageDtoList = eventImageList
                 .stream()
                 .map(x -> new EventImageDto(x))
@@ -56,13 +59,19 @@ public class RestService {
         EventDto eventDto = EventDto.builder()
                 .eventId(event.getId())
                 .eventName(event.getName())
+                .homeName(event.getHomeName())
+                .awayName(event.getAwayName())
                 .triggerType(event.getTriggerType())
                 .triggerTime(event.getTriggerTime())
                 .triggerVote(event.getTriggerVote())
                 .webUrl(event.getWebUrl())
+                .webImg(event.getWebImg())
                 .openchatUrl(event.getOpenchatUrl())
+                .openchatImg(event.getOpenchatImg())
                 .continuityTime(event.getContinuityTime())
                 .continuityType(event.getContinuityType())
+                .eventBkcolor(event.getEventBkcolor())
+                .autoRunState(event.getAutoRunState())
                 .eventMusicList(new ArrayList<>(eventMusicDtos))
                 .eventImageList(new ArrayList<>(eventImageDtoList))
                 .homeColor(event.getHomeColor())
@@ -73,6 +82,15 @@ public class RestService {
                 .cheerUrl2(event.getCheerUrl2())
                 .volumeValue(event.getVolumeValue())
                 .volumeSync(event.getVolumeSync())
+                .animationCount(event.getAnimationCount())
+                .emoji(event.getEmoji())
+                .animationColor(event.getAnimationColor())
+                .qrText(event.getQrText())
+                .logoImg(event.getLogoImg())
+                .bottomAd(event.getBottomAd())
+                .homeTitleImg(event.getHomeTitleImg())
+                .awayTitleImg(event.getAwayTitleImg())
+                .awayShowState(event.getAwayShowState())
                 .build();
 
         RunEvent runEvent = runEventRepository.findByEventLimit(event.getId()).orElse(null);
@@ -85,7 +103,7 @@ public class RestService {
         return eventDto;
     }
 
-    public RunEventDto startEvent(Long id) throws Exception
+    public boolean startEvent(Long id) throws Exception
     {
         Event event = eventRepository.findById(id).orElseThrow(()->new Exception("event-not-found"));
         RunEvent lastEvent = runEventRepository.findByEventLimit(event.getId()).orElse(null);
@@ -93,57 +111,27 @@ public class RestService {
             throw new Exception("event-is-running");
         }
 
-        Event saveEvent = eventRepository.save(event);
 
         LocalDateTime startDateTime = LocalDateTime.now();
         RunEvent runEvent = RunEvent.builder()
-                .event(saveEvent)
+                .event(event)
                 .startDateTime(startDateTime)
                 .eventState("START")
                 .build();
 
         RunEvent saveSaveRunEvent =  runEventRepository.save(runEvent);
 
-        if(saveEvent.getTriggerType() == 0){ // 시간
-            long stopTime = 1000 * saveEvent.getTriggerTime();
+        if(event.getTriggerType() == 0){ // 시간
+            long stopTime = 1000 * event.getTriggerTime();
             EventStateTimer eventStateTimer = new EventStateTimer(event.getId(), saveSaveRunEvent.getId());
             Timer timer = new Timer();
             timer.schedule(eventStateTimer, stopTime );
-        }else if(saveEvent.getTriggerType() == 1){  // 득표
+        }else if(event.getTriggerType() == 1){  // 득표
 
         }
 
-        List<Object[]> objects = eventMusicRepository.findAllEventMusic(event.getId());
-        List<EventMusicDto> eventMusicDtos = objects.stream()
-                .map(x -> new EventMusicDto(((BigInteger)(x[0])).longValue(), ((BigInteger)(x[1])).longValue(),
-                        (String)x[2], (Integer)x[3], (String)x[4],(String)x[5], (String)x[6]))
-                .collect(Collectors.toList());
+        return true;
 
-        List<EventImage> eventImageList = eventImageRepository.findAllByEventOrderByImageTypeAsc(saveEvent);
-        List<EventImageDto> eventImageDtoList = eventImageList
-                .stream()
-                .map(x -> new EventImageDto(x))
-                .collect(Collectors.toList());
-
-        RunEventDto runEventDto = RunEventDto.builder()
-                .id(saveSaveRunEvent.getId())
-                .eventId(saveSaveRunEvent.getEvent().getId())
-                .eventState(saveSaveRunEvent.getEventState())
-                .triggerType(saveEvent.getTriggerType())
-                .triggerTime(saveEvent.getTriggerTime())
-                .triggerVote(saveEvent.getTriggerVote())
-                .continuityType(saveEvent.getContinuityType())
-                .continuityTime(saveEvent.getContinuityTime())
-                .webUrl(saveEvent.getWebUrl())
-                .openchatUrl(saveEvent.getOpenchatUrl())
-                .eventMusicList(new ArrayList<>(eventMusicDtos))
-                .eventImageList(new ArrayList<>(eventImageDtoList))
-                .build();
-
-        eventRepository.flush();
-        runEventRepository.flush();
-
-        return runEventDto;
     }
 
     public RunEventDto startEvent(EventDto eventDto) throws Exception
@@ -819,6 +807,96 @@ public class RestService {
         return result;
 
     }
+
+    public Event createNewEvent(NewEventDto newEventDto){
+        Event event = eventRepository.save(Event.builder()
+                    .name(newEventDto.getEventName())
+                    .homeName(newEventDto.getHomeName())
+                    .awayName(newEventDto.getAwayName())
+                    .triggerType(newEventDto.getTriggerType())
+                    .triggerTime(newEventDto.getTriggerTime())
+                    .triggerVote(newEventDto.getTriggerVote())
+                    .webUrl(newEventDto.getWebUrl())
+                    .continuityTime(newEventDto.getContinuityTime())
+                    .continuityType(newEventDto.getContinuityType())
+                    .homeColor(newEventDto.getHomeColor())
+                    .homeFont(newEventDto.getHomeFont())
+                    .awayColor(newEventDto.getAwayColor())
+                    .awayFont(newEventDto.getAwayFont())
+                    .openchatUrl(newEventDto.getOpenchatUrl())
+                    .openchatImg(newEventDto.getOpenchatImg())
+                    .eventBkcolor(newEventDto.getEventBkcolor())
+                    .autoRunState(newEventDto.getAutoRunState())
+                    .openchatUrl(newEventDto.getOpenchatUrl())
+                    .openchatImg(newEventDto.getOpenchatImg())
+                    .webImg(newEventDto.getWebImg())
+                    .openchatUrl(newEventDto.getOpenchatUrl())
+                    .openchatImg(newEventDto.getOpenchatImg())
+                    .volumeValue(newEventDto.getVolumeValue())
+                    .cheerUrl1(newEventDto.getCheerUrl1())
+                    .cheerUrl2(newEventDto.getCheerUrl2())
+                    .animationCount(newEventDto.getAnimationCount())
+                    .emoji(newEventDto.getEmoji())
+                    .animationColor(newEventDto.getAnimationColor())
+                    .votecountString("현재 남은 투표 : ")
+                    .votetimeString("현재 응원 이벤트 남은 시간")
+                    .votemessageString("응원할 음원을 투표해 주세요.")
+                    .votetagString("응원태그를 설정하면 +1표")
+                    .voteendString("이벤트 종료")
+                    .qrText(newEventDto.getQrText())
+                    .logoImg(newEventDto.getLogoImg())
+                    .bottomAd(newEventDto.getBottomAd())
+                    .homeTitleImg(newEventDto.getHomeTitleImg())
+                    .awayTitleImg(newEventDto.getAwayTitleImg())
+                    .awayShowState(newEventDto.getAwayShowState())
+                    .bottomAdUrl(newEventDto.getBottomAdUrl())
+                .build());
+
+        for(NewEventImageDto newEventImage : newEventDto.getEventImageList()){
+            Image image = Image.builder()
+                    .imageUrl(newEventImage.getImageUrl())
+                    .imageName(newEventImage.getImageName())
+                    .build();
+            Image saveImg = imageRepository.save(image);
+            EventImage eventImage = EventImage.builder()
+                    .image(saveImg)
+                    .event(event)
+                    .imageType(newEventImage.getImageType())
+                    .build();
+            EventImage saveEventImg = eventImageRepository.save(eventImage);
+        }
+
+        for(NewEventMusicDto newEventMusic : newEventDto.getEventMusicList()){
+            Music music = Music.builder()
+                    .musicName(newEventMusic.getMusicName())
+                    .musicUrl(newEventMusic.getMusicUrl())
+                    .youtubeUrl(newEventMusic.getMusicYoutube())
+                    .build();
+            Music saveMusic = musicRepository.save(music);
+            EventMusic eventMusic = EventMusic.builder()
+                    .music(saveMusic)
+                    .event(event)
+                    .teamType(newEventMusic.getTeamType())
+                    .build();
+            eventMusicRepository.save(eventMusic);
+        }
+
+        List<Cheertag> cheertagList = newEventDto.getTags()
+                .stream()
+                .map(x -> {
+                    return Cheertag.builder()
+                            .event(event)
+                            .tag_id(x.getTagId())
+                            .value(x.getValue())
+                            .label(x.getLabel())
+                            .build();
+                })
+                .collect(Collectors.toList());
+        cheertagRepository.saveAll(cheertagList);
+
+        return event;
+    };
+
 
     @Transactional
     public void updateEventMusic()
