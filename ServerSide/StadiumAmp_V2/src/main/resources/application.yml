@@ -70,11 +70,6 @@ spring:
 ##################  [[  Swagger ]] ########################
 swagger.base.package: com.thiscat.stadiumamp.rest
 
-##################  [[  Logging ]] ########################
-#logging.level.org.hibernate.SQL: info
-#logging:
-#    config: classpath:logback-spring.xml
-
 
 
 

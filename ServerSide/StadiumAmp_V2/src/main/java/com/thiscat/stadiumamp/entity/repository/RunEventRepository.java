@@ -207,6 +207,7 @@ public interface RunEventRepository extends JpaRepository<RunEvent, Long> {
                     "                    ('away11count', t.away11count), ('away12count', t.away12count), ('away13count', t.away13count), ('away14count', t.away14count), ('away15count', t.away15count), " +
                     "                    ('away16count', t.away16count), ('away17count', t.away17count), ('away18count', t.away18count), ('away19count', t.away19count), ('away20count', t.away20count) " +
                     "                ) AS v(col_name, max_val) " +
+                    "                 WHERE v.max_val IS NOT NULL " +
                     "                ORDER BY max_val DESC " +
                     "                LIMIT 1 " +
                     "            ) mx " +

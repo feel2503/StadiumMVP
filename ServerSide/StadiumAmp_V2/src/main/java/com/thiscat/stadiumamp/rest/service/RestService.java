@@ -833,6 +833,7 @@ public class RestService {
                     .openchatUrl(newEventDto.getOpenchatUrl())
                     .openchatImg(newEventDto.getOpenchatImg())
                     .volumeValue(newEventDto.getVolumeValue())
+                    .volumeSync(newEventDto.getVolumeSync())
                     .cheerUrl1(newEventDto.getCheerUrl1())
                     .cheerUrl2(newEventDto.getCheerUrl2())
                     .animationCount(newEventDto.getAnimationCount())
