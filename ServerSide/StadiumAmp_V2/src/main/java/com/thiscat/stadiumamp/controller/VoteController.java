@@ -1,5 +1,7 @@
 package com.thiscat.stadiumamp.controller;
 
+import static com.thiscat.stadiumamp.system.common.ColorUtils.getColorValue;
+
 import com.thiscat.stadiumamp.dao.EventMusicDao;
 import com.thiscat.stadiumamp.dao.TagDao;
 import com.thiscat.stadiumamp.dto.*;
@@ -132,7 +134,7 @@ public class VoteController {
         }
 
 
-        //bgImage = "https://lh3.googleusercontent.com/drive-viewer/AKGpihYYrUREeok3BOYgpR_kdlLX4MhYkeEVIjVM6UlDkhWlY86tCtknoo_2bgBWHnQ5DiyBGAnnuYdJN9uZ7LLCRw0rw06fsPWdwg=s2560";
+        //bgImage = "https://pmdm-update.s3.ap-northeast-2.amazonaws.com/portvid.mp4";
         model.addAttribute("event", event);
         model.addAttribute("runevent", runEventDto);
         model.addAttribute("teamtype", strTeam);
@@ -142,7 +144,7 @@ public class VoteController {
         model.addAttribute("awayColor", "#"+event.getAwayColor());
         model.addAttribute("awayFont", "#"+event.getAwayFont());
         model.addAttribute("bgimg", bgImage);
-        model.addAttribute("bgcolor", "#"+event.getEventBkcolor());
+        model.addAttribute("bgcolor", getColorValue(event.getEventBkcolor()));
         model.addAttribute("openchatimg", event.getOpenchatImg());
         model.addAttribute("webimg", event.getWebImg());
         model.addAttribute("gender", gender);
@@ -228,6 +230,7 @@ public class VoteController {
         model.addAttribute("homeColor", "#"+event.getHomeColor());
         model.addAttribute("awayColor", "#"+event.getAwayColor());
         model.addAttribute("bgimg", bgImage);
+        model.addAttribute("bgcolor", getColorValue(event.getEventBkcolor()));
 
         return "vote2";
     }
@@ -558,7 +561,7 @@ public class VoteController {
         model.addAttribute("btColor", "#"+btColor);
         model.addAttribute("fontColor", "#"+fontColor);
         model.addAttribute("bgimg", bgImage);
-        model.addAttribute("bgcolor", "#"+event.getEventBkcolor());
+        model.addAttribute("bgcolor", getColorValue(event.getEventBkcolor()));
         model.addAttribute("openchatimg", event.getOpenchatImg());
         model.addAttribute("webimg", event.getWebImg());
         model.addAttribute("eventTopDtos", eventTopDtos);

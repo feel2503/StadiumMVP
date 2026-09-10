@@ -1,5 +1,7 @@
 package com.thiscat.stadiumamp.controller;
 
+import static com.thiscat.stadiumamp.system.common.ColorUtils.getColorValue;
+
 import com.thiscat.stadiumamp.entity.Event;
 import com.thiscat.stadiumamp.entity.repository.EventImageRepository;
 import com.thiscat.stadiumamp.entity.repository.EventRepository;
@@ -27,6 +29,7 @@ public class EventController {
 //        Stadiumserver stadiumserver = stadiumServerRepository.findById(id).orElse(null);
 
         String bgImage = eventImageRepository.findTypeEventImage(id, "IMAGE_DEFAULT");
+        //bgImage = "https://pmdm-update.s3.ap-northeast-2.amazonaws.com/portvid.mp4";
         model.addAttribute("data", event);
         model.addAttribute("bgimg", bgImage);
         model.addAttribute("bgcolor", getColorValue(event.getEventBkcolor()));
@@ -58,14 +61,5 @@ public class EventController {
         return baseUrl;
     }
 
-    private String getColorValue(String color){
-        if(color != null ){
-            if(!color.startsWith("#"))
-                color = "#" + color;
-        }else{
-            color = "#FFFFFF";
-        }
-        return color;
-    }
 
 }

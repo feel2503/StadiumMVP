@@ -1,5 +1,7 @@
 package com.thiscat.stadiumamp.controller;
 
+import static com.thiscat.stadiumamp.system.common.ColorUtils.getColorValue;
+
 import com.thiscat.stadiumamp.dao.TagDao;
 import com.thiscat.stadiumamp.dto.EventMusicDto;
 import com.thiscat.stadiumamp.dto.EventStatisticsDto;
@@ -129,7 +131,7 @@ public class VoteHistoryController {
         model.addAttribute("btColor", "#"+btColor);
         model.addAttribute("fontColor", "#"+fontColor);
         model.addAttribute("bgimg", bgImage);
-        model.addAttribute("bgcolor", "#"+event.getEventBkcolor());
+        model.addAttribute("bgcolor", getColorValue(event.getEventBkcolor()));
         model.addAttribute("openchatimg", event.getOpenchatImg());
         model.addAttribute("webimg", event.getWebImg());
         model.addAttribute("eventTopDtos", eventTopDtos);

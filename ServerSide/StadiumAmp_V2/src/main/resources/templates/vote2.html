@@ -59,7 +59,15 @@
 <!--            </div>-->
         </div>
 
-        <div class="event_bg" th:styleAppend="'background-image: url('+${bgimg}+');'">
+<!--        <div class="event_bg" th:styleAppend="'background-image: url('+${bgimg}+');'">-->
+        <div class="event_bg"
+             th:with="isVideo=${bgimg != null and (#strings.containsIgnoreCase(bgimg,'.mp4') or #strings.containsIgnoreCase(bgimg,'.webm'))}"
+             th:styleAppend="${isVideo} ? 'background-image: none; background-color: ' + ${bgcolor} + ';' : 'background-image: url(\'' + ${bgimg} + '\');'">
+
+            <video th:if="${isVideo}"
+                   class="event_bg_video"
+                   th:src="${bgimg}"
+                   autoplay muted loop playsinline></video>
         <div style="padding:20px;">
 
 <!--        <div class="event_bg" style="padding:20px;">-->

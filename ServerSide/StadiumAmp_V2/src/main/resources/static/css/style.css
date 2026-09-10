@@ -574,6 +574,8 @@ div{
 
 
 .event_bg {
+    position: relative;
+    z-index: 0;
     margin: 0;
     width: 100vw;
     max-width: 768px;
@@ -582,6 +584,13 @@ div{
     background-image: url('./../asset/WEB-default-square3-50.jpg');
     background-size: contain;
     background-repeat: repeat;
+}
+.event_bg_video {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: contain;   /* 기존 background-size: contain 과 맞춤 */
+    z-index: -1;
 }
 
 .sample {
